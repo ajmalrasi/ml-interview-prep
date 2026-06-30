@@ -28,6 +28,53 @@ for fast browser-facing low-latency model loops and operator UIs.
 You can only start decoding at an I-frame (keyframe). Until the next keyframe
 arrives, P/B frames have nothing to build on. Shorter GOP shortens that window.
 
+**Q: Walk me through what RTSP actually does — it carries video, right?**
+No — RTSP is *control* (OPTIONS/DESCRIBE/SETUP/PLAY/TEARDOWN). It negotiates the
+session; the video rides on **RTP**, stats/feedback on **RTCP**. DESCRIBE returns an
+SDP with the codec; SETUP picks transport (UDP ports or TCP interleaved); PLAY starts
+the RTP flow.
+
+**Q: What's in an RTP packet and why do you care?**
+Sequence number (detect loss/reorder), timestamp (playback timing off a 90kHz clock),
+SSRC (which source), payload type (which codec). A keyframe is fragmented (FU-A)
+across many packets and reassembled by sequence number — that's why one lost packet
+can wreck a whole keyframe.
+
+**Q: What's the jitter buffer and what does tuning it trade?**
+A small buffer that absorbs uneven packet arrival and reorders before decode
+(`rtspsrc latency=200`). Lower = less delay but more visible glitches under loss;
+higher = smoother but laggier. It's a direct latency-vs-smoothness dial.
+
+**Q: Why does an RTSP session need keepalives?**
+Sessions time out. You send periodic GET_PARAMETER/OPTIONS (or rely on RTCP); else
+the camera tears down and you must reconnect. Ties into fault-tolerance reconnect
+logic.
+
+**Q: Explain a WebRTC connection end to end.**
+Four phases: (1) **signaling** — exchange SDP offer/answer over a server you build
+(WebSocket); (2) **ICE** — gather host/STUN/TURN candidates and probe for a working
+path through NAT; (3) **DTLS** handshake exchanges keys; (4) **SRTP** carries
+encrypted media, with congestion control + NACK/FEC. WebRTC doesn't define signaling
+— that's your code.
+
+**Q: STUN vs TURN — what's the difference?**
+STUN tells a peer its public IP:port so two peers can connect *directly* through NAT
+(cheap). TURN *relays* media when direct fails (symmetric NAT) — costs bandwidth/$
+but guarantees connectivity. In a factory/enterprise network, plan for TURN.
+
+**Q: One feed to many browsers in WebRTC — how?**
+Raw WebRTC is 1:1. For one-to-many put an **SFU** (mediasoup/Janus/LiveKit/Pion) in
+the middle: each sender uploads once, the SFU forwards to N viewers. Don't mesh peers.
+
+**Q: A WebRTC connection won't establish — debug order?**
+Signaling reachable? → STUN returning a reflexive candidate? → TURN configured for
+symmetric NAT? → DTLS handshake completing? Walk the four phases in order.
+
+**Q: Why is WebRTC encrypted but camera RTSP often isn't?**
+Different threat models. WebRTC crosses the public internet to a browser → DTLS-SRTP
+mandatory. Camera RTSP usually stays on a trusted VLAN → often plaintext (RTSPS/SRTP
+exist but are less common).
+
 ---
 
 ## Codecs & frames
@@ -97,6 +144,70 @@ Then tear to NULL and reconnect.
 DeepStream gives multi-stream batching, GPU-resident buffers, tracking for free on
 NVIDIA HW — fastest path to many cameras. DIY when you need custom logic or
 non-NVIDIA hardware.
+
+**Q: How do caps negotiation failures show up, and what causes them?**
+`not-negotiated (-4)` = downstream/upstream caps don't intersect (missing
+videoconvert, or a format the decoder can't emit). `internal data stream error` =
+usually a dynamic pad never got linked (the rtspsrc pad-added gotcha). Fix by adding
+the right converter/capsfilter or wiring pad-added.
+
+**Q: Why does rtspsrc need a pad-added callback?**
+Its source pad is a "sometimes pad" — it doesn't appear until the stream connects and
+the format is known, so you can't link it statically. You connect `pad-added` and
+link to the depayloader then.
+
+**Q: What does a `queue` actually do, and why one per tee branch?**
+A queue is a thread boundary + bounded buffer — it decouples upstream/downstream onto
+separate threads and applies backpressure. After a `tee`, each branch needs its own
+queue or the slowest branch stalls all of them (shared thread).
+
+**Q: leaky=downstream vs leaky=no on a queue?**
+`leaky=downstream` drops the oldest buffer when full → live video (latest frame
+wins). `leaky=no` blocks → recorded/offline where you can't lose a frame.
+
+**Q: PTS vs DTS?**
+PTS = when to present, DTS = when to decode. They diverge with B-frames (decode order
+≠ display order), which is also why B-frames add latency.
+
+**Q: How do you read detections without copying frames?**
+Pad probe on nvinfer/nvdsosd → walk the metadata hierarchy
+NvDsBatchMeta → NvDsFrameMeta → NvDsObjectMeta (bbox/class/track id) → push out. Pixels
+stay on the GPU; you only read metadata. `source_id` tells you which camera.
+
+**Q: nvstreammux batch-size and batched-push-timeout — how do you set them?**
+batch-size ≈ number of streams (must match nvinfer). batched-push-timeout ≈ one frame
+interval (~33ms @30fps) so a dead camera can't stall the whole batch — it flushes with
+N-1 streams and the dead one reconnects independently.
+
+**Q: nvinfer `interval` — what is it and why use it?**
+Skip inference on N frames between runs (e.g. infer every 3rd frame), letting the
+tracker fill the gaps. Big throughput/latency win when objects move little
+frame-to-frame.
+
+**Q: How do detections leave a DeepStream pipeline for analytics?**
+nvmsgconv serializes metadata to a schema, nvmsgbroker ships it to Kafka/MQTT/AMQP →
+consumed by a DB/analytics service. Same decoupled message-bus pattern as a data
+platform.
+
+**Q: Primary vs secondary GIE?**
+Primary detects on the full frame; secondary classifies the *crops* the primary found
+(detect vehicle → classify make/color), gated by operate-on-gie-id/class-ids so it
+only runs on relevant objects.
+
+**Q: How do you serve the annotated result back to a browser?**
+Encode (nvv4l2h264enc) → webrtcbin (sub-500ms) or an RTSP-out sink. That closes the
+RTSP-in → infer → WebRTC-out loop. Tiler (nvmultistreamtiler) composites many cameras
+into one grid first if needed.
+
+**Q: How do you debug a GStreamer pipeline that won't play?**
+`GST_DEBUG=3..5 gst-launch-1.0 ...` for verbose negotiation/errors;
+`GST_DEBUG_DUMP_DOT_DIR` to dump the pipeline graph to .dot and visualize what linked;
+`gst-inspect-1.0 <element>` to check pads/caps/properties.
+
+**Q: Jetson vs dGPU — what changes in the pipeline?**
+Jetson shares CPU/GPU memory (NVMM transfers cheap, but compute/power constrained → lean
+on INT8 + frame interval). dGPU has separate memory → avoiding host↔device copies is the
+bigger win. Plugin names vary slightly by DeepStream version.
 
 ---
 
