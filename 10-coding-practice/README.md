@@ -7,6 +7,11 @@ from memory**. KoiReader's product reads labels/barcodes/packages in supply-chai
 video, so expect **practical OpenCV + image-processing + geometry + detection-logic**
 tasks that **produce output images**, not LeetCode puzzles.
 
+> **Play with the code live.** Every problem below is also a runnable Jupyter
+> notebook. Run `bash run.sh` to launch JupyterLab + this website together — see
+> [Live Playground (Jupyter)](../RUN-PLAYGROUND.md). Reading builds memory; running
+> builds intuition. Use both.
+
 ## What to anticipate (ranked by likelihood)
 
 1. **Image preprocessing for OCR/label reading** — grayscale, blur, Otsu/adaptive

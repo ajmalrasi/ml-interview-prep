@@ -16,6 +16,7 @@ const { D, DIAGRAMS, SECTIONS, fig } = require("./_diagrams.js");
 const SITE = [
   { label:"Start here", items:[
     { dir:"", file:"README.md", title:"Overview & Gap Analysis" },
+    { dir:"", file:"RUN-PLAYGROUND.md", title:"Live Playground (Jupyter)" },
     { dir:"", file:"RUN-ON-PI.md", title:"Run on a Raspberry Pi" },
   ]},
   { label:"1 · Video Streaming", dir:"01-video-streaming", items:[
@@ -83,6 +84,8 @@ const SITE = [
     { file:"video-and-streaming.md", title:"Video & Streaming" },
     { file:"python-and-numpy.md", title:"Python & NumPy" },
     { file:"opencv-cheat-sheet.md", title:"OpenCV Cheat Sheet" },
+    { file:"mock-test.md", title:"⏱ 90-min Mock Test" },
+    { file:"mock-solutions.md", title:"Mock — Solutions" },
   ]},
 ];
 
