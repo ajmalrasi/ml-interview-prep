@@ -13,6 +13,7 @@ cd "$(dirname "$0")"
 PYTHON="${PYTHON:-python3}"
 SITE_PORT="${SITE_PORT:-9000}"
 JUPYTER_PORT="${JUPYTER_PORT:-8888}"
+JUPYTER_TOKEN="${JUPYTER_TOKEN:-koireader}"   # the website's "Open live notebooks" link uses this
 
 # 1) venv + deps (only installs once; fast on later runs)
 if [ ! -d .venv ]; then
@@ -45,9 +46,11 @@ echo "============================================================"
 echo ""
 
 # 4) launch JupyterLab in the foreground (Ctrl+C stops both)
+#    Fixed token so the website's "Open live notebooks" link works without prompting.
 exec jupyter lab \
   --no-browser \
   --ip=0.0.0.0 \
   --port="$JUPYTER_PORT" \
+  --IdentityProvider.token="$JUPYTER_TOKEN" \
   --notebook-dir=notebooks \
   --ServerApp.root_dir=notebooks

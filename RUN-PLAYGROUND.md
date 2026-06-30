@@ -21,8 +21,11 @@ Study website :  http://localhost:9000
 Jupyter        :  starting on port 8888 (URL + token printed below)
 ```
 
-Jupyter prints a URL like `http://127.0.0.1:8888/lab?token=...` — open it. Press
-**Ctrl+C** in the terminal to stop both.
+Jupyter starts with the fixed token **`koireader`**, so the website's **"Open live
+notebooks"** button (top-left of the site) opens JupyterLab directly —
+`http://<this-host>:8888/lab?token=koireader`. Press **Ctrl+C** in the terminal to
+stop both. (Change the token with `JUPYTER_TOKEN=... bash run.sh`, but then update
+the link's token in `_app.js` and rebuild.)
 
 Custom ports: `SITE_PORT=9000 JUPYTER_PORT=8888 bash run.sh`
 

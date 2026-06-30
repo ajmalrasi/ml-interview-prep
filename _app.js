@@ -4,6 +4,15 @@ const byPath = {};
 PAGES.forEach(p => byPath[p.path] = p);
 let currentPath = null;
 
+// --- live Jupyter playground link (served on the same host, port 8888) ---
+const JUPYTER_PORT = 8888;
+const JUPYTER_TOKEN = "koireader";   // matches run.sh / koi-jupyter service
+function jupyterURL(){
+  const proto = location.protocol === "file:" ? "http:" : location.protocol;
+  const host = location.hostname || "localhost";
+  return proto + "//" + host + ":" + JUPYTER_PORT + "/lab?token=" + JUPYTER_TOKEN;
+}
+
 // translucent tint from an accent hex — works on light AND dark backgrounds
 function hexToRgba(hex, a){
   hex = (hex||"").replace("#","");
@@ -113,8 +122,10 @@ document.addEventListener("click", e=>{
   if(anchor){ e.preventDefault(); const el=document.getElementById(anchor.dataset.anchor); if(el) el.scrollIntoView({behavior:"smooth",block:"start"}); return; }
   const a=e.target.closest("a.mdlink");
   if(!a) return;
+  const href=a.getAttribute("data-href");
+  if(href==="JUPYTER"){ e.preventDefault(); window.open(jupyterURL(), "_blank", "noopener"); return; }
   e.preventDefault();
-  const target=resolvePath(currentPath||"README.md", a.getAttribute("data-href"));
+  const target=resolvePath(currentPath||"README.md", href);
   if(target) go(target);
 });
 
@@ -172,6 +183,16 @@ document.getElementById("menu").addEventListener("click", openSidebar);
 document.getElementById("searchBtn").addEventListener("click", ()=>{ openSidebar(); setTimeout(()=>searchBox.focus(),260); });
 scrim.addEventListener("click", closeSidebar);
 addEventListener("keydown", e=>{ if(e.key==="Escape") closeSidebar(); });
+
+/* --------------------------- live Jupyter button --------------------------- */
+(function(){
+  const jl=document.getElementById("jupyterLink");
+  if(jl){
+    jl.href=jupyterURL();
+    jl.title="Opens JupyterLab on this device, port "+JUPYTER_PORT+
+             " — requires the playground running (bash run.sh, or the koi-jupyter service).";
+  }
+})();
 
 /* ----------------------------------- init ---------------------------------- */
 buildNav();

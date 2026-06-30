@@ -289,6 +289,7 @@ const HTML =
 '        <input id="search" type="search" placeholder="Search all pages…" autocomplete="off" autocapitalize="off" spellcheck="false">\n' +
 '        <button class="iconbtn theme-toggle" title="Toggle light / dark">◐</button>\n' +
 '      </div>\n' +
+'      <a id="jupyterLink" class="jbtn" target="_blank" rel="noopener">🚀 Open live notebooks ↗</a>\n' +
 '    </div>\n' +
 '    <nav id="nav"></nav>\n' +
 '  </aside>\n' +

@@ -42,6 +42,10 @@
     border-radius:10px; min-width:40px; height:40px; cursor:pointer; font-size:16px;
     display:flex; align-items:center; justify-content:center; flex:none}
   .iconbtn:hover{border-color:var(--accent); color:var(--accent)}
+  a.jbtn{display:block; margin-top:10px; text-align:center; text-decoration:none;
+    background:var(--accent); color:#fff; border-radius:10px; padding:9px 12px;
+    font-size:13px; font-weight:700; letter-spacing:.2px}
+  a.jbtn:hover{filter:brightness(1.08); text-decoration:none}
   nav{padding:10px 10px calc(60px + env(safe-area-inset-bottom))}
   .sec{margin:2px 0}
   .sec>.sec-h{font-size:11px; text-transform:uppercase; letter-spacing:.7px; color:var(--muted);

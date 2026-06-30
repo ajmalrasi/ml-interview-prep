@@ -8,9 +8,11 @@ video, so expect **practical OpenCV + image-processing + geometry + detection-lo
 tasks that **produce output images**, not LeetCode puzzles.
 
 > **Play with the code live.** Every problem below is also a runnable Jupyter
-> notebook. Run `bash run.sh` to launch JupyterLab + this website together — see
-> [Live Playground (Jupyter)](../RUN-PLAYGROUND.md). Reading builds memory; running
-> builds intuition. Use both.
+> notebook. **[▶ Open the live notebooks ↗](JUPYTER)** (or use the *Open live
+> notebooks* button, top-left). That opens JupyterLab running on this same device —
+> start it first with `bash run.sh`, or as the `koi-jupyter` service (see
+> [Live Playground](../RUN-PLAYGROUND.md)). Reading builds memory; running builds
+> intuition. Use both.
 
 ## What to anticipate (ranked by likelihood)
 
