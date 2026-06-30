@@ -145,9 +145,9 @@
   .callout{display:flex; gap:13px; align-items:flex-start; background:var(--sec-accent-soft,var(--accent-soft));
     border:1px solid var(--sec-accent,var(--accent)); border-radius:14px; padding:14px 16px; margin:1.2em 0}
   .callout .cic{font-size:22px; line-height:1.2; flex:none}
-  /* background is always a light section pastel, so force dark text in both themes */
-  .callout .cbody{font-size:.98em; color:#23211c}
-  .callout .cbody code{background:rgba(0,0,0,.06); color:#3a2c20}
+  /* tint background is translucent (theme-proof), so use theme-aware softer text */
+  .callout .cbody{font-size:.98em; color:var(--quote)}
+  .callout .cbody code{background:var(--code-bg); color:var(--code-text)}
   .callout .clead{display:inline-block; font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif;
     font-weight:800; font-size:11px; letter-spacing:.8px; text-transform:uppercase;
     color:var(--sec-accent,var(--accent)); margin-right:6px}

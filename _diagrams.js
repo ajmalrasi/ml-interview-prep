@@ -41,19 +41,18 @@ D.pipeline = (()=>{
 
 // RTSP in / WebRTC out
 D.protocols = {h:200, body:
-  box(40,30,180,54,"IP Cameras","emit RTSP")+
-  arrow(220,57,300)+
-  box(300,20,120,140,"Your System","",'dg-box dg-hot')+
-  '<text class="dg-sub" x="360" y="95" text-anchor="middle">decode ·</text>'+
-  '<text class="dg-sub" x="360" y="112" text-anchor="middle">infer · serve</text>'+
-  arrow(420,57,500)+
-  box(500,30,180,54,"Browsers","via WebRTC")+
-  '<text class="dg-sub" x="130" y="120" text-anchor="middle">pull · ~0.5–3s</text>'+
-  '<text class="dg-sub" x="130" y="136" text-anchor="middle">rugged, standard</text>'+
-  arrow(420,130,500)+
-  '<text class="dg-sub" x="590" y="120" text-anchor="middle">push · &lt;500ms</text>'+
-  '<text class="dg-sub" x="590" y="136" text-anchor="middle">low latency</text>'+
-  box(500,150,180,30,"WebRTC out","",'dg-box')
+  box(28,46,168,54,"IP Cameras","emit RTSP")+
+  '<text class="dg-accent-tx" x="248" y="62" text-anchor="middle">RTSP</text>'+
+  arrow(196,73,300)+
+  '<rect class="dg-box dg-hot" x="300" y="36" width="132" height="92" rx="12"/>'+
+  '<text class="dg-label" x="366" y="65" text-anchor="middle">Your System</text>'+
+  '<text class="dg-sub" x="366" y="89" text-anchor="middle">decode · infer</text>'+
+  '<text class="dg-sub" x="366" y="107" text-anchor="middle">· serve live</text>'+
+  '<text class="dg-accent-tx" x="486" y="62" text-anchor="middle">WebRTC</text>'+
+  arrow(432,73,540)+
+  box(540,46,168,54,"Browsers","in-browser")+
+  '<text class="dg-sub" x="360" y="160" text-anchor="middle">RTSP in — pull from cameras, ~0.5–3s, rugged &amp; standard</text>'+
+  '<text class="dg-sub" x="360" y="180" text-anchor="middle">WebRTC / FastRTC out — push to browsers, &lt;500ms, low-latency</text>'
 };
 
 // GOP: I P P B P ...
