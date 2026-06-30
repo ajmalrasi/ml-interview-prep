@@ -92,12 +92,22 @@ Or put it on a USB stick — the whole site is plain text, a few hundred KB.
 
 ## Notes
 
+- **Single self-contained file:** all content is baked into `index.html`. It works
+  even by double-clicking the file (`file://`) — no server strictly required. The
+  server is only for sharing it on the network (e.g. to your phone).
 - **Fully offline:** no CDN, no external fonts or scripts. Works on an air-gapped
   device.
 - **Resource use:** `python3 -m http.server` idles at near-zero CPU/RAM — fine on a
   Pi Zero.
-- **Editing content:** just edit the `.md` files; refresh the browser. No rebuild.
-- **Dark/light:** toggle with the ◐ button (top-left); preference is remembered.
-- **Search:** the box filters by title and full text across all pages.
+- **Editing content:** edit the `.md` files, then rebuild with **`node build.js`**
+  to regenerate `index.html` (the `.md` files are the source of truth; `_site.css`,
+  `_app.js`, and `build.js` are the build inputs). If you don't have Node, you can
+  edit `index.html` directly instead.
+- **Quiz mode:** on the *Drill Bank* page, hit "Quiz me · hide answers" to collapse
+  every answer, then tap a question to reveal it.
+- **Outline:** long pages show an "On this page" jump list.
+- **Dark/light:** toggle with the ◐ button; preference is remembered.
+- **Search:** type in the box for instant full-text search across all pages
+  (↑/↓ to move, Enter to open).
 
 → Back to the [Overview](README.md).
