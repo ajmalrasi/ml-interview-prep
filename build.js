@@ -220,7 +220,7 @@ function homeCards(){
   const cards = SITE.filter(s=>s.dir).map(sec=>{
     const m = SECTIONS[sec.label] || {};
     const href = sec.dir + "/README.md";
-    return '<a class="seccard mdlink" data-href="'+href+'" href="#" style="--card:'+m.accent+';--cardsoft:'+m.soft+'">'+
+    return '<a class="seccard mdlink" data-href="'+href+'" href="#" style="--card:'+m.accent+'">'+
       '<span class="sc-ic">'+(m.icon||"•")+'</span>'+
       '<span class="sc-lbl">'+sec.label+'</span>'+
       '<span class="sc-tag">'+(m.tag||"")+'</span></a>';
@@ -246,7 +246,7 @@ SITE.forEach(sec => sec.items.forEach(it => {
   const text = stripTags(html).toLowerCase();
   const meta = SECTIONS[sec.label] || {};
   PAGES.push({ path:rel, title:it.title, section:sec.label, quiz:!!it.quiz,
-    accent:meta.accent||"", soft:meta.soft||"", html, toc, text, words: text.split(" ").length });
+    accent:meta.accent||"", html, toc, text, words: text.split(" ").length });
 }));
 
 const NAV = SITE.map(sec => {

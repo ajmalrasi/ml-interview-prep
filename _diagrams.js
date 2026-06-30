@@ -216,18 +216,21 @@ const DIAGRAMS = {
   "09-computer-vision-fundamentals/logic-on-detections.md": ["logic","Turning boxes into business meaning"],
 };
 
-/* section metadata: icon (emoji), accent, soft tint, tagline */
+/* section metadata: icon (emoji), accent, tagline.
+ * Accents are mid-tones chosen to read on BOTH the cream light bg and the dark bg.
+ * Tinted backgrounds are generated translucently at runtime (see _app.js), so they
+ * never become white-on-white in dark mode. */
 const SECTIONS = {
-  "Start here":               { icon:"🧭", accent:"#c45f3c", soft:"#f6e7df", tag:"Map your fit and how to use this pack" },
-  "1 · Video Streaming":      { icon:"📡", accent:"#0e8f8f", soft:"#dcefee", tag:"RTSP, WebRTC, codecs, frame buffers" },
-  "2 · GStreamer":            { icon:"🎬", accent:"#7c5cff", soft:"#e9e4ff", tag:"Pipelines, appsink, DeepStream" },
-  "3 · Low-Latency Inference":{ icon:"⚡", accent:"#c98a00", soft:"#f7ecd0", tag:"TensorRT, quantization, batching" },
-  "4 · Fault Tolerance":      { icon:"🛡️", accent:"#c4453c", soft:"#f7ddda", tag:"Crash-proof, self-healing systems" },
-  "5 · Production Python":    { icon:"🐍", accent:"#2f6fb0", soft:"#dbe9f6", tag:"GIL, threads, async, memory" },
-  "6 · System Design":        { icon:"🏗️", accent:"#2f9e6f", soft:"#d8f1e6", tag:"Design a crash-proof camera fleet" },
-  "7 · Q&A Drill Bank":       { icon:"🎯", accent:"#b5468f", soft:"#f6dcef", tag:"Every \"why X over Y\", quiz-ready" },
-  "8 · Mock Interview":       { icon:"🎤", accent:"#5a5fd0", soft:"#e1e2f7", tag:"Questions, model answers, rubric" },
-  "9 · CV Fundamentals":      { icon:"👁️", accent:"#0d86b0", soft:"#d6edf6", tag:"OpenCV, geometry, detection math" },
+  "Start here":               { icon:"🧭", accent:"#d4663f", tag:"Map your fit and how to use this pack" },
+  "1 · Video Streaming":      { icon:"📡", accent:"#14a3a3", tag:"RTSP, WebRTC, codecs, frame buffers" },
+  "2 · GStreamer":            { icon:"🎬", accent:"#8b6dff", tag:"Pipelines, appsink, DeepStream" },
+  "3 · Low-Latency Inference":{ icon:"⚡", accent:"#d39a1f", tag:"TensorRT, quantization, batching" },
+  "4 · Fault Tolerance":      { icon:"🛡️", accent:"#dd5b54", tag:"Crash-proof, self-healing systems" },
+  "5 · Production Python":    { icon:"🐍", accent:"#4a8bd1", tag:"GIL, threads, async, memory" },
+  "6 · System Design":        { icon:"🏗️", accent:"#34ad7c", tag:"Design a crash-proof camera fleet" },
+  "7 · Q&A Drill Bank":       { icon:"🎯", accent:"#cc5fab", tag:"Every \"why X over Y\", quiz-ready" },
+  "8 · Mock Interview":       { icon:"🎤", accent:"#7479e6", tag:"Questions, model answers, rubric" },
+  "9 · CV Fundamentals":      { icon:"👁️", accent:"#19a4d1", tag:"OpenCV, geometry, detection math" },
 };
 
 module.exports = { D, DIAGRAMS, SECTIONS, fig };

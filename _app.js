@@ -4,6 +4,14 @@ const byPath = {};
 PAGES.forEach(p => byPath[p.path] = p);
 let currentPath = null;
 
+// translucent tint from an accent hex — works on light AND dark backgrounds
+function hexToRgba(hex, a){
+  hex = (hex||"").replace("#","");
+  if(hex.length===3) hex = hex.split("").map(c=>c+c).join("");
+  const n = parseInt(hex||"000000", 16);
+  return "rgba("+((n>>16)&255)+","+((n>>8)&255)+","+(n&255)+","+a+")";
+}
+
 function resolvePath(curPath, href){
   if(href.charAt(0)==="#") return null;
   if(/\/$/.test(href)) href += "README.md";
@@ -19,9 +27,9 @@ function buildNav(){
   const nav=document.getElementById("nav");
   DATA.nav.forEach(sec=>{
     const wrap=document.createElement("div"); wrap.className="sec";
+    wrap.style.setProperty("--card", sec.accent);
     const h=document.createElement("div"); h.className="sec-h";
     h.innerHTML='<span class="sec-ic">'+(sec.icon||"")+'</span> '+sec.label;
-    h.style.setProperty("--card", sec.accent);
     wrap.appendChild(h);
     sec.items.forEach(it=>{
       const a=document.createElement("a");
@@ -82,9 +90,9 @@ function loadPage(path){
   if(!pg){ content.innerHTML='<div class="loading">Page not found: '+path+'</div>'; document.getElementById("pagetools").innerHTML=""; document.getElementById("pager").innerHTML=""; return; }
   currentPath=path;
   setActive(path);
-  // tint the page to its section accent
+  // tint the page to its section accent (soft tint is translucent → theme-proof)
   const root=document.documentElement.style;
-  if(pg.accent){ root.setProperty("--sec-accent", pg.accent); root.setProperty("--sec-accent-soft", pg.soft||pg.accent); }
+  if(pg.accent){ root.setProperty("--sec-accent", pg.accent); root.setProperty("--sec-accent-soft", hexToRgba(pg.accent, 0.16)); }
   else { root.removeProperty("--sec-accent"); root.removeProperty("--sec-accent-soft"); }
   content.innerHTML=pg.html;
   renderPageTools(pg);
