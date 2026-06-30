@@ -11,14 +11,23 @@ The page *reads* the `.md` files at runtime with `fetch()`. Browsers block readi
 local files over `file://` for security, so opening `index.html` directly shows a
 "needs a web server" notice. Any HTTP server fixes it — that's all a Pi needs.
 
+## Deployed instance
+
+Running on **http://192.168.3.20:9000** — served by the `koi-prep` systemd service
+(auto-starts on boot). User: `ajmalrasi`, path: `/home/ajmalrasi/koireader-interview-prep`.
+
+Source: https://github.com/ajmalrasi/koireader-interview-prep
+
+---
+
 ## Option 1 — Python (already on every Pi), 30 seconds
 
 ```bash
 cd /path/to/koireader-interview-prep
-python3 -m http.server 8000
+python3 -m http.server 9000
 ```
 
-Then open **http://localhost:8000** on the Pi, or **http://<pi-ip>:8000** from your
+Then open **http://localhost:9000** on the Pi, or **http://<pi-ip>:9000** from your
 laptop/phone on the same network (find the IP with `hostname -I`).
 
 ## Option 2 — Always-on with systemd (survives reboot)
@@ -32,10 +41,10 @@ Description=KoiReader Interview Prep site
 After=network.target
 
 [Service]
-WorkingDirectory=/home/pi/koireader-interview-prep
-ExecStart=/usr/bin/python3 -m http.server 8000
+WorkingDirectory=/home/ajmalrasi/koireader-interview-prep
+ExecStart=/usr/bin/python3 -m http.server 9000
 Restart=always
-User=pi
+User=ajmalrasi
 
 [Install]
 WantedBy=multi-user.target
@@ -73,8 +82,13 @@ From your computer:
 scp -r koireader-interview-prep pi@<pi-ip>:/home/pi/
 ```
 
-Or put it on a USB stick / clone it from git — the whole site is plain text, a few
-hundred KB.
+Or clone from GitHub:
+
+```bash
+git clone git@github.com:ajmalrasi/koireader-interview-prep.git
+```
+
+Or put it on a USB stick — the whole site is plain text, a few hundred KB.
 
 ## Notes
 
