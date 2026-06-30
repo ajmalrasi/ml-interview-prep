@@ -230,6 +230,7 @@ const SECTIONS = {
   "7 · Q&A Drill Bank":       { icon:"🎯", accent:"#cc5fab", tag:"Every \"why X over Y\", quiz-ready" },
   "8 · Mock Interview":       { icon:"🎤", accent:"#7479e6", tag:"Questions, model answers, rubric" },
   "9 · CV Fundamentals":      { icon:"👁️", accent:"#19a4d1", tag:"OpenCV, geometry, detection math" },
+  "10 · Coding Practice":     { icon:"💻", accent:"#b5651d", tag:"Runnable OpenCV problems for the proctored round" },
 };
 
 module.exports = { D, DIAGRAMS, SECTIONS, fig };

@@ -76,6 +76,14 @@ const SITE = [
     { file:"logic-on-detections.md", title:"Logic on Detections" },
     { file:"cv-cheat-sheet.md", title:"CV Cheat Sheet" },
   ]},
+  { label:"10 · Coding Practice", dir:"10-coding-practice", items:[
+    { file:"README.md", title:"Overview & What to Anticipate" },
+    { file:"image-processing-and-geometry.md", title:"Image Processing & Geometry" },
+    { file:"detection-logic.md", title:"Detection Logic" },
+    { file:"video-and-streaming.md", title:"Video & Streaming" },
+    { file:"python-and-numpy.md", title:"Python & NumPy" },
+    { file:"opencv-cheat-sheet.md", title:"OpenCV Cheat Sheet" },
+  ]},
 ];
 
 /* ----------------------------- markdown parser ----------------------------- */
