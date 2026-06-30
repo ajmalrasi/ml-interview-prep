@@ -72,7 +72,6 @@ WorkingDirectory=/home/ajmalrasi/koireader-interview-prep
 ExecStart=/home/ajmalrasi/koireader-interview-prep/.venv/bin/jupyter lab \
   --no-browser --ip=0.0.0.0 --port=8888 \
   --IdentityProvider.token=koireader \
-  --notebook-dir=/home/ajmalrasi/koireader-interview-prep/notebooks \
   --ServerApp.root_dir=/home/ajmalrasi/koireader-interview-prep/notebooks
 Restart=always
 User=ajmalrasi
