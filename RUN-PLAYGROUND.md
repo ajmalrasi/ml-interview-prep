@@ -52,6 +52,21 @@ Each notebook's **first code cell** creates synthetic sample images
 (`input.jpg`, `test.avi`, …) so every cell runs out of the box. **Swap `input.jpg`
 for a real photo** to experiment on your own data.
 
+## Adding or editing notebook content
+
+**Don't edit files in `notebooks/` directly** — they're generated, and any change
+gets silently overwritten the next time someone runs `build_notebooks.py` (which
+every deploy does). Edit the source instead:
+
+```bash
+# 1. Edit the matching .md in 10-coding-practice/ (e.g. image-processing-and-geometry.md)
+# 2. Regenerate the notebooks from it:
+python3 build_notebooks.py
+# 3. Commit both the .md and the regenerated .ipynb, then push + redeploy.
+```
+
+The `.md` → `.ipynb` mapping is the `FILES` list at the top of `build_notebooks.py`.
+
 ## Practising for the proctored format
 
 The test wants `.py` files, or `.ipynb` **converted to `.html`** (no zip). Convert
