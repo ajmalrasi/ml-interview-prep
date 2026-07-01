@@ -76,13 +76,13 @@ def deskew(path, out="p3_out.png"):
     binary = cv2.threshold(gray, 0, 255, cv2.THRESH_BINARY_INV + cv2.THRESH_OTSU)[1]
     foreground_pixels = np.column_stack(np.where(binary > 0))  # (row, col) of text
     angle = cv2.minAreaRect(foreground_pixels)[-1]  # angle of tightest box
-    if angle < -45:
-        angle = 90 + angle
+    if angle < -45:            # OpenCV reports angle in a 90-deg range;
+        angle = 90 + angle     # flip so we rotate the SHORT way, not 90-deg off
     (height, width) = img.shape[:2]
     rotation_matrix = cv2.getRotationMatrix2D((width / 2, height / 2), angle, 1.0)
     rotated = cv2.warpAffine(img, rotation_matrix, (width, height),
-                             flags=cv2.INTER_CUBIC,
-                             borderMode=cv2.BORDER_REPLICATE)
+                             flags=cv2.INTER_CUBIC,          # smooth resample
+                             borderMode=cv2.BORDER_REPLICATE)  # no black corners
     cv2.imwrite(out, rotated)
     return rotated
 ```
@@ -118,10 +118,11 @@ def four_point_transform(image, points):
     (top_left, top_right, bottom_right, bottom_left) = ordered
     width_bottom = np.linalg.norm(bottom_right - bottom_left)
     width_top = np.linalg.norm(top_right - top_left)
-    out_width = int(max(width_bottom, width_top))
+    out_width = int(max(width_bottom, width_top))    # output = longest measured side
     height_right = np.linalg.norm(top_right - bottom_right)
     height_left = np.linalg.norm(top_left - bottom_left)
     out_height = int(max(height_right, height_left))
+    # destination corners of a flat, axis-aligned rectangle (same order!)
     destination = np.array([[0, 0], [out_width - 1, 0],
                             [out_width - 1, out_height - 1], [0, out_height - 1]],
                            dtype="float32")
