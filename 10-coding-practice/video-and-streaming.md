@@ -11,6 +11,28 @@ to have in muscle memory — it doubles as your fault-tolerance answer.
 
 **Tests:** the capture loop, failure handling, frame sampling, releasing resources.
 
+**The problem:** open a video (file or RTSP stream), keep every Nth frame as an
+image, and don't crash or leak when the source misbehaves.
+
+**The plan:**
+
+```text
+ frames:   0   1  ...  14  [15]  16 ...  29  [30]     every=15
+          save                save            save
+
+ the loop that matters:
+    while True:  ok, frame = cap.read()
+                 if not ok: break         <- EOF *or* dropped stream
+    finally:     cap.release()            <- runs no matter what
+```
+
+**Why this way:** count-and-modulo beats seeking — jumping around with
+`CAP_PROP_POS_FRAMES` is unreliable on many codecs (seeks snap to keyframes),
+while sequential reading is always exact. The `ok` guard and `finally: release`
+ARE the fault-tolerance answer: streams end without warning, and leaked capture
+handles are how long-running services die slowly. For live RTSP, wrap the whole
+thing in reconnect-with-backoff.
+
 ```python
 import cv2
 import os
@@ -47,6 +69,25 @@ reconnect-with-backoff loop (see the fault-tolerance chapter).
 ## Problem 14 — Motion detection via frame differencing, write annotated video
 
 **Tests:** per-frame processing, background diff, contours on a mask, `VideoWriter`.
+
+**The problem:** find and box the *moving* things in a video, writing an
+annotated copy.
+
+**The plan:**
+
+```text
+ prev frame    cur frame     absdiff      threshold     dilate+contours
+ [.......]  vs [...o...] ==> [...#...] ==> [...#...] ==> [..[box]..]
+ (blur both first - otherwise sensor noise "moves" in every pixel)
+```
+
+**Why this way:** frame differencing needs zero training and one frame of
+state — the right first answer. Know its weakness out loud: it detects *change*,
+so an object that stops moving disappears. The production upgrade is
+`cv2.createBackgroundSubtractorMOG2()`, which learns the background over time
+and tolerates gradual lighting change. Practical trap: `VideoWriter` silently
+produces an empty file if the frame size doesn't match — always pass the real
+width/height.
 
 ```python
 import cv2
@@ -96,6 +137,24 @@ empty file. Blur before diff to kill sensor noise. `fourcc` "mp4v" for `.mp4`.
 ## Problem 15 — Overlay FPS / text and count frames
 
 **Tests:** drawing text, reading video properties, simple per-frame overlay.
+
+**The problem:** overlay live diagnostics (frame number, throughput) on each
+frame — the "prove your pipeline keeps up" task.
+
+**The plan:**
+
+```text
+ read frame -> putText("frame N   X fps") -> writer.write(frame)
+
+ measured fps = frames processed / wall-clock time
+ (NOT the file's metadata fps - that's just its playback rate)
+```
+
+**Why this way:** measured fps is the number that answers "is my processing
+real-time?" — comparing it against the source fps tells you if you're falling
+behind. The drawing gotchas to memorize: `putText` coordinates are the
+**bottom-left** of the text (not top-left), coordinates are (x, y), and colors
+are BGR — yellow is `(0, 255, 255)`.
 
 ```python
 import cv2, time

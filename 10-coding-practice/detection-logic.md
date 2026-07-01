@@ -11,6 +11,27 @@ Pure Python + NumPy — no model needed. These are classic, so know them cold.
 
 **Tests:** the fundamental box metric; coordinate math; the empty-overlap edge case.
 
+**The problem:** score how much two boxes agree, as a number in [0, 1] — the
+currency of all detection logic (NMS, evaluation, tracker matching).
+
+**The plan:**
+
+```text
+   +-------+
+   |   A   |            IoU = overlap / (areaA + areaB - overlap)
+   |   +---+----+
+   |   |###|    |       ### intersection rectangle:
+   +---+---+    |       its left  = max(A.left,  B.left)
+       |    B   |       its right = min(A.right, B.right)
+       +--------+       (same idea for top/bottom)
+```
+
+**Why this way:** the intersection of two ranges on ONE axis is simply
+[max(starts), min(ends)] — do that for x and for y, multiply the two lengths.
+The `max(0, ...)` clamp is the whole edge case: for disjoint boxes min-max goes
+negative and would fabricate overlap. And union must subtract the intersection,
+or the shared area is counted twice.
+
 ```python
 def iou(a, b):
     """Boxes as (x1, y1, x2, y2). Returns intersection-over-union in [0,1]."""
@@ -36,6 +57,27 @@ bogus positive area.
 
 **Tests:** the dedup algorithm every detector needs. Sort by score, greedily keep
 the best, drop high-IoU neighbours.
+
+**The problem:** a detector fires several overlapping boxes on the *same*
+object. Keep exactly one box per object.
+
+**The plan:**
+
+```text
+ scores:  A=0.9   B=0.8   C=0.7
+ 1. take best remaining:  A  -> KEEP
+ 2. IoU(A,B)=0.8 (same object)  -> drop B
+    IoU(A,C)=0.0 (elsewhere)    -> C survives
+ 3. take best remaining:  C  -> KEEP        result: [A, C]
+```
+
+**Why this way:** greedy-by-confidence works because the highest-score box is
+usually the best-localized one — lock it in, delete everything that mostly
+overlaps it. The plain-Python version shows the algorithm; the NumPy version
+exists because the inner IoU loop is O(n²) — vectorizing "winner vs all
+survivors" into one array pass is what makes thousands of boxes per frame
+feasible. Name the follow-up: Soft-NMS decays scores instead of deleting, for
+crowded scenes where two real objects genuinely overlap.
 
 ```python
 def nms(boxes, scores, iou_thresh=0.5):
@@ -87,6 +129,28 @@ Soft-NMS (decay scores instead of dropping) is the follow-up for crowded scenes.
 **Tests:** geometry on detections; using the **bottom-center** (foot) point, not
 the box center.
 
+**The problem:** given detection boxes and a zone polygon, count who is IN the
+zone.
+
+**The plan:**
+
+```text
+      zone (on the floor)          a tall object, oblique camera:
+   +---------------+                 +----+
+   |               |                 |    | <- box CENTER lands here
+   |      x <------|---- foot        |    |    (inside the zone?!)
+   +---------------+                 |    |
+                                     | x  | <- foot = ((x1+x2)/2, y2)
+                                     +----+    where it actually STANDS
+```
+
+**Why this way:** zones are painted on the *floor*, and objects touch the world
+at their *feet* — with an angled camera, a box's geometric center can sit inside
+a zone the object isn't standing in. Using the bottom-center point is the
+standard fix (and a favorite interview gotcha). `cv2.pointPolygonTest` handles
+arbitrary polygons; pass `False` to get just the inside/on/outside sign — we
+don't need the distance, and skipping it is faster.
+
 ```python
 import cv2
 import numpy as np
@@ -111,6 +175,28 @@ geometric center — the standard gotcha for tall objects / oblique cameras.
 
 **Tests:** tracking-style logic; cross-product sign to detect a crossing and its
 direction between consecutive frames.
+
+**The problem:** count objects crossing a virtual line — separately for each
+direction (entering vs leaving).
+
+**The plan:**
+
+```text
+             p_prev   (side +)
+  A ------------ line ------------ B
+             p_cur    (side -)
+
+ side(p) = z of cross product (B-A) x (p-A)
+ sign flips between consecutive frames  ==>  the track crossed
+ which sign it ENDS on                  ==>  which direction
+```
+
+**Why this way:** comparing raw x or y coordinates only works for perfectly
+vertical/horizontal lines; the cross-product sign works for a line at *any*
+angle and gives direction for free. Counting per **track id** (not per frame)
+is essential — one person crossing would otherwise be counted at every frame
+near the line. In production you'd also debounce (require K of N frames on the
+new side) to survive detector flicker.
 
 ```python
 def side(line_a, line_b, p):
@@ -141,6 +227,26 @@ not once per frame. Debounce flicker in real systems (K-of-N frames).
 ## Problem 12 — Sort OCR boxes into reading order
 
 **Tests:** turning detections into text order — group into rows, then left-to-right.
+
+**The problem:** OCR returns word boxes in arbitrary order; reconstruct the
+order a human would read them in.
+
+**The plan:**
+
+```text
+ naive sort by (y, x) fails:  same-line words differ by a few px in y,
+                              so the sort interleaves lines:
+                              word(y=10) word(y=12) word(y=11) ...
+
+ fix: 1. sort by y      2. group into ROWS with a tolerance
+      3. sort each row by x     4. concatenate rows
+```
+
+**Why this way:** the tolerance (about half the text height) is what makes row
+grouping robust to slightly wavy or tilted scans; the running-average row
+anchor keeps a long row from drifting. A single lexicographic sort has no such
+slack — it's the bug interviewers expect you to know about. This exact "logic
+on top of an OCR model" is KoiReader's bread and butter.
 
 ```python
 def reading_order(boxes, row_tol=15):

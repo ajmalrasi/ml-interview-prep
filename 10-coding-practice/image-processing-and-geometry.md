@@ -13,6 +13,31 @@ Every solution is complete and runnable. Practice typing each from a blank file.
 
 **Tests:** the fundamental chain, color conversion, thresholding, saving output.
 
+**The problem:** an OCR engine can't read a color photo — it wants crisp
+black-and-white where ink is cleanly separated from paper. Turn a messy photo
+into exactly that.
+
+**The plan:**
+
+```text
+photo (3 channels)
+   |  cvtColor        drop color, keep brightness (1 channel)
+   v
+gray
+   |  GaussianBlur    smooth away sensor noise BEFORE deciding
+   v
+smooth gray
+   |  Otsu threshold  every pixel becomes pure 0 or 255
+   v
+black/white  --imwrite-->  saved
+```
+
+**Why this way:** a fixed cutoff like `127` breaks the moment lighting changes.
+Otsu instead looks at the image's brightness histogram and picks the split point
+that best separates "dark pixels" from "bright pixels" — zero tuning. And blur
+comes *first* because thresholding is a hard yes/no decision: one speck of noise
+near the cutoff flips into a black dot. Smooth before deciding, never after.
+
 ```python
 import cv2
 
@@ -40,6 +65,27 @@ threshold gets speckly.
 
 **Tests:** adaptive thresholding (uneven lighting) and morphology to remove specks.
 
+**The problem:** real scans are unevenly lit — one corner sits in shadow. Any
+single global cutoff (even Otsu's) is then wrong *somewhere*: right for the
+bright side, hopeless for the dark side.
+
+**The plan:**
+
+```text
+uneven scan            ONE global cutoff           cutoff PER 31x31 window
++------------+         +------------+              +------------+
+| text  #####| shadow  | text  #####|  shadow      | text  text |
+| text  #####| side    | text  #####|  swallowed   | text  text |
++------------+         +------------+              +------------+
+                        global threshold            adaptiveThreshold
+```
+
+**Why this way:** `adaptiveThreshold` recomputes the cutoff inside every small
+window, so each region is judged against its *own* lighting. The leftover salt
+noise is erased with morphological **opening** (erode → dilate): erosion deletes
+anything smaller than the kernel, dilation regrows the surviving text to full
+size. Flip to **closing** when the defect is holes inside strokes, not specks.
+
 ```python
 import cv2
 import numpy as np
@@ -65,6 +111,26 @@ holes — pick by whether your noise is dots (open) or gaps (close).
 ## Problem 3 — Deskew a rotated document
 
 **Tests:** geometry from foreground pixels, rotation matrix, warpAffine.
+
+**The problem:** the page was scanned slightly rotated, so text lines are tilted
+and OCR row-grouping falls apart. Find the tilt angle, rotate it back.
+
+**The plan:**
+
+```text
+ tilted ink pixels        fit ONE rotated box          rotate by -angle
+   \  \  \  \            .----------.                 __________
+    \  \  \  \    ==>     | all text | angle=-12   ==> |__________|
+     \  \  \  \           '----------'                  (upright)
+                          cv2.minAreaRect
+```
+
+**Why this way:** you *could* detect individual lines (Hough) and average their
+angles, but `minAreaRect` answers in one call: collect every ink pixel, fit the
+tightest rotated rectangle around all of them, read its angle. The `< -45` fix
+exists because OpenCV only reports angles within a 90° window — without the
+correction you'd sometimes "deskew" the page sideways. `BORDER_REPLICATE` fills
+the corners uncovered by rotation with edge colors instead of black wedges.
 
 ```python
 import cv2
@@ -97,6 +163,29 @@ know the `< -45` correction and be ready to explain it.
 **Tests:** the single most likely task. Detect the document's 4 corners and warp
 it to a flat top-down view. Memorize the `order_points` + `four_point_transform`
 pair cold.
+
+**The problem:** a label photographed at an angle appears as a *trapezoid*. To
+read or measure it you need the flat, top-down rectangle — like a scanner sees.
+
+**The plan:**
+
+```text
+   detected corners                          warped output
+   TL._________.TR                          TL __________ TR
+     /         \          3x3 perspective    |           |
+    /  LABEL    \         matrix (getPersp   |  LABEL    |
+   /             \        + warpPerspective) |           |
+  BL._____________.BR         ==>            BL __________ BR
+  find quad: Canny -> contours -> approxPolyDP == 4 points
+```
+
+**Why this way:** an affine warp (2×3 matrix: rotate/scale/shear) can *never*
+fix this — affine preserves parallelism, and perspective distortion is exactly
+parallel lines converging. You need the 3×3 homography, which is fully
+determined by 4 point pairs — hence "4-point transform". `order_points` exists
+because `getPerspectiveTransform` pairs source and destination corners *by array
+position*: hand it corners in a random order and the output comes out mirrored
+or rotated. The sum/diff trick identifies each corner without if-else chains.
 
 ```python
 import cv2
@@ -161,6 +250,28 @@ a resized copy.
 
 **Tests:** Canny + contours + `approxPolyDP` + bounding-box crop.
 
+**The problem:** isolate just the document/label from the photo background —
+the "crop out the interesting part" task.
+
+**The plan:**
+
+```text
+photo --blur+Canny--> edge map --findContours--> [c1, c2, c3, ...]
+                                                  |  max(key=contourArea)
+                                                  v
+                                            page outline
+                                                  |  boundingRect
+                                                  v
+                                       img[y:y+h, x:x+w]  (pure slicing)
+```
+
+**Why this way:** thresholding works only if the page is clearly brighter than
+the background; *edges* survive even when brightnesses are similar. `RETR_EXTERNAL`
+keeps only outermost contours, so "largest" means the page outline — not a logo
+or text block inside it. `boundingRect` returns an axis-aligned box, croppable
+with a slice; if the document is tilted, this crop keeps background wedges —
+that's when you upgrade to Problem 4's perspective warp.
+
 ```python
 import cv2
 
@@ -187,6 +298,28 @@ def crop_largest_rect(path, out="p5_out.png"):
 
 **Tests:** the standard model-input preprocessing; aspect-ratio math, padding.
 
+**The problem:** detection models want a fixed square input (e.g. 640×640) but
+photos come in any shape. Naive `resize` to a square squashes objects.
+
+**The plan:**
+
+```text
+   stretch (bad)             letterbox (good)
+  +-----------+             +-----------+
+  | oO -> oOO |             |###########|  <- gray pad (114)
+  | distorted!|             |   image   |
+  +-----------+             | untouched |
+                            |###########|
+                     scale by LONG side, pad the rest
+```
+
+**Why this way:** three options exist. Stretching distorts geometry — a square
+carton becomes a rectangle and the model's learned shapes break. Center-cropping
+keeps shapes but throws away edge pixels (where detections might be).
+Letterboxing keeps *every pixel and every shape*, paying only some wasted pad.
+Keep the scale and offsets — you need them to map detections back to the
+original image coordinates.
+
 ```python
 import cv2
 import numpy as np
@@ -212,6 +345,27 @@ Keep the scale + padding offsets if you later need to map detections back.
 ## Problem 7 — Boost contrast on a dark image (CLAHE)
 
 **Tests:** histogram equalization done right (local, on luminance only).
+
+**The problem:** a dark, low-contrast image has all its pixel values bunched
+into a narrow band — details exist but are invisible.
+
+**The plan:**
+
+```text
+ histogram before              after CLAHE
+ |#                            |   #   #
+ |##                           |  ##  ## #
+ |###._____________            |.##.####.##._____
+ 0              255            0              255
+ values crammed left           spread out - per tile, clip-limited
+```
+
+**Why this way:** plain `equalizeHist` uses ONE histogram for the whole image —
+it blows out regions that were already bright and massively amplifies noise in
+flat areas. CLAHE fixes both failure modes: it equalizes per **tile** (adapts to
+local lighting) and **clips** each histogram (caps noise amplification). Doing
+it on the L channel of LAB is what preserves color — equalizing B, G, R
+separately changes their *ratios*, which literally changes the colors.
 
 ```python
 import cv2
@@ -257,6 +411,25 @@ The setup assets include `color.jpg`, `barcode.jpg`, and `lines.jpg` for these.
 **Tests:** color spaces. HSV separates *what color* (H) from *how bright* (V),
 so a single hue range survives lighting changes that would break BGR thresholds.
 
+**The problem:** find "the green object" reliably — even when the lighting makes
+its RGB values completely different from yesterday's photo.
+
+**The plan:**
+
+```text
+ In BGR, "green" = (30,90,20)? (80,200,90)? (40,140,60)?  moves with lighting!
+ In HSV, hue stays ~60 whether the scene is dim or bright.
+
+ cvtColor(HSV) -> inRange(lo, hi) -> binary mask -> open (despeckle)
+              -> largest contour -> boundingRect
+```
+
+**Why this way:** in BGR all three numbers change together when light dims, so
+no fixed BGR box captures "green". HSV factors a pixel into hue (*which* color),
+saturation (how vivid), value (how bright) — lighting mostly moves V, so a
+stable H range does the job. A learned segmentation model could too, but when
+the target color is known, two thresholds beat a neural net.
+
 ```python
 import cv2
 import numpy as np
@@ -285,6 +458,27 @@ needs **two** ranges (`0-10` and `170-179`) OR-ed together with `cv2.bitwise_or`
 **Tests:** `matchTemplate` slides the template over the image and scores every
 position; `minMaxLoc` finds the best one.
 
+**The problem:** find where a known patch — a logo, stamp, or icon — appears
+inside a larger image.
+
+**The plan:**
+
+```text
+ template slides across the image; every position gets a similarity score
+      +----------------+
+      | .1 .2 .1 .0 .1 |      the brightest cell of the
+      | .2 .9 .3 .1 .0 | <--  score map is the best match:
+      | .1 .3 .2 .1 .1 |      minMaxLoc finds it
+      +----------------+
+```
+
+**Why this way:** when the target's scale and rotation are fixed (same camera,
+same layout — typical for documents), template matching is exact, tiny, and
+needs zero training. Know its failure mode out loud: any scale or rotation
+change kills the score — *that's* when you reach for feature matching
+(ORB/SIFT + homography) or a trained detector. `TM_CCOEFF_NORMED` is the mode
+to memorize: scores normalized to [-1, 1] mean one threshold works everywhere.
+
 ```python
 import cv2
 
@@ -311,6 +505,30 @@ in the interview. For *all* matches above the threshold use
 
 **Tests:** the classic gotcha — `warpAffine` to the original size clips the
 corners. Grow the canvas and shift the rotation center.
+
+**The problem:** rotate an image by 30° and the corners vanish — because
+`warpAffine` renders into a canvas of the *original* size.
+
+**The plan:**
+
+```text
+ same-size canvas (clips)          grown canvas (fits)
+ +------------+                +--------------------+
+ |  /\ lost   |                |        /\          |
+ | /  \       |      ==>       |       /  \         |
+ | \  /       |                |       \  /         |
+ |  \/ lost   |                |        \/          |
+ +------------+                +--------------------+
+                               new_w = h|sin| + w|cos|
+                               new_h = h|cos| + w|sin|
+                               then shift M's translation to recenter
+```
+
+**Why this way:** the rotated image's bounding box comes straight from
+projecting w and h through |cos| and |sin| — and the rotation matrix already
+*contains* those values, so no extra trig. The naive alternative — pad the image
+heavily, rotate, crop — works but wastes memory and adds a step. Bonus answer:
+for exact 90/180/270 use `cv2.rotate`, which is lossless and instant.
 
 ```python
 import cv2
@@ -341,6 +559,24 @@ need 90/180/270, use `cv2.rotate(img, cv2.ROTATE_90_CLOCKWISE)` — it's exact a
 **Tests:** ROI slicing (views write back in place!) and `bitwise_and` masking —
 the two building blocks of every "redact this part" task.
 
+**The problem:** redact part of an image — blur an address, hide a face, or
+keep only a region of interest.
+
+**The plan:**
+
+```text
+ roi = img[y:y+h, x:x+w]     <- this is a VIEW (a window into img), not a copy
+ img[y:y+h, x:x+w] = blur(roi)  <- writing back mutates the original in place
+
+ non-rectangular?  build a mask  ->  bitwise_and(img, img, mask=mask)
+```
+
+**Why this way:** NumPy slices share memory with the parent array — that's what
+makes redaction a two-liner with no copying. It's also the classic bug source:
+mutate a slice you thought was independent. Say both sides of that coin. And for
+*real* privacy prefer solid fill or heavy pixelation over Gaussian blur — mild
+blurs have been reversed in practice.
+
 ```python
 import cv2
 import numpy as np
@@ -367,6 +603,29 @@ mutates `img`; call `.copy()` when you *don't* want that.
 
 **Tests:** a logistics classic. Barcodes have strong **horizontal** gradient and
 weak vertical gradient; morphological closing glues the bars into one blob.
+
+**The problem:** find WHERE the barcode sits on a shipping label — any barcode,
+any content, no training data.
+
+**The plan:**
+
+```text
+ barcode = || ||| | || |||    a patch of DENSE VERTICAL EDGES
+ d/dx  -> fires on every bar edge (HIGH)
+ d/dy  -> bars are vertical, nothing changes vertically (~0)
+
+ grad_x - grad_y  ->  bright exactly where "vertical-edge-ness" is high
+       |  blur + Otsu       speckled blob over the bars
+       |  close (21x7)      wide flat kernel bridges the GAPS between bars
+       v                    ==> one solid rectangle
+ minAreaRect of biggest contour = barcode box
+```
+
+**Why this way:** the *content* of barcodes varies but their texture signature —
+many parallel vertical edges — never does, so a gradient filter finds them with
+zero training. The closing kernel's shape is the insight: wide and flat, because
+the gaps to bridge are horizontal. A neural detector also works, but this runs
+in milliseconds on a CPU — the classic logistics-pipeline answer.
 
 ```python
 import cv2
@@ -406,6 +665,25 @@ or `pyzbar`. If the barcode may be rotated, run on both `grad_x - grad_y` and
 **Tests:** `HoughLinesP` — the go-to for finding straight structure (table grids,
 form fields, document edges).
 
+**The problem:** find the straight lines in a document — table grids, form
+boxes, underlines.
+
+**The plan:**
+
+```text
+ Canny edge pixels ==> each edge pixel VOTES for every line that
+                       could pass through it (Hough accumulator)
+                       lines collecting >= threshold votes win
+ HoughLinesP returns real SEGMENTS: (x1, y1, x2, y2) with endpoints
+```
+
+**Why this way:** voting makes Hough robust to broken edges — a line missing a
+third of its pixels still wins the vote. Choose `HoughLinesP` (probabilistic)
+over `HoughLines`: it hands you finite segments you can draw and measure, not
+infinite (rho, theta) pairs you'd have to convert. Alternative worth naming: to
+*separate* horizontal from vertical table lines, morphological opening with a
+long thin kernel (e.g. `(40, 1)`) is even simpler than Hough.
+
 ```python
 import cv2
 import numpy as np
@@ -435,6 +713,27 @@ with a long thin kernel like `(40, 1)` keeps only horizontal strokes.
 **Tests:** do you understand what `filter2D` actually does? Loop over the small
 **kernel**, never over pixels — that keeps it vectorized *and* short.
 
+**The problem:** implement image filtering yourself — the "do you actually know
+what `filter2D` does?" question.
+
+**The plan:**
+
+```text
+ kernel   0 -1  0      each output pixel = weighted sum of its
+         -1  5 -1      3x3 neighborhood (here: sharpen)
+          0 -1  0
+
+ naive:  loop over 350,000 pixels x 9 weights  ->  millions of Python steps
+ smart:  loop over the 9 WEIGHTS; each step shifts the whole image and
+         adds it, weighted  ->  9 vectorized array ops, same math
+```
+
+**Why this way:** both loop orders compute the identical sum — but flipping them
+moves the heavy loop from the Python interpreter into NumPy's C code, a ~1000x
+speedup for the same line count. This "make the big loop the vectorized one"
+trick generalizes far beyond convolution. Edge-padding by half the kernel keeps
+output size equal to input ('same' convolution, like filter2D's default).
+
 ```python
 import numpy as np
 
@@ -460,6 +759,24 @@ uint8 silently wraps (-1 → 255): always `np.clip` first.
 
 **Tests:** turning raw contours into decisions with cheap shape stats:
 area, aspect ratio, and *extent* (how much of its bounding box the shape fills).
+
+**The problem:** contour detection found twenty shapes — which ones are actually
+labels (rectangles), and which are circles, blobs, and junk?
+
+**The plan:**
+
+```text
+ candidate     area    aspect(w/h)   extent(area/bbox area)
+ rectangle     big       ~1.0          ~1.00   ==> KEEP
+ circle        big       ~1.0          ~0.79   ==> reject (doesn't fill box)
+ noise speck   tiny        -             -     ==> reject first (cheapest test)
+```
+
+**Why this way:** three one-line statistics do what would otherwise need a
+trained classifier — and every rejection is explainable ("dropped: extent
+0.62"), which matters in production debugging. Order the tests cheapest-first
+so expensive checks run on fewer candidates. If rectangles may be *rotated*,
+compute extent against `minAreaRect` area instead of the axis-aligned box.
 
 ```python
 import cv2

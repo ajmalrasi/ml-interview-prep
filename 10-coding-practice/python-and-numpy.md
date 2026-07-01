@@ -12,6 +12,25 @@ long-running processes" — show that.
 **Tests:** that you reach for NumPy, not `for y: for x:`. Example: threshold +
 tint without loops.
 
+**The problem:** do a per-pixel operation (select + recolor) without writing a
+per-pixel Python loop.
+
+**The plan:**
+
+```text
+ loops:  for y: for x: if gray[y,x] > 180: img[y,x] = red
+         ==> 350,000 interpreted Python iterations        (slow)
+
+ numpy:  mask = gray > 180        one C-speed comparison  -> bool array
+         img[mask] = (0, 0, 255)  one C-speed scatter     (fast)
+```
+
+**Why this way:** NumPy's entire value is that the loop happens inside compiled
+C, not the Python interpreter — typically ~100-1000x faster. Boolean-mask
+indexing and `axis=` reductions replace 90% of pixel loops you'd be tempted to
+write. The interview tell: the moment you type `for y in range(h)`, stop and
+ask "what's the array expression for this?"
+
 ```python
 import numpy as np
 import cv2
@@ -39,6 +58,26 @@ answer — say "vectorize with NumPy."
 
 **Tests:** the "manage a long-running job, don't crash on one bad input" skill.
 Process a folder, skip and log corrupt files, keep going.
+
+**The problem:** process a folder of 10,000 images where file #37 is corrupt —
+without the whole job dying at #37.
+
+**The plan:**
+
+```text
+ for each file:
+     try:     read -> check None -> process -> write   ok += 1
+     except:  log the name and reason, fail += 1, CONTINUE
+
+ one bad file = one warning line, not a dead 3-hour batch job
+```
+
+**Why this way:** the try/except goes *inside* the loop, per file — wrap the
+whole loop instead and the first bad file still kills everything after it. The
+subtle trap this problem is really testing: `cv2.imread` does NOT raise on
+failure, it silently returns `None` — you must check and raise yourself.
+Returning (ok, fail) counts and logging skips makes the job observable, which
+is what "fault-tolerant" means in practice.
 
 ```python
 import os
@@ -78,6 +117,27 @@ tolerance.
 ## Problem 18 — Count connected components (blobs)
 
 **Tests:** a small algorithm framed in CV terms; thresholding + labeling.
+
+**The problem:** count the distinct objects (blobs) in an image — and be ready
+to do it with *and* without OpenCV.
+
+**The plan:**
+
+```text
+ grid:   1 1 . .        two components under 4-connectivity
+         . 1 . 1        (up/down/left/right - diagonals do NOT connect)
+         . . . 1
+
+ OpenCV:  threshold -> connectedComponentsWithStats -> filter by area
+ by hand: scan cells; each unseen 1 starts a BFS flood-fill; count fills
+```
+
+**Why this way:** `connectedComponentsWithStats` beats `findContours` for
+counting — it labels every pixel and returns areas + centroids directly, with
+no contour-hierarchy edge cases (nested shapes can't fool it). Remember label 0
+is the background: start loops at 1. The pure-Python BFS is the same idea by
+hand — it's LeetCode's "Number of Islands", and the `seen` matrix is what
+prevents counting one island twice.
 
 ```python
 import cv2
