@@ -60,10 +60,28 @@ def make_sample_assets():
         cv2.rectangle(fr, (10+i*15,80), (50+i*15,140), (255,255,255), -1)
         vw.write(fr)
     vw.release()
+    # extra assets for the "More practice" problems (E1-E8)
+    canvas = np.full((400,600,3), 60, np.uint8)
+    cv2.rectangle(canvas, (80,100), (220,260), (60,180,60), -1)   # green box (BGR)
+    cv2.circle(canvas, (430,180), 70, (60,60,200), -1)            # red circle
+    cv2.imwrite("color.jpg", canvas)
+    bc = np.full((400,600,3), 200, np.uint8)
+    x, rng = 150, np.random.default_rng(0)
+    while x < 450:                        # random-width vertical bars = fake barcode
+        bw = int(rng.integers(3, 10))
+        cv2.rectangle(bc, (x,140), (x+bw,260), (0,0,0), -1)
+        x += bw + int(rng.integers(3, 10))
+    cv2.imwrite("barcode.jpg", bc)
+    tbl = np.full((400,600,3), 255, np.uint8)
+    for gx in range(50, 601, 110):        # vertical table lines
+        cv2.line(tbl, (gx,40), (gx,360), (0,0,0), 2)
+    for gy in range(40, 401, 80):         # horizontal table lines
+        cv2.line(tbl, (50,gy), (490,gy), (0,0,0), 2)
+    cv2.imwrite("lines.jpg", tbl)
     return doc
 
 doc = make_sample_assets()
-print("Sample assets ready: input.jpg, noisy.jpg, low.jpg, ind/, test.avi")
+print("Sample assets ready: input.jpg, noisy.jpg, low.jpg, color.jpg, barcode.jpg, lines.jpg, ind/, test.avi")
 show(doc, "synthetic input.jpg  (replace with your own image!)")
 '''
 
@@ -90,6 +108,28 @@ DEMOS = {
     "process_folder":      'print("(ok, failed) =", process_folder("ind","outd"))',
     "count_blobs":         'n, cent = count_blobs("input.jpg"); print("blobs:", n)',
     "count_islands":       'print("islands:", count_islands([[1,1,0,0],[0,1,0,1],[0,0,0,1]]))',
+    "find_color_object":   'img, box = find_color_object("color.jpg", (40, 50, 50), (80, 255, 255))  # green range\n'
+                           'show(img, f"Problem E1 - green object at {box}")',
+    "find_template":       '# crop the \'LABEL 12345\' text out of input.jpg and find it again\n'
+                           'template = cv2.cvtColor(cv2.imread("input.jpg"), cv2.COLOR_BGR2GRAY)[260:320, 130:350]\n'
+                           'img, score = find_template("input.jpg", template)\n'
+                           'show(img, f"Problem E2 - match score {score:.2f}")',
+    "rotate_bound":        'show(rotate_bound("input.jpg", 30), "Problem E3 - rotated 30 deg, nothing cropped")',
+    "blur_region":         'show(blur_region("input.jpg", (130, 260, 220, 60)), "Problem E4 - text blurred")\n'
+                           'circle_mask = np.zeros((700, 500), np.uint8)\n'
+                           'cv2.circle(circle_mask, (250, 300), 150, 255, -1)     # white disk = keep\n'
+                           'show(keep_masked(cv2.imread("input.jpg"), circle_mask), "Problem E4 - circular mask")',
+    "find_barcode":        'show(find_barcode("barcode.jpg"), "Problem E5 - barcode localized")',
+    "find_lines":          'img, n = find_lines("lines.jpg")\nshow(img, f"Problem E6 - {n} line segments")',
+    "convolve2d":          'gray = cv2.cvtColor(cv2.imread("input.jpg"), cv2.COLOR_BGR2GRAY)\n'
+                           'sharpen = np.array([[0, -1, 0], [-1, 5, -1], [0, -1, 0]], np.float32)\n'
+                           'mine = convolve2d(gray, sharpen)\n'
+                           'ref = cv2.filter2D(gray, -1, sharpen)\n'
+                           'print("matches cv2.filter2D away from borders:",\n'
+                           '      np.array_equal(mine[5:-5, 5:-5], ref[5:-5, 5:-5]))\n'
+                           'show(mine, "Problem E7 - sharpened with hand-rolled convolution")',
+    "find_rectangles":     'img, boxes = find_rectangles("color.jpg")\n'
+                           'show(img, f"Problem E8 - kept {len(boxes)} rectangle(s), circle rejected")',
 }
 
 def md_cell(text):
