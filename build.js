@@ -87,6 +87,32 @@ const SITE = [
     { file:"mock-test.md", title:"⏱ 90-min Mock Test" },
     { file:"mock-solutions.md", title:"Mock — Solutions" },
   ]},
+  { label:"11 · Crowd & Queue Analytics", dir:"11-crowd-queue-analytics", items:[
+    { file:"README.md", title:"Overview" },
+    { file:"queue-time-estimation.md", title:"Queue-Time Estimation" },
+    { file:"crowd-counting-density.md", title:"Crowd Counting & Density" },
+    { file:"zones-flow-heatmaps.md", title:"Zones, Flow & Heatmaps" },
+    { file:"calibration-and-metrics.md", title:"Calibration & Metrics" },
+  ]},
+  { label:"12 · Event & Anomaly Detection", dir:"12-event-anomaly-detection", items:[
+    { file:"README.md", title:"Overview" },
+    { file:"operational-events.md", title:"Operational Event Catalog" },
+    { file:"anomaly-methods.md", title:"Anomaly Detection Methods" },
+    { file:"alerting-and-thresholds.md", title:"Alerting & Thresholds" },
+  ]},
+  { label:"13 · Secure On-Prem & Monitoring", dir:"13-secure-onprem-monitoring", items:[
+    { file:"README.md", title:"Overview" },
+    { file:"onprem-architecture.md", title:"On-Prem / Air-Gapped Architecture" },
+    { file:"security-and-privacy.md", title:"Security, Access & PII/Privacy" },
+    { file:"performance-monitoring.md", title:"Performance Monitoring & Drift" },
+  ]},
+  { label:"14 · Deep Learning for Video", dir:"14-deep-learning-for-video", items:[
+    { file:"README.md", title:"Overview" },
+    { file:"cnns-and-backbones.md", title:"CNNs & Backbones" },
+    { file:"object-detection.md", title:"Object Detection" },
+    { file:"tracking.md", title:"Multi-Object Tracking" },
+    { file:"training-and-optimization.md", title:"Training & Optimization" },
+  ]},
 ];
 
 /* ----------------------------- markdown parser ----------------------------- */
@@ -275,10 +301,11 @@ function homeCards(){
   return '<h2 id="jump-in">Jump in</h2><div class="section-cards">'+cards+'</div>';
 }
 const HOME_HERO =
-  '<div class="hero"><span class="hero-badge">KoiReader · Computer Vision Engineer</span>'+
-  '<div class="hero-title">Interview Prep</div>'+
-  '<p class="hero-sub">Systems-first Vision AI — streaming pipelines, ultra-low-latency inference, '+
-  'and crash-proof systems. Nine chapters, a drill bank, and a full mock.</p></div>';
+  '<div class="hero"><span class="hero-badge">Abu Dhabi · AI Data Scientist</span>'+
+  '<div class="hero-title">Video Intelligence Prep</div>'+
+  '<p class="hero-sub">Computer vision &amp; deep learning on live CCTV — crowd analytics, queue-time '+
+  'estimation, and anomaly detection, built on the NVIDIA edge stack and deployed secure on-prem. '+
+  'Fourteen chapters, a drill bank, and a full mock.</p></div>';
 
 const PAGES = [];
 SITE.forEach(sec => sec.items.forEach(it => {
@@ -314,13 +341,13 @@ const HTML =
 '<meta charset="utf-8">\n' +
 '<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">\n' +
 '<meta name="theme-color" content="#d97757">\n' +
-'<title>KoiReader Interview Prep</title>\n' +
+'<title>AI Data Scientist — Video Intelligence Prep</title>\n' +
 '<style>\n' + CSS + '\n</style>\n</head>\n<body>\n' +
 '<div class="app">\n' +
 '  <aside class="sidebar" id="sidebar">\n' +
 '    <div class="brand">\n' +
-'      <h1>KoiReader Interview Prep</h1>\n' +
-'      <div class="sub">Systems-First Computer Vision Engineer</div>\n' +
+'      <h1>Video Intelligence Prep</h1>\n' +
+'      <div class="sub">AI Data Scientist · CCTV Crowd &amp; Queue Analytics</div>\n' +
 '      <div class="tools">\n' +
 '        <input id="search" type="search" placeholder="Search all pages…" autocomplete="off" autocapitalize="off" spellcheck="false">\n' +
 '        <button class="iconbtn theme-toggle" title="Toggle light / dark">◐</button>\n' +
@@ -332,7 +359,7 @@ const HTML =
 '  <main class="main">\n' +
 '    <div class="topbar">\n' +
 '      <button class="iconbtn" id="menu" aria-label="Open menu">☰</button>\n' +
-'      <span class="tb-title" id="tbTitle">KoiReader Prep</span>\n' +
+'      <span class="tb-title" id="tbTitle">Video Intel Prep</span>\n' +
 '      <button class="iconbtn" id="searchBtn" aria-label="Search">🔍</button>\n' +
 '      <button class="iconbtn theme-toggle" aria-label="Toggle theme">◐</button>\n' +
 '    </div>\n' +

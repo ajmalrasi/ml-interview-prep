@@ -37,7 +37,7 @@ Create the service:
 ```bash
 sudo tee /etc/systemd/system/koi-prep.service >/dev/null <<'EOF'
 [Unit]
-Description=KoiReader Interview Prep site
+Description=Video Intelligence Interview Prep site
 After=network.target
 
 [Service]

@@ -1,42 +1,44 @@
-# KoiReader Interview Prep — Learning Path
+# AI Data Scientist (Video Intelligence) — Learning Path
 
-Everything you need for the **KoiReader Computer Vision Engineer** interview, in
-the order to study it. Read **top to bottom the first time**. Come back to any
-file as a reference (or the morning of) anytime.
+Everything you need for the **AI Data Scientist** interview — CCTV-based video
+intelligence in Abu Dhabi — in the order to study it. Read **top to bottom the
+first time**. Come back to any file as a reference (or the morning of) anytime.
 
-The role in one line: **systems-first CV** — not training models, but building
-the *high-performance highways* that run Vision AI on live video, 24/7, without
-crashing.
+The role in one line: **turn live CCTV into operational decisions** — count and
+time crowds, flag anomalies, and run computer-vision + deep-learning models on
+the NVIDIA edge, deployed in a secure on-prem environment that never phones home.
 
 ```
-RTSP cameras → ingest/decode → frame buffer → inference (TRT/DeepStream) → logic → output
-     ↑              ↑              ↑                  ↑                       ↑
-  reconnect      GStreamer     backpressure      batching/zero-copy      analytics/DB
-  (fault tol.)   /FFmpeg       (drop frames)     (low latency)
+CCTV cameras → ingest/decode → detect + track → analytics → events/alerts
+     ↑             ↑              ↑                 ↑              ↑
+  reconnect     GStreamer      CNN / YOLO      queue time /    anomaly +
+  (on-prem)     /DeepStream    + ByteTrack     crowd density   thresholds
 ```
 
 ## What this role actually wants (and how you stack up)
 
-| JD core requirement | Your resume evidence | Gap to close |
+| JD requirement | Your resume evidence | Gap to close |
 |---|---|---|
-| RTSP/WebRTC/FastRTC streaming, frame buffers, decode/encode | DeepStream + GStreamer + Jetson video analytics (Integration Wizards) | **Medium** — you've done GStreamer/DeepStream but resume is light on raw RTSP/WebRTC protocol detail. Study `01` + `02`. |
-| Ultra-low-latency inference (Jetson + cloud) | TensorRT/ONNX, INT8/FP16, layer fusion, pruning, Jetson Nano | **Strong** — this is your home turf. Just frame it crisply (`03`). |
-| Fault-tolerant, crash-proof systems | "go-to engineer for hard ambiguous problems"; seismic platform reliability | **Medium** — you have the instinct, need the streaming-specific patterns (`04`). |
-| Production Python: multi-threaded/async, long-running resource mgmt | Gunicorn/Celery/Kafka edge serving; petabyte Dask pipelines | **Medium** — know GIL/threads-vs-async cold for video (`05`). |
-| OpenCV + image-processing fundamentals, geometry | Surround-view C++/OpenCV, calibration, RANSAC, photometric alignment | **Strong** — emphasize the C++/OpenCV surround-view work. |
-| Docker mandatory | Dockerized inference servers on GCP | **Strong**. |
-| Brownie: TensorRT/DeepStream/Triton, K8s, CI/CD, SQL/NoSQL | All present (TensorRT, DeepStream, GKE, Azure DevOps) | **Strong** — you check every bonus box. |
+| CCTV-based video intelligence (live, 24/7) | DeepStream + GStreamer + Jetson video analytics (Integration Wizards) | **Strong** — this is exactly the live-video work you've shipped. Frame it as CCTV intelligence, not "data platform." Sections `01`, `02`. |
+| Queue-time estimation & crowd analytics | Detection/tracking + zone logic on edge; analytics pipelines | **Medium** — you have the primitives (tracking, homography, counting) but need the *metric* vocabulary: Little's Law, dwell, density maps. Study `11`. |
+| Operational event & anomaly detection | "Go-to engineer for hard, ambiguous problems"; logic-on-detections | **Medium** — know the standard event catalog (loitering, intrusion, abandoned object, surge) and supervised-vs-unsupervised anomaly methods cold. `12`. |
+| CV + deep learning: CNNs, object detection, tracking | Surround-view C++/OpenCV, calibration, RANSAC; TensorRT model work | **Medium** — your recent years read *systems*, not *modeling*. Rebuild the DL-modeling narrative: backbones, YOLO, mAP, ByteTrack, ReID. `14` + `09`. |
+| NVIDIA edge AI stack (Jetson, TensorRT, DeepStream) | TensorRT/ONNX, INT8/FP16, layer fusion, pruning, Jetson Nano, DeepStream | **Strong** — home turf. Just frame it crisply. `03`, `02`. |
+| Deployment in secure on-prem environments | Dockerized inference; edge serving (Gunicorn/Celery/Kafka); GKE/Azure DevOps | **Medium** — you've deployed, but mostly *cloud*. Learn the air-gapped, data-residency, PII/face-privacy angle. `13`. |
+| Model optimization & performance monitoring | TensorRT INT8/FP16, pruning; production reliability | **Medium** — optimization is strong; add the *monitoring* half — drift, per-camera health, GPU dashboards. `03` + `13`. |
+| Strong Python + ML frameworks | Petabyte Dask pipelines; PyTorch/ONNX; production Python | **Strong**. |
 
-**Headline:** You're a strong fit. Your risk isn't capability — it's that your
-recent 4 years read as *data-platform/seismic*, and the interviewer wants to
-hear the *live-video-systems* engineer. This pack rebuilds that narrative and
-drills the streaming-specific depth.
+**Headline:** You're a strong fit on the *systems + edge* half and need to
+rebuild the *modeling + applied-analytics* half of the story. Your risk isn't
+capability — it's that "AI **Data Scientist**" wants to hear you reason about
+models, metrics (queue time, density, mAP, false-alarm rate) and secure on-prem
+deployment, not only pipelines. This pack closes exactly those gaps.
 
 ## Topics (in order)
 
 | # | Folder | What you learn |
 |---|--------|----------------|
-| 1 | [01-video-streaming/](01-video-streaming/) | RTSP, WebRTC/FastRTC, FFmpeg, codecs, frame buffers, decode/encode |
+| 1 | [01-video-streaming/](01-video-streaming/) | RTSP, WebRTC, FFmpeg, codecs, frame buffers, decode/encode |
 | 2 | [02-gstreamer/](02-gstreamer/) | Pipelines, elements, appsink, hardware decode, DeepStream |
 | 3 | [03-low-latency-inference/](03-low-latency-inference/) | TensorRT, DeepStream, Triton, batching, zero-copy, the latency budget |
 | 4 | [04-fault-tolerance/](04-fault-tolerance/) | Crash-proof design: reconnect, watchdogs, backpressure, graceful degradation |
@@ -44,18 +46,26 @@ drills the streaming-specific depth.
 | 6 | [06-system-design/](06-system-design/) | The big whiteboard question: design a crash-proof multi-camera pipeline |
 | 7 | [07-qa-drill-bank/](07-qa-drill-bank/) | Every "why X over Y" + the one-page cheat sheet |
 | 8 | [08-mock-interview/](08-mock-interview/) | Staged mock questions, model answers, scoring rubric |
-| 9 | [09-computer-vision-fundamentals/](09-computer-vision-fundamentals/) | Classical CV refresher: color spaces, geometry, calibration, features, detection/tracking math, logic-on-detections |
+| 9 | [09-computer-vision-fundamentals/](09-computer-vision-fundamentals/) | Classical CV: color spaces, geometry, calibration, features, detection/tracking math |
+| 10 | [10-coding-practice/](10-coding-practice/) | Runnable OpenCV problems for the proctored round |
+| 11 | [11-crowd-queue-analytics/](11-crowd-queue-analytics/) | **Queue-time estimation, crowd counting/density, zones, flow, heatmaps** |
+| 12 | [12-event-anomaly-detection/](12-event-anomaly-detection/) | **Operational events, anomaly methods, alerting & false-alarm control** |
+| 13 | [13-secure-onprem-monitoring/](13-secure-onprem-monitoring/) | **Air-gapped deployment, security & PII, drift & performance monitoring** |
+| 14 | [14-deep-learning-for-video/](14-deep-learning-for-video/) | **CNNs, object detection (YOLO), tracking (ByteTrack/ReID), training & optimization** |
 
-> **Section 9 is a refresher** for the CV fundamentals the JD assumes (OpenCV,
-> geometry, color spaces, statistics over detections). If the classical CV is rusty,
-> read it early — alongside or right after section 01.
+> **Sections 11–14 are the new focus areas** for this JD — the applied analytics,
+> event detection, secure on-prem, and DL-modeling depth the role is built
+> around. Sections 01–10 are the transferable foundation.
 
 ## How to use this
 
-- **First time:** follow the numbers, 1 → 6, plus 9 if classical CV is rusty.
-- **Day before:** read `06-system-design`, `07-qa-drill-bank`, and skim `09`.
+- **First time:** follow the numbers 1 → 6, then the applied focus 11 → 14, plus
+  9 if classical CV is rusty.
+- **If the modeling story is your weak spot:** start at `14` and `11`.
+- **Day before:** read `06-system-design`, `07-qa-drill-bank`, `11`, `12`, and skim `13`.
 - **Morning of:** read `07-qa-drill-bank/cheat-sheet.md` + `09/cv-cheat-sheet.md`.
 - **Want to rehearse out loud:** open `08-mock-interview/` — or ask me to run it
   live in chat and I'll grade your answers.
 
-→ Start here: **[01-video-streaming/README.md](01-video-streaming/README.md)**
+→ Start here: **[01-video-streaming/README.md](01-video-streaming/README.md)** —
+or jump straight to the new focus areas in **[11-crowd-queue-analytics/](11-crowd-queue-analytics/)**.

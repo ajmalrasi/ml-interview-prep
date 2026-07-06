@@ -399,6 +399,10 @@ const SECTIONS = {
   "8 · Mock Interview":       { icon:"🎤", accent:"#7479e6", tag:"Questions, model answers, rubric" },
   "9 · CV Fundamentals":      { icon:"👁️", accent:"#19a4d1", tag:"OpenCV, geometry, detection math" },
   "10 · Coding Practice":     { icon:"💻", accent:"#b5651d", tag:"Runnable OpenCV problems for the proctored round" },
+  "11 · Crowd & Queue Analytics":   { icon:"🧮", accent:"#2f9e6f", tag:"Queue time, crowd density, zones, flow, heatmaps" },
+  "12 · Event & Anomaly Detection": { icon:"🚨", accent:"#d9534f", tag:"Events, anomalies, alerting & false-alarm control" },
+  "13 · Secure On-Prem & Monitoring":{ icon:"🔒", accent:"#5b6ee1", tag:"Air-gapped deploy, PII/privacy, drift monitoring" },
+  "14 · Deep Learning for Video":   { icon:"🧠", accent:"#9a5cd0", tag:"CNNs, detection, tracking, training & optimization" },
 };
 
 module.exports = { D, DIAGRAMS, SECTIONS, fig };

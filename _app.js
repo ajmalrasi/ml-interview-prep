@@ -54,7 +54,7 @@ function buildNav(){
 function setActive(path){
   document.querySelectorAll("nav a.item").forEach(a=>a.classList.toggle("active", a.dataset.path===path));
   const pg=byPath[path];
-  document.getElementById("tbTitle").textContent = pg ? pg.title : "KoiReader Prep";
+  document.getElementById("tbTitle").textContent = pg ? pg.title : "Video Intel Prep";
 }
 
 function renderPageTools(pg){
