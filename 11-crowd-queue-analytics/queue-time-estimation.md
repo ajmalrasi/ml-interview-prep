@@ -1,84 +1,107 @@
 # Queue-Time Estimation
 
-**TL;DR:** There are three ways to measure how long people wait, in increasing
-order of robustness-under-crowding: **(1)** track individuals and subtract
-timestamps, **(2)** measure at the boundary — time between entering and leaving a
-zone via line-crossing, **(3)** don't track anyone — infer the wait from flow and
-occupancy using **Little's Law**. Know all three and when each fails.
+**TL;DR:** "How long are people waiting?" has three answers, and they get more
+robust as crowds get worse. The intuitive one — follow each person and subtract
+their timestamps — is also the most fragile. The clever one — infer the wait from
+how fast people arrive and how many are in line, without tracking anyone — barely
+flinches when the crowd gets dense. Understanding *why* that's true is the whole
+lesson here.
 
-## Method 1 — Per-person dwell (tracking-based)
+## Start with the obvious approach, and watch it break
 
-Follow each person with a tracker (ByteTrack/DeepSORT, see section 14). For a
-queue zone `Q`:
-
-```
-enter_time[id] = first frame the track's foot point is inside Q
-exit_time[id]  = last  frame it was inside Q (or when it crosses the exit line)
-wait[id]       = exit_time[id] − enter_time[id]
-queue_time     = median(wait[id] for id in recently-completed)
-```
-
-- **Use the foot point** (bottom-center of box), projected to the floor — not the
-  box centroid — so "inside the zone" means feet-on-tile, not head-over-line.
-- **Report median or a percentile (p85), not mean** — one abandoned cart that sits
-  for an hour destroys the mean.
-- **Fails when:** dense crowds cause ID switches. A switch splits one person's wait
-  into two short waits (under-estimate) or merges two (over-estimate).
-
-## Method 2 — Boundary timing (line-crossing pairs)
-
-Don't track through the whole queue — just detect **two events**: crossing the
-**join** line and crossing the **service** line. Pair them up (FIFO for a single
-serpentine lane) and the difference is the wait. Cheaper and more robust than full
-tracking because you only need identity to survive two line crossings, not the
-whole dwell.
-
-- Great for a **single-file serpentine** queue (airport, immigration, ADNOC-style
-  service counter) where order is preserved → FIFO pairing needs no ReID.
-- Breaks for **unordered / multi-lane** crowds where join-order ≠ service-order.
-
-## Method 3 — Little's Law (flow-based, no tracking)
-
-The workhorse when the crowd is too dense to track. From queuing theory:
+The first idea anyone has is the right place to begin: if I can follow a person, I
+can time them. You give each person a stable ID with a tracker (the ByteTrack /
+DeepSORT machinery from section 14), and for a queue zone you simply record when
+their feet enter it and when they leave:
 
 ```
-        L = λ · W
-  L = average number of people in the queue (occupancy)
-  λ = arrival rate (people per second entering the queue)
-  W = average wait time   ⇒   W = L / λ
+enter_time[id] = first frame this person's feet are inside the queue
+exit_time[id]  = the frame they cross the "being served" line
+wait[id]       = exit_time − enter_time
 ```
 
-You can measure **L** and **λ** without any tracking:
+Two small refinements matter more than they look. First, use the person's **feet**,
+not the middle of their box, to decide "in the queue" — the feet are where they
+actually stand on the floor, and we'll see on the calibration page that the floor is
+the only place geometry behaves. Second, report the **median** wait, not the
+average. One abandoned trolley that sits in frame for an hour will drag the mean
+into fantasy; the median shrugs it off.
 
-- **L (occupancy):** count heads inside the queue zone per frame — a **density-map
-  count** works even when individuals aren't separable (section 2 of this folder).
-- **λ (arrival rate):** a **line-crossing counter** at the queue entrance — you
-  only need to count crossings, not identities.
-- Then **W = L / λ**. Smooth L and λ over a rolling window (e.g. 1–5 min).
+Now the crack: this whole method leans on identities staying correct. The moment the
+crowd thickens and one person walks in front of another, the tracker can swap their
+IDs. A swap chops one person's genuine wait into two short fragments, or fuses two
+people into one — and your queue time quietly goes wrong with no error message. So
+the honest summary is: per-person timing is the most *accurate* method when the
+scene is calm, and the *first* to fail when it isn't.
 
-> **Interview gold:** "In dense crowds I stop trying to track individuals and use
-> Little's Law: occupancy over arrival rate gives the average wait, and both inputs
-> survive occlusion because one is a density count and the other is a crossing
-> count." This shows you know the *modeling*, not just the plumbing.
+## A sturdier version: time the boundary, not the whole journey
 
-**Assumptions to state:** Little's Law needs a system in rough steady state
-(arrivals ≈ departures over the window) and FIFO-ish service for the *average* to
-mean a typical person's wait. Call these out — interviewers probe whether you know
-the model's limits.
+Here's a nice trick that buys robustness for little cost. Instead of following each
+person through the entire queue, just watch two lines — the point where they *join*
+and the point where they reach *service* — and record a crossing event at each. The
+wait is the gap between a person's two crossings.
 
-## Practical accuracy notes
+Why is this tougher than full tracking? Because identity now only has to survive two
+brief moments (the two line crossings), not the whole minutes-long dwell in between.
+And in a single-file serpentine queue — think an immigration hall or an ADNOC
+service counter — order is preserved, so you don't even need to recognise anyone:
+the first person to join is the first to be served, so you can pair crossings in
+simple first-in-first-out order. Where this falls apart is an unordered, multi-lane
+scrum, because then join-order and service-order no longer match and the pairing
+guesses wrong.
 
-- **Validate against a clock.** Ground-truth a few people with a stopwatch (or a
-  second synced camera) and compare. Report MAE in seconds, not just "looks right."
-- **Latency vs freshness.** A dwell isn't known until the person leaves — so a
-  live "current wait" board is always a lagging estimate. Little's Law gives a
-  *leading* estimate (from instantaneous L and λ) — often you show both.
-- **Zone hygiene.** Exclude staff, exclude the person being served, handle
-  re-entries. Most "wrong queue time" bugs are zone-definition bugs, not model bugs.
+## The method that ignores individuals entirely: Little's Law
 
-## Quick self-check
+When the crowd is genuinely dense, stop trying to follow anyone at all. There's a
+result from queuing theory that lets you infer the *average* wait from two things
+that are much easier to measure in a crowd:
 
-- Why report median wait, not mean? *(outliers — abandoned objects, staff idling)*
-- Your tracker's ID-switch rate just tripled at peak. Which method do you switch to
-  and why? *(Little's Law — inputs are occlusion-robust counts, not identities)*
-- What must be true for `W = L/λ` to be valid? *(steady state over the window)*
+```
+        L = λ · W        which rearranges to      W = L / λ
+
+  L = how many people are in the queue on average   (the occupancy)
+  λ = how fast people are arriving                   (the arrival rate)
+  W = the average time each person waits            (what we want)
+```
+
+The beauty is that both inputs survive occlusion, because neither one needs
+identities. You get **L**, the occupancy, from a *density-map count* — the technique
+on the next page that counts a crowd without separating it into individuals. You get
+**λ**, the arrival rate, from a simple *line-crossing counter* at the entrance,
+which only has to count crossings, not tell people apart. Divide one by the other,
+smoothed over a rolling window of a few minutes, and you have the wait.
+
+This is the answer that makes an interviewer nod, because it shows you're thinking
+about the *model*, not just the plumbing: *"Once tracking becomes unreliable I stop
+timing individuals and use Little's Law — occupancy over arrival rate gives the
+average wait, and both of those inputs are counts that survive occlusion."* Just be
+honest about the fine print, because they'll poke at it: the law gives you the
+*average* wait, and it assumes the queue is in rough steady state over your window
+(people arriving at about the rate they're leaving). State those assumptions out
+loud — knowing a model's limits is what separates using it from reciting it.
+
+## A subtlety worth raising yourself: leading vs. lagging
+
+There's a timing paradox in all of this. A per-person wait can't be known until the
+person actually *leaves* — so any "current wait" number built from completed
+journeys is inherently looking backwards. Little's Law, because it's built from
+instantaneous occupancy and arrival rate, gives you a *forward-looking* estimate of
+what someone joining now will experience. In practice you often show both: the
+measured wait of the last people through, and the projected wait for someone
+arriving now. Mentioning this distinction unprompted signals real familiarity.
+
+## Where queue-time projects actually go wrong
+
+It's rarely the model. It's the zone. The bugs that eat these projects are almost
+always definitional: staff standing in the queue zone getting counted as customers,
+the person currently *being served* still counted as waiting, someone stepping out
+and re-entering being counted twice. Get the zone hygiene right and most "the queue
+time is wrong" complaints evaporate. And whatever method you use, prove it against a
+clock — the calibration page covers exactly how.
+
+**Self-check.** Why report the median wait rather than the mean? *(a single outlier
+— an abandoned object, an idling staff member — wrecks the mean.)* Your tracker's
+ID-switch rate triples at peak; which method do you fall back to and why? *(Little's
+Law — its inputs are occlusion-robust counts, not fragile identities.)* And what has
+to be true for `W = L/λ` to hold? *(the queue is in rough steady state over your
+averaging window.)*

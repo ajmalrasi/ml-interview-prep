@@ -1,91 +1,91 @@
 # Training & Model Optimization for the Edge
 
-**TL;DR:** As a data scientist you own the model lifecycle: curate data, augment for
-the deployment domain, transfer-learn instead of training from scratch, then
-**optimize for the edge** (INT8/FP16, pruning, distillation, TensorRT) *without*
-losing the accuracy you need. And because it's a closed on-prem loop, you improve
-the model with **active learning** on its own failures.
+**TL;DR:** As a data scientist you own the model's whole life, and it has two halves that
+pull in opposite directions. Training is about making the model *accurate* on your actual
+scene — which comes far more from data than from architecture. Optimization is about making
+it *fast* enough to run on a Jetson — without giving back the accuracy you just earned. And
+because this is a sealed on-prem site, there's a third act: the model improves over time by
+learning from its own mistakes. This page walks that arc.
 
-## Data — where the accuracy actually comes from
+## Where accuracy really comes from: the data
 
-- **Domain match is everything.** A model trained on web images fails on your CCTV:
-  high angle, wide lens, night IR, weather, motion blur. Collect/label data **from
-  the actual cameras and conditions**. This single point beats most architecture
-  tweaks.
-- **Labeling quality & consistency** — define box conventions (head vs full body,
-  occluded-object policy) and hold to them; noisy labels cap your ceiling.
-- **Class balance & hard cases** — deliberately include night, crowds, occlusion,
-  rare events; a model only learns what it sees.
+The uncomfortable truth is that the biggest lever on accuracy isn't the architecture, it's
+the data — and specifically whether it *matches your scene*. A model trained on tidy web
+images falls apart on real CCTV, which is shot from a high angle through a wide lens, often
+at night in infrared, through weather and motion blur. So the single most valuable thing you
+can do is collect and label footage from the *actual cameras* in their *actual conditions*.
+Two things make or break that data: **labelling consistency**, because if you're vague about
+conventions — head or full body, how to handle an occluded object — noisy labels quietly cap
+how good the model can ever get; and **coverage of hard cases**, because a model only learns
+what it has seen, so you deliberately include night, crowds, occlusion, and the rare events
+you care about.
 
-## Augmentation (cheap generalization)
+## Augmentation: buying generalisation cheaply
 
-- **Geometric:** flip, scale, crop, rotate — teach scale/position invariance
-  (matches the CCTV scale range).
-- **Photometric:** brightness/contrast/hue, noise, blur, JPEG artifacts — teach
-  robustness to lighting/weather/IR and compression.
-- **Detection-specific:** **mosaic** (4 images tiled — YOLO staple, great for small
-  objects and context), mixup, copy-paste, cutout/random-erase (occlusion robustness).
-- Augment toward *your* deployment conditions — simulate night, rain, glare.
+Augmentation stretches the data you have to cover conditions you haven't photographed yet, and
+you aim it deliberately at your deployment. **Geometric** transforms — flips, scaling, crops,
+rotations — teach the model to handle objects at any position and size, which directly
+addresses the CCTV scale range. **Photometric** ones — brightness, contrast, hue, noise, blur,
+JPEG artefacts — teach robustness to lighting, weather, infrared, and compression. And there
+are **detection-specific** tricks: mosaic (tiling four images into one, a YOLO staple that's
+great for small objects and context), mixup, copy-paste, and random erasing to simulate
+occlusion. The mindset is to augment *toward* your real conditions — if you'll deploy at
+night in the rain, simulate night and rain.
 
-## Transfer learning (almost always the right start)
+## Transfer learning: almost always the right start
 
-Start from an ImageNet/COCO-pretrained backbone and **fine-tune** on your data —
-far less data and compute than scratch, better generalization. Freeze early layers
-(generic edges/textures) and adapt the head + later layers to your classes/domain.
-Say this — training a detector from scratch on-site is rarely justified.
+You rarely train from scratch, and you should be ready to say why. You start from a backbone
+pretrained on ImageNet or COCO and **fine-tune** it on your data, which needs far less data
+and compute than starting cold and generalises better — you can even freeze the early layers,
+which have already learned generic edges and textures, and adapt only the head and later
+layers to your specific classes and scene. Training a detector from scratch on-site is almost
+never justified, and saying so shows judgement.
 
-## Handling the usual problems
+Along the way you'll hit the usual problems, each with a standard answer. Class imbalance,
+where "person" dominates, is handled with focal loss or resampling. Overfitting is fought with
+more and harder augmentation, dropout, weight decay, and early stopping. Small objects want
+higher resolution, FPN, and tiling. And — a point worth making unprompted — you evaluate on a
+held-out *scene* or camera, not random frames from the same clip, because near-duplicate
+frames leak between train and test and inflate your metrics into a lie.
 
-- **Class imbalance** — focal loss, resampling, class-balanced sampling.
-- **Overfitting** — more/harder augmentation, dropout, weight decay, early stopping,
-  validate on a **held-out scene** (not just held-out frames from the same clip).
-- **Small objects** — higher input res, FPN, tiling, mosaic.
-- **Evaluate on realistic splits** — split by camera/day, not random frames, or
-  near-duplicate frames leak and inflate your metrics.
+## Optimization: making it fit on a Jetson
 
-## Optimization for the edge (ties to §03)
-
-The JD's "model optimization." Turn the trained model into something that hits the
-FPS budget on a Jetson:
-
-- **Precision reduction** — **FP16** (≈2× speed, usually negligible accuracy loss),
-  **INT8** (bigger speedup, needs calibration and can cost mAP — *measure it*).
-  - **PTQ** (post-training quantization) — calibrate on a representative set; fast,
-    no retraining, small accuracy hit.
-  - **QAT** (quantization-aware training) — simulate INT8 during training; recovers
-    most of the accuracy when PTQ drops too much.
-- **Pruning** — remove low-importance weights/channels → smaller/faster; fine-tune
-  to recover accuracy.
-- **Knowledge distillation** — train a small "student" to mimic a big "teacher";
-  keep much of the accuracy at edge cost. Strong answer for edge deployment.
-- **TensorRT** — layer/tensor fusion, kernel autotuning, precision calibration into
-  a hardware-specific engine (§03). **Always re-measure mAP after** — optimization
-  that quietly tanks accuracy is a failure, which is why §13 monitoring watches it.
+Now the other half. A trained model is often too heavy for the edge, so you shrink it — the
+job's "model optimization" — while watching that accuracy survives. The main tool is
+**precision reduction**: FP16 roughly doubles speed for usually negligible accuracy loss,
+while INT8 gives a bigger speedup but needs calibration and can cost you mAP, so you *measure*
+it. INT8 comes in two flavours worth distinguishing: **post-training quantization** calibrates
+on a representative sample after training — fast, no retraining, small accuracy hit — and when
+that hit is too big you move to **quantization-aware training**, which simulates INT8 during
+training so the model learns to tolerate it and recovers most of the lost accuracy. Beyond
+precision, **pruning** removes low-importance weights or channels and then fine-tunes to
+recover, and **knowledge distillation** trains a small "student" model to mimic a big
+"teacher," keeping much of the accuracy at a fraction of the cost — a strong, specific answer
+for edge deployment. Finally **TensorRT** fuses layers, autotunes kernels, and bakes in the
+chosen precision to produce a hardware-specific engine (the section 03 material) — and the
+non-negotiable habit is to **re-measure mAP afterward**, because an optimization that quietly
+tanks accuracy is a failure, which is exactly why the monitoring in section 13 keeps watching.
 
 ```
-train (transfer + augment) ─► validate on held-out SCENE
-   ─► optimize (FP16/INT8 PTQ→QAT, prune, distill) ─► TensorRT engine
-   ─► RE-MEASURE mAP + latency ─► deploy (§13 canary) ─► monitor drift (§13)
+train (transfer + augment) → validate on a held-out SCENE
+   → optimize (FP16/INT8: PTQ then QAT if needed, prune, distill) → TensorRT engine
+   → RE-MEASURE mAP and latency → deploy (§13 canary) → monitor for drift (§13)
 ```
 
-## Active learning — improve inside a closed loop
+## The third act: getting better inside a sealed site
 
-On-prem you can't crowdsource labels, but the system generates its own hard cases:
+On-prem you can't crowdsource labels, but here's the elegant part — the running system
+*generates its own* hardest examples, so you let it teach itself. You mine the low-confidence
+detections and the false alarms operators flagged (from section 12), label just those, since a
+few well-chosen labels are worth far more than many random ones, then retrain, validate, and
+canary the result. That's **active learning**, and it's how accuracy climbs over time in a
+locked-down environment without an endless labelling budget — a mature thing to volunteer
+before you're asked.
 
-1. Mine **low-confidence** detections and **operator-flagged false alarms** (§12).
-2. Label just those (high value per label).
-3. Retrain / fine-tune, validate, canary (§13).
-
-This is how accuracy climbs over time in a locked-down deployment without endless
-labeling — a mature, senior thing to volunteer.
-
-## Quick self-check
-
-- Biggest lever on CCTV accuracy — architecture or data? *(domain-matched data +
-  augmentation from the real cameras)*
-- PTQ vs QAT — when each? *(PTQ first — fast, no retrain; QAT when INT8 drops mAP
-  too much)*
-- Why validate on a held-out *scene/camera*, not random frames? *(same-clip frames
-  leak → inflated metrics; you must test generalization to new views)*
-- How does a model improve on a closed on-prem site? *(active learning — mine
-  low-confidence + flagged false positives, label those, retrain, canary)*
+**Self-check.** What's the biggest lever on CCTV accuracy — architecture or data?
+*(domain-matched data and augmentation from the real cameras.)* PTQ versus QAT — when do you
+use each? *(PTQ first, because it's fast and needs no retraining; QAT when INT8 drops mAP too
+far.)* Why validate on a held-out scene rather than random frames? *(random frames from the
+same clip leak near-duplicates into the test set and inflate your metrics.)* And how does a
+model improve on a closed on-prem site? *(active learning — mine low-confidence and flagged
+cases, label those, retrain, and canary.)*

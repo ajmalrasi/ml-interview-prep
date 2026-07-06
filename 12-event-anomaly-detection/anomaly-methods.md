@@ -1,90 +1,99 @@
 # Anomaly Detection Methods
 
-**TL;DR:** Anomaly = "not normal," where you can't enumerate the bad cases. The
-core trick is always the same: **learn a model of normal, then score how far a new
-observation deviates.** They differ in *what* they model (a scalar metric, an
-appearance frame, a motion pattern, a future prediction) and in how much
-supervision they need. Match the method to what "normal" looks like in the scene.
+**TL;DR:** An anomaly is a problem you can't specify — you can't list the bad cases,
+so you can't write a rule. Every method here gets around that the same way: learn
+what *normal* looks like, then measure how far a new observation strays from it. What
+separates the methods is only *what* they treat as "normal" — a number, a
+still frame, a motion pattern, a prediction of the future — and how much labelled
+data they demand. Once you see that shared skeleton, the zoo of techniques becomes a
+short, ordered menu.
 
-## First: is it really anomaly detection?
+## First, make sure it's actually an anomaly
 
-If you can name the bad thing ("person in zone > 30 s"), it's an **event** (section
-1 of this folder) — use a rule; it's higher-precision. Reserve true anomaly methods
-for the **open-ended** part: "flag anything unusual on this platform." Interviewers
-respect the candidate who *narrows* the problem before reaching for a fancy model.
+The most valuable instinct here is to *shrink* the problem before reaching for a
+fancy model. If you can name the bad thing — "a person in this zone for more than
+thirty seconds" — then it isn't an anomaly at all, it's an event, and a rule from the
+previous page will catch it with far higher precision. Save true anomaly detection
+for the genuinely open-ended part of the brief: "flag anything unusual on this
+platform." Interviewers respect the candidate who narrows the question first, because
+it shows judgement rather than reflexive model-reaching.
 
-## Method families (weakest supervision → strongest)
+## The menu, from least to most supervision
 
-### 1. Statistical / metric-based (no learning)
-Track a scalar (occupancy, mean speed, flow rate) and flag deviation:
-- **Z-score / robust z (MAD)** — flag when a metric is > k σ from its rolling mean.
-- **EWMA / control charts** — smooth baseline, flag sustained excursions.
-- **Seasonal baselines** — "normal" depends on hour/day (a busy mall at 6pm ≠ 6am);
-  compare against the same time-of-week, not a global mean.
-- Cheap, explainable, great first line. Catches surges, stampede-onset (speed drop +
-  density spike), sudden emptying.
+**Start with plain statistics, no learning at all.** Track a single meaningful number
+— occupancy, average speed, flow rate — and flag it when it strays. A robust z-score
+(using the median and MAD so a few outliers don't poison your baseline) or an EWMA
+control chart will catch a surge, or the onset of a stampede where speed spikes while
+density does too. The crucial refinement is seasonality: "normal" for a mall at 6pm
+is nothing like 6am, so you compare against the same time-of-week, not a global
+average, or you'll alarm every single rush hour. This tier is cheap, explainable, and
+should almost always be your first line.
 
-### 2. Classical unsupervised ML on features
-Extract features (trajectory shapes, HOG/flow histograms, embeddings) and model
-normal density:
-- **One-Class SVM**, **Isolation Forest**, **Gaussian Mixture / KDE**, **k-NN
-  distance**. Score = how far outside the learned normal region.
+**Next, classical unsupervised learning on features.** Extract features — trajectory
+shapes, flow histograms, appearance embeddings — and fit a model of where "normal"
+lives in that feature space: a one-class SVM, an isolation forest, a Gaussian mixture
+or KDE. The anomaly score is simply how far outside the learned normal region a new
+sample sits.
 
-### 3. Reconstruction-based (autoencoder)
-Train an **autoencoder** (or conv-AE) only on *normal* footage. It learns to
-reconstruct normal well; **anomalies reconstruct poorly → high reconstruction
-error** is the anomaly score.
+**Then the reconstruction idea — the autoencoder.** Train an autoencoder on *only*
+normal footage. It gets very good at rebuilding the normal scenes it was trained on,
+but when something genuinely unusual appears, it can't reconstruct it well — and that
+reconstruction error *is* your anomaly score.
+
 ```
-frame ─► encoder ─► latent ─► decoder ─► reconstruction
-anomaly score = || frame − reconstruction ||   (high = unusual)
+frame → encoder → small latent code → decoder → reconstruction
+anomaly score = how different the reconstruction is from the input (high = unusual)
 ```
-- Self-supervised: only needs normal data (abundant), no anomaly labels.
-- Watch-out: strong AEs "generalize" and reconstruct anomalies too well → misses.
-  Mitigate with memory-augmented AEs (MemAE) or constraints.
 
-### 4. Prediction-based (temporal)
-Predict the **next frame** (or next positions) from recent ones; **large prediction
-error = anomaly** (a future-frame-prediction GAN/U-Net, or an LSTM over
-trajectories). Good for *motion* anomalies — wrong-way, sudden scatter, fall — that
-a single-frame AE misses.
+The appeal is that it's self-supervised: you only need normal footage, which you have
+in abundance, and no anomaly labels, which you don't. The famous failure is
+counter-intuitive — a *too-powerful* autoencoder generalises so well that it happily
+reconstructs anomalies too, so the error stays low and the anomaly slips through.
+Memory-augmented variants (MemAE) exist precisely to hobble that over-generalisation.
 
-### 5. Optical-flow / motion anomaly
-Model the **normal motion field** (direction + magnitude histograms per region).
-Flag frames whose flow deviates — people running in a walking area, a crowd
-suddenly dispersing (panic), reverse flow. Classic, light, and effective for
-crowd-motion anomalies specifically.
+**Then prediction-based methods, for things that move.** Instead of rebuilding the
+current frame, predict the *next* one (or the next few positions) from recent history
+with something like a future-frame predictor or an LSTM over trajectories. A large
+prediction error means reality did something the model of normal didn't expect —
+which is exactly how you catch *motion* anomalies like someone running the wrong way
+or a crowd suddenly scattering, the kind of thing a single-frame autoencoder misses.
 
-### 6. Modern: video embeddings + distance
-Embed clips with a pretrained video/self-supervised backbone; score anomalies by
-distance to normal embeddings, or use weakly-supervised MIL (video-level "normal vs
-anomaly" labels, e.g. the UCF-Crime style) when you have *some* labeled incidents.
+**And the motion-specific classic, optical-flow modelling.** Build a model of the
+normal motion field — the usual directions and magnitudes of movement in each region
+— and flag frames whose flow breaks the pattern: people running in a walking area,
+reverse flow, a crowd abruptly dispersing in panic. It's light and remarkably
+effective for crowd-motion anomalies specifically.
 
-## Choosing (say the trade-off)
+**Finally, the modern embedding approach.** Embed short clips with a pretrained
+self-supervised video backbone and score anomalies by distance from normal
+embeddings — or, if you happen to have a *few* labelled incidents, use weakly
+supervised multiple-instance learning on video-level labels (the UCF-Crime style).
 
-| Scene / need | Reach for |
-|---|---|
-| A few scalar metrics, want explainable, fast | Statistical (z-score / EWMA / seasonal) |
-| Appearance anomaly, only normal footage | Autoencoder (reconstruction error) |
-| Motion/behavior anomaly (running, panic, wrong-way) | Optical-flow model or prediction error |
-| Some labeled incidents exist | Weakly-supervised MIL on embeddings |
+## Choosing, in one breath
 
-## The universal gotchas
+If you want something explainable over a few scalar metrics, use the statistical tier.
+If the oddity is about *appearance* and you only have normal footage, reach for an
+autoencoder. If it's about *motion* — running, panic, wrong-way — use optical-flow or
+prediction error, not a still-frame model. And if you're lucky enough to have some
+labelled incidents, weak supervision on embeddings will beat the purely unsupervised
+options.
 
-- **"Normal" drifts** — lighting, seasons, layout changes. A static normal model
-  ages into a false-alarm generator → ties to monitoring/retraining (section 13).
-- **Base-rate problem** — real anomalies are *rare*, so even 99% specificity buries
-  operators in false positives. This is why alerting design (next page) matters more
-  than the detector.
-- **No ground truth** — you often can't measure recall (you don't know what you
-  missed). Validate on injected/known incidents and precision of what fired.
+## The gotchas that haunt every method
 
-## Quick self-check
+Three problems apply no matter which technique you pick. "Normal" **drifts** —
+lighting, seasons, a rearranged layout — so a frozen model of normal slowly turns
+into a false-alarm generator, which is exactly why it ties into the monitoring and
+retraining loop in section 13. The **base rate** is brutal: real anomalies are rare,
+so even a model that's 99% specific will bury operators in false positives, which is
+why the alerting design on the next page matters more than the detector itself. And
+you usually have **no ground truth** for recall — you can't measure what you never
+caught — so you validate on injected or known incidents and on the precision of what
+actually fired.
 
-- When do you use a rule (event) vs a learned anomaly model? *(nameable → rule;
-  open-ended → learned)*
-- Why can a *too-good* autoencoder miss anomalies? *(it reconstructs them well too;
-  low error → missed)*
-- Which method best catches "crowd suddenly runs"? *(optical-flow / prediction-error
-  motion model, not a single-frame AE)*
-- Why does seasonality matter? *(normal is time-of-day/week dependent; compare like
-  for like or you alarm every rush hour)*
+**Self-check.** When do you use a rule instead of a learned anomaly model? *(when you
+can name the bad thing — nameable means event means rule; open-ended means learned.)*
+Why can a *too-good* autoencoder miss anomalies? *(it reconstructs them well too, so
+the error stays low and nothing fires.)* Which method best catches "the crowd suddenly
+runs"? *(an optical-flow or prediction-error motion model — a single-frame autoencoder
+would miss it.)* And why does seasonality matter? *(normal depends on time of day and
+week; compare like with like or you alarm at every rush hour.)*

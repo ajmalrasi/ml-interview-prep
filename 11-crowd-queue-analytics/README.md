@@ -1,43 +1,51 @@
 # 11 — Crowd & Queue Analytics
 
-**TL;DR:** This is the headline deliverable of the JD: *queue-time estimation and
-crowd analytics*. The model gives you boxes and track IDs; this section is how you
-turn them into the two numbers a client actually pays for — **how many people**
-and **how long they wait**. Master the metric vocabulary (Little's Law, dwell,
-density) and the ground-plane geometry that makes the numbers real.
+**TL;DR:** This is the headline deliverable of the whole job: *queue-time
+estimation and crowd analytics*. Everything upstream — the cameras, the detector,
+the tracker — exists to produce two numbers a client will actually pay for: **how
+many people are here**, and **how long they're waiting**. This section is the bridge
+from "boxes on a screen" to those two numbers.
 
-Files:
-1. [queue-time-estimation.md](queue-time-estimation.md) — the three ways to measure wait time, and Little's Law
-2. [crowd-counting-density.md](crowd-counting-density.md) — detection vs density estimation, when each breaks
-3. [zones-flow-heatmaps.md](zones-flow-heatmaps.md) — ROI zones, line-crossing, directional flow, occupancy, heatmaps
-4. [calibration-and-metrics.md](calibration-and-metrics.md) — homography to the floor, real-world units, accuracy & validation
+Here's the story the four pages tell. A detector gives you boxes; a tracker gives
+those boxes identities that persist across frames. But a box in the *image* isn't
+yet a person standing on a *floor* — and until you fix that, every distance, speed,
+and density you compute is distorted by perspective. So the real work is: put the
+scene into real-world coordinates, decide which regime you're in (can you follow
+individuals, or is the crowd too dense?), and then measure. We'll build it in that
+order.
 
-## The framing line (memorize)
+Files, in reading order:
+1. [queue-time-estimation.md](queue-time-estimation.md) — three ways to measure a wait, and why one survives a packed hall when the others don't
+2. [crowd-counting-density.md](crowd-counting-density.md) — counting by detecting people vs. counting without ever separating them
+3. [zones-flow-heatmaps.md](zones-flow-heatmaps.md) — turning tracks into occupancy, flow, and heatmaps
+4. [calibration-and-metrics.md](calibration-and-metrics.md) — the homography that makes it all real, and how you'd prove your numbers are right
 
-*"Queue time and crowd count are geometry-plus-statistics on top of detection and
-tracking. I put the camera in real-world coordinates with a homography, define
-zones on the floor plan, and then it's two families of method: tracking-based
-(follow individuals, measure their dwell) and estimation-based (regress a count or
-a wait from density when tracking breaks down in dense crowds). I pick per the
-crowd regime and validate against a ground-truth clock."*
+## The one idea that ties the section together
 
-## The two regimes (this decides everything)
+There are really only two situations you can be in, and knowing which one you're in
+decides every method you reach for:
 
 ```
- SPARSE / MID crowd            DENSE crowd (occlusion, >~2 ppl/m²)
- heads separable                heads merge, tracking fails
-        │                              │
-        ▼                              ▼
- detect + track individuals     density estimation / regression
- → count unique IDs             → integrate a density map for count
- → dwell = t_exit − t_enter     → wait ≈ Little's Law from flow + occupancy
+ When you CAN tell people apart          When you CAN'T (dense, occluded crowd)
+ (sparse to moderate crowd)              heads merge, tracking falls apart
+        │                                       │
+        ▼                                       ▼
+ follow individuals, measure them        stop tracking; estimate from the
+ directly: count IDs, time their dwell    aggregate — density and flow
 ```
 
-Interviewers love to push you from the easy regime into the hard one: *"Your
-person detector works at the counter — now it's Friday and the hall is packed and
-half the heads are occluded. What breaks and what do you switch to?"* Answer:
-tracking-based dwell degrades as ID switches explode; fall back to a density-map
-count and a **flow-based** wait estimate (Little's Law), and report the regime you
-detected.
+A favourite interview move is to start you in the easy world and then push you into
+the hard one: *"Your counter works fine on a Tuesday morning — now it's a festival
+and half the heads are hidden. What breaks, and what do you switch to?"* If you can
+narrate that transition calmly, you've shown you understand the whole section. The
+short version, which the pages unpack: as the crowd thickens, tracking-based methods
+degrade because identities start swapping, so you fall back to methods that work on
+the *mass* of the crowd rather than its individuals.
+
+**The framing line to memorize:** *"Queue time and crowd count are geometry plus
+statistics layered on detection and tracking. I put the camera into real-world
+coordinates with a homography, then pick my method by the crowd regime: follow
+individuals when I can, and estimate from density and flow when I can't. Then I
+validate against a ground-truth clock."*
 
 → Start: **[queue-time-estimation.md](queue-time-estimation.md)**

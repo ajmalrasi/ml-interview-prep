@@ -1,80 +1,88 @@
 # CNNs & Backbones
 
-**TL;DR:** A CNN turns pixels into a hierarchy of features via convolutions —
-early layers see edges/textures, deep layers see objects. The **backbone** is the
-feature extractor every detector/tracker sits on. Know convolution mechanics,
-receptive field, why we downsample, and how a feature pyramid handles the scale
-problem that dominates crowd/CCTV scenes.
+**TL;DR:** A convolutional network turns raw pixels into a ladder of increasingly
+abstract features — edges near the bottom, whole objects near the top — and the
+**backbone** is the part that does this feature extraction for everything downstream.
+If you understand three things — how a convolution works and why, how far up the ladder
+"seeing a whole object" happens, and why a single feature map can't cope with a CCTV
+scene — you understand what the rest of this section is standing on.
 
-## Convolution — the core operation
+## What a convolution actually does, and why it's the right tool
 
-A small learnable kernel slides over the image, computing dot products → a feature
-map. Key properties and why they matter:
+A convolution slides a small learnable filter across the image, computing a dot product
+at each position to produce a feature map. Three properties explain why this beats a
+plain dense layer for images. First, **weight sharing**: the same filter is used
+everywhere, so the network needs far fewer parameters and, more importantly, an edge is
+recognised as an edge wherever it appears — the response moves with the pattern. Second,
+**locality**: each output looks at only a small patch of input, which matches how images
+are actually structured, out of nearby pixels. Third, **composition**: stack these layers
+and the abstraction climbs on its own — edges combine into textures, textures into parts,
+parts into objects — without anyone hand-designing the intermediate features.
 
-- **Weight sharing** — the same kernel everywhere → translation equivariance and far
-  fewer parameters than a dense layer. An edge is an edge wherever it appears.
-- **Locality** — each output sees only a local patch (the receptive field), matching
-  image structure.
-- **Stacking grows abstraction** — edges → textures → parts → objects as depth
-  increases.
+The knobs are worth knowing because they come up constantly. **Stride** is the step size,
+and a stride of two halves the spatial resolution. **Padding** decides whether the output
+keeps its size or shrinks. **Kernel size** is usually 3×3, and there's a neat reason:
+stacking two 3×3 convolutions covers the same input area as one 5×5 but with fewer
+parameters and an extra dose of nonlinearity, so modern nets prefer the stack.
+**Channels** are the depth of the feature map — more channels, more kinds of feature.
+And **dilation** spreads the filter out to see a wider area without adding parameters,
+which is exactly the trick CSRNet uses for crowd density.
 
-Knobs to know cold:
+## Receptive field: the concept behind a classic question
 
-- **Stride** — step size; stride 2 downsamples (halves spatial size).
-- **Padding** — keep spatial size ("same") or shrink ("valid").
-- **Kernel size** — 3×3 is the workhorse; stacking two 3×3 ≈ one 5×5 receptive field
-  with fewer params + more nonlinearity.
-- **Channels** — depth of the feature map; more channels = more feature types.
-- **Dilation** — spreads the kernel to enlarge receptive field without more params
-  (used in CSRNet, segmentation).
+The **receptive field** is the region of the original image that influences one
+activation deep in the network, and it grows as you go deeper and as you add stride or
+dilation. It matters because of a simple constraint: to recognise a large object — a
+person standing near the camera — an activation has to actually "see" enough of it. If
+the receptive field is too small, the network literally cannot perceive large objects;
+push resolution too coarse and it loses the tiny distant ones. That tension is the whole
+motivation for the multi-scale features we get to below — so if an interviewer asks about
+receptive field, they're usually fishing for whether you understand *why* multi-scale
+matters.
 
-## Receptive field (a classic question)
+## The pieces modern backbones are built from
 
-The region of input that influences one output activation. It grows with depth,
-stride, and dilation. **Why it matters:** to detect a big object (a person near the
-camera) an activation must "see" enough of it — too small a receptive field and the
-network can't perceive large objects; too coarse and it misses tiny far ones. This
-is *the* motivation for multi-scale features.
+A few components recur everywhere. **Batch normalisation** rescales activations as they
+flow through, which makes training faster and more stable. **Residual connections** — the
+`y = F(x) + x` idea from ResNet — let gradients skip past layers, which is what makes it
+possible to train networks dozens of layers deep without them stalling; it's the single
+idea behind most backbones you'll name. **Pooling or strided convolution** downsamples to
+build a bit of spatial invariance and cut compute. And **depthwise-separable convolutions**
+— the MobileNet trick — factor an expensive convolution into two cheap steps, which is
+precisely what lets a model run in real time on a Jetson. That last one is the one to name
+when the conversation turns to the edge.
 
-## The building blocks of modern backbones
+As for backbones themselves: a ResNet-50 is the dependable, well-understood baseline;
+MobileNet and EfficientNet-Lite are the lightweight, edge-friendly choices you'd actually
+deploy on a Jetson; CSPDarknet is the speed-tuned backbone the YOLO family is built on; and
+vision transformers are strong but heavier and usually not your first pick when every
+millisecond of edge latency counts.
 
-- **BatchNorm** — normalizes activations per batch → faster, more stable training.
-- **Residual connections (ResNet)** — `y = F(x) + x` lets gradients flow through
-  very deep nets (solves vanishing gradients). The idea behind most backbones.
-- **Pooling / strided conv** — downsample to build spatial invariance and cut compute.
-- **Depthwise-separable conv (MobileNet)** — factorizes conv into per-channel +
-  1×1 → far cheaper. **This is what you run on a Jetson** — name it for the edge.
+## The scale problem, which is *the* CCTV problem
 
-## Backbones you should be able to name
-
-| Backbone | Why you'd pick it |
-|---|---|
-| **ResNet-50** | strong, standard baseline; good accuracy/complexity balance |
-| **MobileNetV2/V3, EfficientNet-Lite** | lightweight, mobile/edge — Jetson-friendly |
-| **CSPDarknet** | the YOLO-family backbone; speed-tuned for detection |
-| **ViT / hybrid** | transformers; strong but heavier — usually not first choice on edge |
-
-## The scale problem & FPN (crucial for CCTV)
-
-In a CCTV frame, a person near the camera is huge and one at the back is a few
-pixels — a **massive scale range in one frame**. A single feature map can't handle
-both. **Feature Pyramid Network (FPN)** fuses deep-semantic-low-res features with
-shallow-high-res features so the detector has strong features at *every* scale.
-This is why FPN-style necks are standard in detectors and why they matter more here
-than in a "one object, centered" classification task.
+Here's where CCTV differs sharply from the tidy "one centred object" benchmark. In a single
+surveillance frame, a person right under the camera can be hundreds of pixels tall while
+someone at the back of the hall is a handful of pixels — an enormous range of scales in one
+image. No single feature map handles both well: the deep, semantically rich maps are too
+coarse to localise the tiny person, and the shallow, detailed maps don't understand what
+they're looking at. The **Feature Pyramid Network** resolves this by fusing the two — taking
+the deep semantic features, upsampling them, and adding them to the shallow detailed ones —
+so the detector gets strong features at *every* scale.
 
 ```
-deep, semantic, low-res  ─┐ (upsample + add)
-                          ├─► multi-scale feature maps → detect small AND large
+deep, semantic, low-res  ─┐  (upsample and add)
+                          ├─► multi-scale features → detect small AND large together
 shallow, detailed, hi-res ─┘
 ```
 
-## Quick self-check
+This is why FPN-style "necks" are standard in detectors, and why they matter more here than
+in ordinary image classification — the scale range is the defining difficulty of the
+domain, and it's the reason the next page's detectors are built the way they are.
 
-- Why stack two 3×3 convs instead of one 5×5? *(same receptive field, fewer params,
-  extra nonlinearity)*
-- What do residual connections solve? *(vanishing gradients → trainable deep nets)*
-- Why is FPN especially important for CCTV crowd scenes? *(huge per-frame scale
-  range — near vs far people — needs multi-scale features)*
-- What backbone family runs well on a Jetson and why? *(MobileNet / depthwise-
-  separable convs — cheap FLOPs)*
+**Self-check.** Why stack two 3×3 convolutions instead of using one 5×5? *(same receptive
+field, fewer parameters, and an extra nonlinearity.)* What do residual connections solve?
+*(vanishing gradients, which is what lets very deep networks train at all.)* Why is FPN
+especially important for CCTV crowds? *(the huge per-frame range from near to far people
+demands strong features at every scale.)* And which backbone family runs well on a Jetson,
+and why? *(MobileNet-style depthwise-separable convolutions, because they're cheap in
+FLOPs.)*

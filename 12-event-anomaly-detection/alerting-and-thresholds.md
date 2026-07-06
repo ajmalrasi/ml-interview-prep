@@ -1,59 +1,72 @@
 # Alerting, Thresholds & False-Alarm Control
 
-**TL;DR:** Detecting an event once is easy. Making operators *trust* the system is
-the real job — and it lives entirely in the alerting layer: **confirmation,
-debouncing, hysteresis, deduplication, and a clean event schema**. A system that
-cries wolf gets muted in a week. This is the most senior thing you can talk about
-in this whole section.
+**TL;DR:** Detecting an event once is the easy part. The part that decides whether the
+whole system lives or dies is what happens *after* the detection — how you confirm it,
+debounce it, deduplicate it, and hand it to a human. A system that cries wolf gets
+muted within a week, and a muted system detects nothing. So the most senior thing you
+can talk about in this entire section isn't the detector at all; it's the alerting
+layer wrapped around it.
 
-## Why the alerting layer decides success
+## Why this layer, and not the detector, decides success
 
-Anomalies/events are **rare** → the base rate is brutal. Even a great detector at
-99% specificity, watching thousands of frames × dozens of cameras, produces a flood
-of false positives. Operators mute muted systems. So you engineer the alert, not
-just the detector:
+The reason comes straight from the previous page: anomalies and events are *rare*, and
+rare things are unforgiving. Picture a detector that's 99% specific — sounds great —
+now run it across thousands of frames per second, times dozens of cameras. That 1%
+becomes a flood of false positives, an operator mutes the alerts, and your beautifully
+accurate detector is now worthless. The only cure is to engineer the *alert*, not just
+the detection. Think of it as a pipeline that a raw per-frame trigger has to survive
+before it's allowed to reach a person:
 
 ```
-raw trigger (per frame)
-   → temporal confirmation (K-of-N / dwell)     # kill single-frame noise
-   → hysteresis (enter high, clear low)          # stop flicker at the boundary
-   → debounce / cool-down per (camera,zone,type) # one alert, not 500
-   → dedupe across cameras (same world event)    # overlap views = one incident
-   → severity + evidence  → route to operator
+raw trigger (this frame)
+   → temporal confirmation (K-of-N, or a dwell)   kill single-frame noise
+   → hysteresis (arm high, clear low)             stop flicker at the boundary
+   → debounce / cool-down per camera+zone+type    one alert, not five hundred
+   → dedupe across cameras (one real-world event) overlapping views = one incident
+   → add severity + evidence → route to operator
 ```
 
-## The core techniques
+## The techniques, and the intuition for each
 
-- **K-of-N confirmation** — fire only if the condition holds in K of the last N
-  frames. The single highest-leverage false-alarm reducer.
-- **Dwell / persistence** — require a duration (loiter > 30 s, object static > 60 s).
-- **Hysteresis (two thresholds)** — enter the alarm state at a *high* threshold,
-  clear it at a *lower* one. Prevents rapid on/off chatter when a metric hovers on
-  the line (e.g. occupancy oscillating around the cap).
-- **Debounce / cool-down** — after firing for a (camera, zone, type), suppress
-  repeats for a window; send one "ongoing" update, not a per-frame storm.
-- **Deduplication** — the *same* real-world event seen by two overlapping cameras
-  is **one** incident (dedupe on shared ground-plane position + time; see §11
-  calibration).
-- **Spatial/temporal filtering** — ignore known-noisy regions (a swaying tree, a
-  reflective floor, a monitor showing video), and known busy periods.
+**K-of-N confirmation** is the highest-leverage tool you have: only fire if the
+condition held in, say, eight of the last ten frames. One noisy frame can no longer
+trigger anything. **Dwell or persistence** is its cousin — insist on a real duration
+(loitering over thirty seconds, an object static over a minute) so momentary blips
+never qualify.
 
-## Setting thresholds
+**Hysteresis** solves a specific, maddening problem: a metric hovering right on the
+threshold. If occupancy is oscillating around its cap, a single threshold makes the
+alarm chatter on and off dozens of times. The fix is two thresholds — arm the alarm
+at a *high* level, but don't clear it until it drops to a *lower* one — so the state
+is sticky and the chatter stops.
 
-- **Derive from data, not vibes** — collect the metric's normal distribution and set
-  thresholds at a chosen percentile / cost trade-off, then validate.
-- **Precision–recall trade-off is a business decision** — a **security intrusion**
-  wants high recall (miss nothing, tolerate false alarms); a **retail marketing
-  count** wants high precision. Ask which the client wants; don't assume.
-- **ROC/PR + operating point** — pick the threshold on the PR curve that hits the
-  agreed false-alarm budget (e.g. "< 2 false alerts per camera per day").
-- **Per-site tuning** — expose thresholds as config an integrator sets on-site;
-  scenes differ too much for one global value.
+**Debounce, or cool-down**, says that once you've fired for a given camera, zone, and
+event type, you suppress repeats for a while and send one "still ongoing" update
+rather than a per-frame storm. **Deduplication** handles the multi-camera case: the
+*same* real-world intrusion seen by two overlapping cameras is **one** incident, not
+two, and you enforce that by deduping on shared floor position and time — which is
+exactly why the shared ground-plane calibration from section 11 keeps paying off. And
+plain **spatial filtering** rounds it out: mask off the known-noisy regions — a
+swaying tree, a reflective floor, a wall-mounted monitor showing video — before they
+ever generate a trigger.
 
-## The event/alert schema (design it deliberately)
+## Where the thresholds actually come from
 
-A clean, self-describing event object is what makes the system auditable — critical
-in a secure government deployment:
+Not from guessing. You collect the normal distribution of whatever metric you're
+thresholding and set the cut at a chosen percentile or cost trade-off, then validate
+it. And the direction you lean is a *business* decision, not a technical default: a
+security intrusion wants high recall — miss nothing, tolerate some false alarms — while
+a retail footfall count wants high precision. So you ask which the client actually
+wants rather than assuming, and you pick your operating point on the precision-recall
+curve to hit an agreed budget, something as concrete as "fewer than two false alerts
+per camera per day." Finally, you expose these thresholds as per-site configuration,
+because scenes differ far too much for one global number to fit them all.
+
+## Designing the event itself so it's auditable
+
+In a secure deployment, the shape of the event object matters as much as the logic
+that produced it, because it's what makes the system auditable after the fact. A clean
+event is self-describing and carries its own evidence:
 
 ```json
 {
@@ -63,7 +76,7 @@ in a secure government deployment:
   "camera_id": "cam-07",
   "zone_id": "restricted-b",
   "start_ts": "2026-07-06T09:14:03Z",
-  "end_ts": null,                       // open until cleared → ongoing
+  "end_ts": null,                       // stays open while ongoing
   "track_ids": [42],
   "confidence": 0.87,
   "evidence": { "clip": "…", "keyframe": "…", "trajectory": [] },
@@ -71,28 +84,28 @@ in a secure government deployment:
 }
 ```
 
-- **Include evidence** (keyframe/clip/track) so a human can adjudicate fast and the
-  record is auditable later.
-- **State machine** — active → acknowledged → resolved; supports SLAs and stops
-  duplicate paging.
-- **Idempotency** — dedupe by (type, camera, zone, time-bucket) so retries/overlap
-  don't double-alert.
+Three things make it trustworthy. It carries **evidence** — a keyframe, a clip, the
+track — so a human can judge it in seconds and the record survives for later audit. It
+moves through a **state machine** — active, then acknowledged, then resolved — which
+supports SLAs and stops the same incident paging three people. And it's **idempotent**:
+because it's keyed on type, camera, zone and a time bucket, a retry or an overlapping
+view can't manufacture a duplicate.
 
-## Closing the loop (this impresses)
+## Closing the loop, which is what impresses
 
-- **Operator feedback** — a "false alarm" button feeds a dataset to retune
-  thresholds and hard-mine false positives into the next model (active learning,
-  §14).
-- **Continuous false-alarm-rate monitoring** — track alerts/camera/day; a rising
-  trend is an early warning of drift or a bumped camera (→ §13 monitoring).
+The detail that signals real maturity is treating false alarms as fuel rather than
+noise. Give operators a "false alarm" button, and every press feeds a dataset you use
+to retune thresholds and to hard-mine those false positives into the next model — the
+active-learning loop from section 14. And keep watching the false-alarm rate itself:
+alerts per camera per day is a metric, and a rising trend is often the first sign of
+model drift or a camera that's been bumped, which walks you straight into the
+monitoring in section 13.
 
-## Quick self-check
-
-- Why hysteresis instead of one threshold? *(stops on/off chatter when the metric
-  hovers at the boundary)*
-- Two overlapping cameras both fire on one intrusion — how many incidents, and how
-  do you enforce it? *(one; dedupe on shared world position + time)*
-- Client says "never miss an intruder." Which way do you move the operating point,
-  and what's the cost? *(toward recall; more false alarms — budget them explicitly)*
-- What makes an event auditable in a secure deployment? *(self-describing schema +
-  attached evidence + status state machine)*
+**Self-check.** Why hysteresis instead of a single threshold? *(it stops the alarm
+chattering on and off when the metric hovers right at the boundary.)* Two overlapping
+cameras both fire on one intrusion — how many incidents should there be, and how do you
+enforce it? *(one; dedupe on shared floor position and time.)* A client says "never
+miss an intruder" — which way do you move the operating point, and what does it cost?
+*(toward recall, at the price of more false alarms, which you budget explicitly.)* And
+what makes an event auditable in a secure deployment? *(a self-describing schema with
+attached evidence and a status state machine.)*

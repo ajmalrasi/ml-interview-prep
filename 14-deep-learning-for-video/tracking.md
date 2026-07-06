@@ -1,94 +1,96 @@
 # Multi-Object Tracking
 
-**TL;DR:** Detection tells you *what's in this frame*; tracking gives objects
-**stable IDs across frames** — which is what makes counting, dwell, flow, and
-loitering possible. The dominant paradigm is **tracking-by-detection**: detect each
-frame, then associate detections to existing tracks. Know the SORT→DeepSORT→ByteTrack
-lineage, the Kalman+Hungarian core, when you need ReID, and the MOT metrics.
+**TL;DR:** Detection tells you what's in *this* frame; tracking is what stitches those
+per-frame boxes into objects that persist over time, each with a stable identity. That
+persistence is the thing that makes everything in sections 11 and 12 possible — you can't
+measure a wait, a count, or a loitering event without knowing that the person in frame 100
+is the same person from frame 1. So tracking quality doesn't just affect the analytics; it
+*bounds* them, which is why noisy queue times so often trace back to a tracking problem.
 
-## Why tracking at all
+## Why you can't skip it
 
-- **Counting** needs IDs or you recount the same person every frame.
-- **Dwell / queue time** = last_seen − first_seen for a track (§11).
-- **Direction / flow / wrong-way** need a trajectory, not a point.
-- **Loitering / events** need "the *same* person for > T seconds" (§12).
+Run through what the analytics actually need and the necessity becomes obvious. Counting
+needs identities, or you'd recount the same person on every single frame. Dwell time and
+queue time are literally "last seen minus first seen" for one identity. Direction, flow, and
+wrong-way detection need a trajectory, which is a sequence of positions for *one* object.
+Loitering and most events need "the same person, here, for more than T seconds." Every one
+of these is impossible with detection alone — they all require identity to persist, and that
+persistence is exactly what a tracker provides. So when an interviewer says "your queue times
+look noisy, why?", the answer is very often *ID switches*, and this page is why.
 
-So tracking quality (ID stability) directly bounds the accuracy of every §11/§12
-number. Interviewers link them: *"your queue times are noisy — why?"* → often
-**ID switches**.
+## The core idea: track by detecting
 
-## The tracking-by-detection core
+The dominant approach is called tracking-by-detection, and its loop is simple to picture: on
+each frame you already have detections, and you have a set of existing tracks, so the job is
+just to match this frame's detections to the right tracks.
 
 ```
-predict each track's next position (motion model)
+predict where each existing track should be now (a motion model)
         │
         ▼
-match detections ↔ tracks   (cost = IoU and/or appearance distance)
-        │                    solved by the HUNGARIAN algorithm (optimal assignment)
+match detections ↔ tracks, using a cost (box overlap, and/or appearance similarity)
+        │            solved optimally by the HUNGARIAN algorithm
         ▼
-update matched tracks; birth unmatched detections; kill stale tracks
+update matched tracks; start new tracks for unmatched detections; retire stale ones
 ```
 
-- **Kalman filter** — the motion model; predicts where a track goes next
-  (constant-velocity) and smooths noisy boxes. Bridges short detection gaps.
-- **Hungarian algorithm** — optimal one-to-one assignment of detections to tracks
-  given a cost matrix. (These two are the SORT recipe.)
-- **Cost** — IoU (position/overlap) and/or appearance embedding distance.
+Two classic algorithms do the heavy lifting. A **Kalman filter** is the motion model: it
+predicts where a track should appear next (assuming roughly constant velocity) and smooths
+out the jitter in noisy boxes, which also lets it bridge a short gap where a detection is
+briefly missing. The **Hungarian algorithm** then solves the matching optimally — given a
+cost matrix of how well each detection fits each track, it finds the best one-to-one
+assignment. Those two together *are* the original SORT tracker, and everything fancier is
+built on top of them.
 
-## The lineage (name these, know the diff)
+## The family tree, and what each addition buys
 
-| Tracker | Adds | Use when |
-|---|---|---|
-| **SORT** | Kalman + Hungarian on IoU only | fast, clean scenes, few crossings |
-| **DeepSORT** | + appearance **ReID** embedding in the cost | occlusion / crossings — ID survives a gap |
-| **ByteTrack** | associate **low-score** detections too, in a second stage | crowded/occluded — big MOTA gain, still fast |
-| **OC-SORT / BoT-SORT** | better motion / camera-motion comp + ReID | moving-camera or heavy occlusion |
+It's most memorable as a progression, because each tracker adds one idea to fix the last
+one's weakness. **SORT** is Kalman plus Hungarian on box overlap alone — fast and clean, and
+fine when the scene is sparse and paths rarely cross. **DeepSORT** adds an appearance
+embedding (ReID) into the matching cost, so when two people cross or one is briefly hidden,
+their identities survive the encounter because appearance disambiguates them where position
+alone would swap them. **ByteTrack** adds a genuinely clever twist worth stating explicitly:
+instead of throwing away low-confidence detections, it keeps them and matches them to
+existing tracks in a second pass — and since an occluded person's box gets a *low* score,
+this recovers identities right through occlusion, and it does so cheaply without needing a
+heavy ReID model, which makes it a great edge answer. Beyond those, OC-SORT and BoT-SORT
+refine the motion model and compensate for camera motion when you need it.
 
-**ByteTrack's key insight** (worth stating): don't throw away low-confidence
-detections — an occluded person's box gets a low score; matching those to existing
-tracks in a second pass recovers IDs through occlusion without a heavy ReID model.
-Great edge answer: strong tracking, cheap.
+## ReID: when identity has to travel
 
-## ReID (re-identification)
+Re-identification is an appearance embedding that lets you recognise the *same* person after
+a gap or in a different camera — and combined with the foot-point-on-the-floor idea from
+section 11, it's how you hand a track from one camera to the next. You need it for long
+occlusions, crossing paths, multi-camera identity, and re-entries. But you can skip it in a
+sparse scene with only short gaps, where plain motion and overlap (SORT or ByteTrack) suffice
+and cost far less on the edge — a trade worth naming. And one careful point that connects to
+section 13: a ReID embedding is derived from a real person, so you treat it as sensitive, but
+it re-associates an *unnamed* track — it is not a name or an identity.
 
-An embedding of a person's appearance so the *same* person matches across a gap or
-across cameras (foot point + ReID = cross-camera handoff, §11 calibration).
+## Scoring a tracker
 
-- **When you need it:** long occlusions, crossing paths, multi-camera identity,
-  re-entry.
-- **When you can skip it:** sparse scene, short gaps → motion/IoU (SORT/ByteTrack)
-  is enough and far cheaper on the edge.
-- **Privacy note (§13):** a ReID embedding is derived from a person — treat as
-  sensitive, scope its retention. It re-associates an *unnamed* track; it is **not**
-  a name/identity.
+The metrics matter because they map onto analytics quality. **MOTA** rolls false positives,
+misses, and ID switches into one headline number. **IDF1** focuses specifically on identity
+consistency — how reliably the right ID stays on the right object — which is often more
+telling than MOTA for analytics that live or die on identity. **ID switches** is the raw
+count of times a track's identity changed, and it's the most direct driver of count and dwell
+error. **HOTA** is the modern metric that balances detection quality against association
+quality.
 
-## MOT metrics (the tracking scorecard)
+## The CCTV gotchas
 
-- **MOTA** — combines false positives, misses, and **ID switches** into one score
-  (higher better). The headline.
-- **IDF1** — identity-focused F1: how consistently the right ID stays on the right
-  object. Often more telling than MOTA for analytics that depend on identity.
-- **ID switches** — count of times a track's ID changes — the direct driver of
-  count/dwell error.
-- **HOTA** — modern balance of detection vs association accuracy.
+The recurring enemy is occlusion, because it causes ID switches, which corrupt counts and
+dwell — and the mitigations are the ones above: ByteTrack, ReID, Kalman gap-bridging, and the
+downstream K-of-N confirmation from section 12. Past a certain crowd density tracking becomes
+hopeless entirely, and that's your cue to switch to density estimation plus Little's Law
+(section 11). And watch the frame rate: too few frames per second breaks the constant-velocity
+assumption because objects jump too far between frames for the matcher to associate them — so
+you budget FPS for the *tracker*, not just the detector, back in section 03.
 
-## CCTV gotchas
-
-- **Occlusion** → ID switches → wrong counts/dwell. Mitigate: ByteTrack, ReID,
-  Kalman gap-bridging, K-of-N confirmation downstream (§12).
-- **Crowd density** — past a point, tracking is hopeless → switch to density
-  estimation + Little's Law (§11).
-- **Frame rate** — too-low FPS breaks the constant-velocity assumption (objects jump
-  too far between frames) → association fails. Budget FPS for tracking, not just
-  detection (§03).
-
-## Quick self-check
-
-- What are SORT's two algorithms and what does each do? *(Kalman = motion predict/
-  smooth; Hungarian = optimal detection↔track assignment)*
-- ByteTrack's core trick? *(also associate low-confidence detections → recover IDs
-  through occlusion, cheaply)*
-- When do you add ReID, and when skip it? *(add for occlusion/crossing/multi-camera;
-  skip in sparse scenes to save edge compute)*
-- Which metric best reflects identity consistency for analytics? *(IDF1; watch ID
-  switches)*
+**Self-check.** What are SORT's two algorithms, and what does each do? *(a Kalman filter for
+motion prediction and smoothing, and the Hungarian algorithm for optimal detection-to-track
+assignment.)* What's ByteTrack's core trick? *(also match low-confidence detections, which
+recovers identities through occlusion, cheaply.)* When do you add ReID, and when skip it?
+*(add it for occlusion, crossing paths, and multi-camera identity; skip it in sparse scenes to
+save edge compute.)* And which metric best reflects identity consistency for analytics?
+*(IDF1 — and keep an eye on ID switches.)*

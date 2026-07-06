@@ -1,71 +1,100 @@
-# The Operational Event Catalog
+# The Operational Event Catalogue
 
-**TL;DR:** These are the events every video-intelligence product ships. Each is
-**detection + tracking + geometry + a temporal condition** — not a special model.
-Know how each is computed and its main false-alarm trap.
+**TL;DR:** These are the events every video-intelligence product ends up shipping.
+The reassuring secret is that almost none of them need a special model — each one is
+the *same* small recipe with different parameters: take detections, give them stable
+identities, place them on the floor, ask a geometric question and a timing question,
+and confirm before you shout. Learn the recipe once and the whole catalogue opens up.
 
-## The standard catalog
+## The recipe that underlies everything
 
-| Event | How it's computed | Main false-alarm trap |
-|---|---|---|
-| **Intrusion / zone breach** | foot point enters a restricted ROI polygon | shadows/reflections; staff who are allowed in |
-| **Loitering** | track dwell in a zone > T seconds | someone waiting legitimately; ID switch resets the timer |
-| **Abandoned / removed object** | static object appears (or a fixture disappears) and persists > T | bags briefly set down; lighting change; a parked cart |
-| **Crowd surge / overcrowding** | zone occupancy or density > threshold for K sec | brief clustering; miscalibrated density |
-| **Line-crossing / wrong-direction** | track crosses tripwire in the disallowed direction | tracking jitter near the line |
-| **Tailgating** | 2 tracks cross an access line within Δt of one badge event | two people legitimately close |
-| **Fall / person-down** | box aspect ratio flips (tall→wide) + stays low + low motion | sitting/crouching; occlusion |
-| **Speed anomaly** | ground-plane speed > (running) or ≈0 (collapse) | tracker velocity noise |
-| **PPE / compliance** | attribute classifier on the person crop (helmet/vest present?) | small/occluded gear; domain shift |
-
-## The recurring recipe
+Before the list, here's the pattern they all share, because seeing it once means you
+never have to memorise the events individually:
 
 ```
-detections ─► track (stable IDs) ─► project foot point to floor
-          ─► geometric test (in zone? crossed line? which direction?)
-          ─► temporal test (for > T sec? K-of-N frames? persisted?)
-          ─► CONFIRM (debounce) ─► emit event once, with evidence
+detections → track (stable IDs) → project feet onto the floor
+          → geometric test  (in the zone? crossed the line? which way?)
+          → temporal test   (for how long? persisting? K of the last N frames?)
+          → confirm (debounce) → emit ONE event, with evidence attached
 ```
 
-Two temporal ideas do most of the work:
+Two ideas in that recipe do most of the real work. The first is a **duration
+threshold**: a real event almost always has a *time* attached — loitering means "in
+the zone for more than thirty seconds," an abandoned object means "static for more
+than a minute" — and simply requiring a duration kills the vast majority of flicker.
+The second is **K-of-N confirmation**: require the condition to hold in, say, eight
+of the last ten frames before you believe it, so a single noisy frame can never fire
+an alert on its own. Keep those two in mind and every entry below is a variation on a
+theme.
 
-- **Dwell threshold** — the event needs a *duration* (loitering > 30 s, object
-  static > 60 s), not a single frame. This alone kills most flicker.
-- **K-of-N confirmation** — require the condition true in K of the last N frames
-  before firing, so one noisy frame can't trigger an alert.
+## The catalogue
 
-## Abandoned object — the classic deep-dive
+**Intrusion, or zone breach**, is the simplest: a foot point enters a polygon it
+shouldn't. The thing that trips it up is shadows and reflections reading as people,
+and staff who are actually allowed in.
 
-A favorite interview scenario. Approach:
+**Loitering** is intrusion plus a clock: a track that dwells in a zone longer than a
+threshold. Its classic failure is subtle — when a person's ID switches, the dwell
+timer resets, and a genuine loiterer is quietly forgiven.
 
-1. **Background/static detection** — a region that was moving/empty becomes static
-   and stays static (dual-background or a "static-foreground" model), OR a detected
-   object (bag) whose track goes stationary.
-2. **Ownership / separation** — was it left by a person who then walked away? Track
-   the owner; fire only if owner-distance > D for > T (distinguishes "set down for a
-   second" from "abandoned").
-3. **Persistence** — must remain > T seconds to fire.
-4. **Evidence** — attach the frame + track history so a human can adjudicate.
+**Abandoned or removed object** is the interesting one, so it gets its own section
+below. The short version: something becomes static and stays static, or a fixture
+that should be there vanishes.
 
-The interesting part is #2 — naive "static blob" detectors alarm on every parked
-trolley. Owner separation is what makes it usable.
+**Crowd surge or overcrowding** reuses the occupancy signal from section 11 — count
+in a zone, or density, above a threshold, held for a few seconds. It false-fires on
+brief clustering and on a miscalibrated density estimate.
 
-## Why these beat "just train a model"
+**Line-crossing and wrong-direction** watch a track cross a tripwire the wrong way
+(section 11's flow logic), and mostly get fooled by tracking jitter right at the line.
 
-- **Explainable & auditable** — "fired because track 42 was in zone B for 47 s." In
-  a **secure/government Abu Dhabi context**, an auditable rule beats a black box.
-- **No labeled event data needed** — you can't collect 10k real intrusions.
-- **Tunable per site** — thresholds are knobs an integrator sets on-site.
+**Tailgating** pairs vision with access control: two tracks cross an access line
+within a moment of a single badge swipe. Two people who are simply walking close
+together are the false-alarm trap.
 
-The model's job is only the primitives (boxes, classes, IDs, attributes). The
-*event* is your logic layer on top — exactly the JD's "designing complex logic
-layers on model detections."
+**Fall or person-down** watches a person's box flip from tall to wide and stay low
+with little motion — with the obvious confusion being someone who merely sat down or
+crouched.
 
-## Quick self-check
+**Speed anomalies** flag ground-plane speed that's too high (running where nobody
+should) or near zero (a collapse), and lean entirely on the speed being measured on
+the floor, not in pixels.
 
-- Loitering fires falsely every time someone's ID switches. Fix? *(persist dwell
-  across short gaps / re-associate via ReID; don't reset timer on a 1-frame drop)*
-- How do you stop abandoned-object alerting on every parked cart? *(owner-separation
-  test + persistence, not just static-blob)*
-- Why prefer rule-based events over a learned event classifier here? *(explainable,
-  auditable, tunable, and no labeled event data exists)*
+**PPE or compliance** checks run a small attribute classifier on the person's crop —
+is the helmet or vest present? — and struggle when the gear is small, occluded, or
+from a site the model hasn't seen.
+
+## Abandoned object, in depth
+
+This is a favourite interview scenario because the naive version is a trap. If you
+just flag "a static blob appeared," you'll alarm on every parked trolley and every
+bag someone set down for ten seconds. The good solution has four moving parts. You
+detect that a region which was moving or empty has become static and *stayed* static.
+You establish **ownership** — was it left by a person who then walked away? — by
+tracking the owner and only firing once the owner has been more than some distance
+away for more than some time; this single step is what separates "abandoned" from
+"set down for a moment." You require **persistence**, so it has to remain for a real
+duration. And you attach **evidence** — the keyframe and the track history — so a
+human can adjudicate in seconds. The whole art of this event is step two; everything
+else is bookkeeping.
+
+## Why rules beat "just train a model" here
+
+It's tempting to imagine training an end-to-end "intrusion classifier," but rules win
+in this domain for three concrete reasons. They're **explainable and auditable** —
+you can say "this fired because track 42 stood in zone B for forty-seven seconds,"
+which, in a secure government deployment in Abu Dhabi, beats a black box that can't
+justify itself. They need **no labelled event data**, which is fortunate because you
+can't go collect ten thousand real intrusions to train on. And they're **tunable per
+site**, so an integrator can turn the thresholds up or down on the day. The model's
+job is only to supply the primitives — boxes, classes, IDs, attributes — and *your*
+logic on top is the event. That logic layer is exactly what the role means by
+"designing complex logic layers on model detections."
+
+**Self-check.** Loitering keeps forgiving a genuine loiterer whenever their ID
+switches — how do you fix it? *(carry the dwell across short gaps, re-associate the
+track with ReID, and don't reset the timer on a one-frame drop.)* How do you stop the
+abandoned-object rule from alarming on every parked trolley? *(add the
+owner-separation test and require persistence — don't fire on a static blob alone.)*
+And why prefer rules over a learned event classifier here? *(they're explainable and
+auditable, tunable on site, and no labelled event data exists to train on.)*

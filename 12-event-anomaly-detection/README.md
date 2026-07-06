@@ -1,41 +1,48 @@
 # 12 — Operational Event & Anomaly Detection
 
-**TL;DR:** The JD's third pillar: *operational event detection and anomaly
-identification*. Two distinct problems. **Events** are things you can *define*
-(loitering, intrusion, abandoned object, crowd surge) — rule/logic on detections.
-**Anomalies** are things you *can't* enumerate ("something unusual") — you learn
-"normal" and flag deviation. Know the standard event catalog, the anomaly method
-families, and — most important — how you keep false alarms low enough that anyone
-trusts the system.
+**TL;DR:** The job asks for *operational event detection and anomaly
+identification*, and the single most important thing to get straight is that those
+are two different problems. An **event** is something you can describe in words
+before it happens — loitering, an intrusion, an abandoned bag, a crowd surge — so you
+can write a rule for it. An **anomaly** is the thing you *couldn't* list in advance
+— "something's off here" — so instead of describing it you learn what normal looks
+like and flag whatever deviates. Almost every real brief is mostly the first kind
+with a little of the second, and knowing to say that is half the interview.
 
-Files:
-1. [operational-events.md](operational-events.md) — the standard event catalog and how each is computed
-2. [anomaly-methods.md](anomaly-methods.md) — supervised vs unsupervised, optical flow, autoencoders, prediction error
-3. [alerting-and-thresholds.md](alerting-and-thresholds.md) — debounce, confirmation, false-alarm control, alert schemas
+The three pages build the argument in order: first the catalogue of definable events
+and how each is actually computed, then the family of methods for the genuinely
+unpredictable anomalies, and finally — the part that decides whether the whole system
+succeeds — how you keep the alerts trustworthy instead of drowning operators in false
+alarms.
 
-## Events vs anomalies (get this distinction crisp)
+Files, in reading order:
+1. [operational-events.md](operational-events.md) — the standard event catalogue, and the common recipe underneath all of it
+2. [anomaly-methods.md](anomaly-methods.md) — learning "normal" and scoring deviation, from simple statistics to autoencoders
+3. [alerting-and-thresholds.md](alerting-and-thresholds.md) — the layer that makes anyone trust the system
+
+## The distinction, drawn once
 
 ```
- EVENT (known, definable)            ANOMALY (unknown, "not normal")
- "person in restricted zone >30s"    "motion pattern never seen here before"
-        │                                    │
-        ▼                                    ▼
- deterministic logic on               learn a model of normal, score
- detections/tracks + geometry         deviation (unsupervised/self-supervised)
- → high precision, explainable        → catches the unforeseen, harder to tune
+ EVENT — known, describable                 ANOMALY — unknown, "not normal"
+ "person in restricted zone for 30s"        "a motion pattern never seen here"
+        │                                            │
+        ▼                                            ▼
+ write deterministic logic on tracks         learn a model of normal, then
+ + geometry → precise, explainable           score how far this deviates
 ```
 
-Most production "anomaly detection" briefs are actually **80% defined events + 20%
-true anomaly**. Say so: you'd ship the high-precision rule-based events first
-(immediate value, explainable), and layer statistical/learned anomaly detection for
-the long tail. That's the pragmatic, senior answer.
+Why lead with this? Because when someone hands you an "anomaly detection" project, it
+usually turns out to be eighty percent definable events plus a long tail of true
+surprises. The senior move is to say so, and to sequence the work accordingly: ship
+the high-precision, explainable rule-based events first — they deliver value on day
+one and a human can audit exactly why each fired — and layer statistical or learned
+anomaly detection on top for the open-ended remainder.
 
-## The framing line (memorize)
-
-*"I separate definable events from true anomalies. Events are geometry-plus-temporal
-logic on tracks — high precision, auditable, and what a client actually asks for
-day one. Anomaly detection is a learned model of 'normal' for the open-ended rest.
-Either way the hard part isn't detecting once — it's the false-alarm rate, so I
-design confirmation and debouncing in from the start."*
+**The framing line to memorize:** *"I separate definable events from true anomalies.
+Events are geometry-and-timing logic on tracks — precise, auditable, and what a
+client actually asks for first. Anomaly detection is a learned model of 'normal' for
+the open-ended rest. Either way, the hard part isn't detecting something once — it's
+keeping the false-alarm rate low enough that people trust it, so I design the
+confirmation logic in from the start."*
 
 → Start: **[operational-events.md](operational-events.md)**
