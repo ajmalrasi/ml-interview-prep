@@ -5,10 +5,10 @@ Two self-contained interview-prep tracks. Each is a static site — edit the
 
 ## Tracks
 
-- **[koireader-interview-prep/](koireader-interview-prep/)** — AI Data Scientist
-  (video intelligence). CCTV-based live video: GStreamer/DeepStream, low-latency
-  inference on NVIDIA edge, computer vision, crowd/queue analytics, event & anomaly
-  detection, secure on-prem deployment.
+- **[computer-vision-prep/](computer-vision-prep/)** — Computer Vision / video
+  intelligence. CCTV-based live video: GStreamer/DeepStream, low-latency inference
+  on NVIDIA edge, computer vision, crowd/queue analytics, event & anomaly detection,
+  secure on-prem deployment.
 
 - **[ml-engineer-prep/](ml-engineer-prep/)** — AI / ML Engineer. The full ML
   lifecycle: data pipelines, model development, experimentation, MLOps & serving,
@@ -17,7 +17,7 @@ Two self-contained interview-prep tracks. Each is a static site — edit the
 ## Build a track
 
 ```
-cd ml-engineer-prep        # or koireader-interview-prep
+cd ml-engineer-prep        # or computer-vision-prep
 node build.js              # regenerates index.html
 open index.html            # works offline by double-click
 ```

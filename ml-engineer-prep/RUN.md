@@ -24,8 +24,8 @@ node build.js        # regenerates index.html
 
 ## Run both prep sites side by side
 ```bash
-# terminal 1 — CV / AI Data Scientist site
-cd ../koireader-interview-prep && python3 -m http.server 9000
+# terminal 1 — Computer Vision site
+cd ../computer-vision-prep && python3 -m http.server 9000
 # terminal 2 — this ML/Cloud Engineer site
 cd ml-engineer-prep && python3 -m http.server 9002
 ```
