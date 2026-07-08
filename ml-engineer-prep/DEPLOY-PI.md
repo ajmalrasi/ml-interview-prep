@@ -1,52 +1,40 @@
 # Deploy the ML Eng Prep site on a Raspberry Pi (port 9002)
 
-This is a **self-contained static site** — after `node build.js`, everything lives in
-`index.html`. Deploying = copy the folder to the Pi and keep a server running on 9002.
+This is a **self-contained static site** — after `node build.js`, everything the browser
+needs lives in `index.html`. It ships as one track inside the **monorepo**
+`github.com/ajmalrasi/ml-interview-prep` (sibling: `computer-vision-prep/`), and the Pi
+**deploys by `git pull`**, not rsync.
 
 ---
 
-## Copy-paste agent prompt
+## Deployed instance
 
-> Deploy my static site to my Raspberry Pi and keep it running on port 9002.
->
-> **Facts**
-> - Pi host: `192.168.3.20`, SSH user: `pi` (change if different).
-> - Site source is the `ml-engineer-prep/` folder. It's a static site: `index.html`
->   is fully self-contained (built from Markdown via `node build.js`).
-> - Target URL after deploy: `http://192.168.3.20:9002/`
->
-> **Do this**
-> 1. On my machine, run `node build.js` in `ml-engineer-prep/` to regenerate
->    `index.html`, then `rsync` the folder to the Pi at `/home/pi/ml-engineer-prep`.
-> 2. On the Pi, set up a persistent server on port 9002 that survives reboots and
->    crashes. Prefer a `systemd` service running `python3 -m http.server 9002` from
->    the site directory (no extra dependencies). Enable and start it.
-> 3. Verify `curl -sI http://192.168.3.20:9002/` returns `200 OK` and that the page
->    loads after a reboot.
-> 4. Report the service name and how to redeploy after I edit content.
+Running on **http://192.168.3.20:9002** — served by the `ml-prep` systemd service
+(auto-starts on boot). User: `ajmalrasi`, path:
+`/home/ajmalrasi/ml-interview-prep/ml-engineer-prep`.
+
+The Pi holds one clone of the monorepo at `/home/ajmalrasi/ml-interview-prep`. The Pi has
+**no Node and doesn't need it** — `index.html` is committed, so it serves the built file
+directly.
 
 ---
 
-## Manual steps
+## First-time setup on the Pi
 
-### 1. Build + copy (run on your machine)
 ```bash
-cd ml-engineer-prep
-node build.js                       # regenerate index.html from the .md files
-rsync -av --delete ./ pi@192.168.3.20:/home/pi/ml-engineer-prep/
-```
+# clone the monorepo once (HTTPS — public repo, no key needed)
+git clone https://github.com/ajmalrasi/ml-interview-prep.git /home/ajmalrasi/ml-interview-prep
 
-### 2. Persistent server via systemd (run on the Pi)
-```bash
-sudo tee /etc/systemd/system/mlprep.service >/dev/null <<'UNIT'
+# persistent server on 9002 (survives reboot + crash)
+sudo tee /etc/systemd/system/ml-prep.service >/dev/null <<'UNIT'
 [Unit]
-Description=ML Eng Prep static site (port 9002)
+Description=ML/Cloud Engineer study website
 After=network.target
 
 [Service]
-User=pi
-WorkingDirectory=/home/pi/ml-engineer-prep
-ExecStart=/usr/bin/python3 -m http.server 9002 --bind 0.0.0.0
+User=ajmalrasi
+WorkingDirectory=/home/ajmalrasi/ml-interview-prep/ml-engineer-prep
+ExecStart=/usr/bin/python3 -m http.server 9002
 Restart=always
 
 [Install]
@@ -54,34 +42,38 @@ WantedBy=multi-user.target
 UNIT
 
 sudo systemctl daemon-reload
-sudo systemctl enable --now mlprep.service
-sudo systemctl status mlprep.service --no-pager
+sudo systemctl enable --now ml-prep.service
+sudo systemctl status ml-prep.service --no-pager
 ```
 
-Now `http://192.168.3.20:9002/` stays up across reboots and crashes.
+---
 
-### 3. Verify
+## Redeploy after editing content
+
+Build on your laptop (the Pi has no Node), push, then pull on the Pi:
+
+```bash
+# on your laptop, in ml-interview-prep/ml-engineer-prep
+node build.js                                   # regenerate index.html from the .md files
+git add -A && git commit -m "…" && git push
+ssh rpi 'cd ml-interview-prep && git pull'       # static re-serve, no restart
+```
+
+No Pi restart needed — the static file is re-served immediately. Restart only if you change
+the systemd unit itself: `sudo systemctl restart ml-prep.service`.
+
+---
+
+## Verify
 ```bash
 curl -sI http://192.168.3.20:9002/ | head -1     # expect: HTTP/1.0 200 OK
 ```
 
 ---
 
-## Redeploy after editing content
-Edit any `.md`, then from your machine:
-```bash
-cd ml-engineer-prep && node build.js
-rsync -av --delete ./ pi@192.168.3.20:/home/pi/ml-engineer-prep/
-```
-No Pi restart needed — the static file is re-served immediately. (Restart only if you
-ever change the systemd unit: `sudo systemctl restart mlprep.service`.)
-
----
-
 ## Notes
-- **No Node needed on the Pi** — `node build.js` runs on your machine; the Pi only
-  serves the built `index.html`. Only Python 3 (preinstalled on Raspberry Pi OS) is
-  required there.
-- **Nginx alternative** (if you want gzip / port 80 / TLS): point a server block at
-  `root /home/pi/ml-engineer-prep; index index.html;` and drop the systemd unit.
-- **Firewall**: if `ufw` is on, `sudo ufw allow 9002/tcp`.
+- **No Node on the Pi** — `node build.js` runs on your machine; the Pi only serves the
+  committed `index.html`. Only Python 3 (preinstalled on Raspberry Pi OS) is required.
+- **Ports already in use on this Pi:** `koi-prep` :9000, `docsmind` :9001, `ml-prep` :9002,
+  `koi-jupyter` :8888 — don't duplicate. Check with `ss -ltnp` before adding a unit.
+- **Firewall**: if `ufw` is on, `sudo ufw allow 9002/tcp`. LAN only — don't expose publicly.

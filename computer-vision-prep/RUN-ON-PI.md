@@ -14,16 +14,22 @@ local files over `file://` for security, so opening `index.html` directly shows 
 ## Deployed instance
 
 Running on **http://192.168.3.20:9000** — served by the `koi-prep` systemd service
-(auto-starts on boot). User: `ajmalrasi`, path: `/home/ajmalrasi/koireader-interview-prep`.
+(auto-starts on boot). User: `ajmalrasi`, path:
+`/home/ajmalrasi/ml-interview-prep/computer-vision-prep`.
 
-Source: https://github.com/ajmalrasi/koireader-interview-prep
+This track lives in the **monorepo** `github.com/ajmalrasi/ml-interview-prep` (alongside
+`ml-engineer-prep/`). The Pi holds one clone at `/home/ajmalrasi/ml-interview-prep` and
+**deploys by `git pull`** — the committed `index.html` is served directly, so the Pi needs
+no Node. See [Editing / redeploying](#editing--redeploying) below.
+
+Source: https://github.com/ajmalrasi/ml-interview-prep
 
 ---
 
 ## Option 1 — Python (already on every Pi), 30 seconds
 
 ```bash
-cd /path/to/koireader-interview-prep
+cd /home/ajmalrasi/ml-interview-prep/computer-vision-prep
 python3 -m http.server 9000
 ```
 
@@ -41,7 +47,7 @@ Description=Video Intelligence Interview Prep site
 After=network.target
 
 [Service]
-WorkingDirectory=/home/ajmalrasi/koireader-interview-prep
+WorkingDirectory=/home/ajmalrasi/ml-interview-prep/computer-vision-prep
 ExecStart=/usr/bin/python3 -m http.server 9000
 Restart=always
 User=ajmalrasi
@@ -64,7 +70,7 @@ koi-prep`. Logs: `journalctl -u koi-prep -f`.
 ```nginx
 server {
     listen 80;
-    root /home/pi/koireader-interview-prep;
+    root /home/ajmalrasi/ml-interview-prep/computer-vision-prep;
     index index.html;
     location / { try_files $uri $uri/ =404; }
 }
@@ -74,21 +80,30 @@ Drop that in `/etc/nginx/sites-available/koi-prep`, symlink to `sites-enabled`,
 `sudo nginx -t && sudo systemctl reload nginx`. Then browse to the Pi's IP on port
 80.
 
-## Copying the folder to the Pi
+## First-time setup on the Pi
 
-From your computer:
-
-```bash
-scp -r koireader-interview-prep pi@<pi-ip>:/home/pi/
-```
-
-Or clone from GitHub:
+Clone the monorepo once (HTTPS — the repo is public, no key needed):
 
 ```bash
-git clone git@github.com:ajmalrasi/koireader-interview-prep.git
+git clone https://github.com/ajmalrasi/ml-interview-prep.git /home/ajmalrasi/ml-interview-prep
 ```
 
-Or put it on a USB stick — the whole site is plain text, a few hundred KB.
+The `koi-prep` service already points its `WorkingDirectory` at
+`ml-interview-prep/computer-vision-prep`, so nothing else is needed.
+
+## Editing / redeploying
+
+The Pi has **no Node**, and it doesn't need one — `index.html` is committed. Build on your
+laptop, push, then pull on the Pi:
+
+```bash
+# on your laptop, in ml-interview-prep/computer-vision-prep
+node build.js                                  # regenerates index.html
+git add -A && git commit -m "…" && git push
+ssh rpi 'cd ml-interview-prep && git pull'      # static re-serve, no restart
+```
+
+Only `daemon-reload` + `systemctl restart koi-prep` if you change the `.service` file itself.
 
 ## Notes
 

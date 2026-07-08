@@ -11,10 +11,14 @@ Pi as boot services. Idempotent — re-run any time to ship updates. Ignore the 
 
 ## Target
 
+This track lives in the **monorepo** `ml-interview-prep` (sibling: `ml-engineer-prep/`,
+served separately by `ml-prep.service` :9002 — don't touch it here).
+
 | | |
 |---|---|
-| Repo | `https://github.com/ajmalrasi/koireader-interview-prep` (**public** — pull over HTTPS) |
-| Directory | `/home/ajmalrasi/koireader-interview-prep` |
+| Repo | `https://github.com/ajmalrasi/ml-interview-prep` (**public** — pull over HTTPS) |
+| Repo root (git ops) | `/home/ajmalrasi/ml-interview-prep` |
+| This track (site, venv, notebooks) | `/home/ajmalrasi/ml-interview-prep/computer-vision-prep` |
 | `koi-prep` | static website, port **9000** (no build needed to serve) |
 | `koi-jupyter` | JupyterLab, port **8888**, fixed token **`koireader`** (needs a Python venv) |
 
@@ -22,7 +26,7 @@ Pi as boot services. Idempotent — re-run any time to ship updates. Ignore the 
 
 - **Pi pulls over HTTPS, not SSH.** The Pi has no GitHub key. If `origin` is
   `git@github.com:...` you'll get `Host key verification failed`. Fix once:
-  `git remote set-url origin https://github.com/ajmalrasi/koireader-interview-prep.git`
+  `git remote set-url origin https://github.com/ajmalrasi/ml-interview-prep.git`
 - **The Pi's checkout may be dirty/divergent** (a stale local commit + old untracked
   source files) and `git pull --ff-only` will abort. Back up, then force-sync:
   `git reset --hard origin/main && git clean -fd` (respects `.gitignore`, so `.venv`
@@ -40,17 +44,20 @@ Pi as boot services. Idempotent — re-run any time to ship updates. Ignore the 
 
 ## Steps
 
-**1. Code** — clone if missing, else sync to the pushed code:
+**1. Code** — clone the monorepo if missing, else sync to the pushed code (git ops run at
+the **repo root**):
 ```bash
-cd /home/ajmalrasi/koireader-interview-prep
-git remote set-url origin https://github.com/ajmalrasi/koireader-interview-prep.git
+[ -d /home/ajmalrasi/ml-interview-prep ] || \
+  git clone https://github.com/ajmalrasi/ml-interview-prep.git /home/ajmalrasi/ml-interview-prep
+cd /home/ajmalrasi/ml-interview-prep
+git remote set-url origin https://github.com/ajmalrasi/ml-interview-prep.git
 git fetch origin && git reset --hard origin/main && git clean -fd
 git log -1 --oneline
 ```
 
-**2. Venv + deps + notebooks:**
+**2. Venv + deps + notebooks** (inside the track subfolder):
 ```bash
-cd /home/ajmalrasi/koireader-interview-prep
+cd /home/ajmalrasi/ml-interview-prep/computer-vision-prep
 python3 -c "import venv" || sudo apt-get update && sudo apt-get install -y python3-venv
 [ -d .venv ] || python3 -m venv .venv
 ./.venv/bin/pip install --upgrade pip
@@ -65,7 +72,7 @@ Description=KoiReader study website
 After=network.target
 
 [Service]
-WorkingDirectory=/home/ajmalrasi/koireader-interview-prep
+WorkingDirectory=/home/ajmalrasi/ml-interview-prep/computer-vision-prep
 ExecStart=/usr/bin/python3 -m http.server 9000
 Restart=always
 User=ajmalrasi
@@ -82,11 +89,11 @@ Description=KoiReader live Jupyter notebooks
 After=network.target
 
 [Service]
-WorkingDirectory=/home/ajmalrasi/koireader-interview-prep
-ExecStart=/home/ajmalrasi/koireader-interview-prep/.venv/bin/jupyter lab \
+WorkingDirectory=/home/ajmalrasi/ml-interview-prep/computer-vision-prep
+ExecStart=/home/ajmalrasi/ml-interview-prep/computer-vision-prep/.venv/bin/jupyter lab \
   --no-browser --ip=0.0.0.0 --port=8888 \
   --IdentityProvider.token=koireader \
-  --ServerApp.root_dir=/home/ajmalrasi/koireader-interview-prep/notebooks
+  --ServerApp.root_dir=/home/ajmalrasi/ml-interview-prep/computer-vision-prep/notebooks
 Restart=always
 User=ajmalrasi
 
@@ -123,11 +130,13 @@ Then print the two URLs: `http://<ip>:9000` and
 
 ## Update later (one shot)
 ```bash
-cd /home/ajmalrasi/koireader-interview-prep \
+cd /home/ajmalrasi/ml-interview-prep \
   && git fetch origin && git reset --hard origin/main && git clean -fd \
-  && ./.venv/bin/python build_notebooks.py \
+  && ./computer-vision-prep/.venv/bin/python computer-vision-prep/build_notebooks.py \
   && sudo systemctl restart koi-prep koi-jupyter
 ```
+> Static site updates need only `git pull` (no `build_notebooks.py`, no restart) — the
+> notebook rebuild + restart above is only needed when notebook content changes.
 
 ---
 
