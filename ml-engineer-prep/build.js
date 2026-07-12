@@ -86,6 +86,7 @@ const SITE = [
   { label:"11 · Drill Bank", dir:"11-drill-bank", items:[
     { file:"README.md", title:"Overview" },
     { file:"drill-bank.md", title:"Rapid Q&A", quiz:true },
+    { file:"decision-tradeoffs.md", title:"Decision Tradeoffs — Why X over Y" },
     { file:"cheat-sheet.md", title:"One-Page Cheat Sheet" },
   ]},
 ];
