@@ -24,6 +24,14 @@ train: bad       train: good       train: great
 test:  bad       test:  good       test:  bad
 ```
 
+**Try it.** Drag the model complexity below. Degree 1–2 underfits (both errors high);
+push it toward 10–12 and the curve wriggles through every training point while test
+error blows up — that's variance. The sweet spot is where test error bottoms out.
+
+```rawhtml
+<div id="bv-widget" class="widget-host"></div>
+```
+
 ## The knobs that fight overfitting
 
 This is a classic "how would you fix overfitting?" question — have the list ready:

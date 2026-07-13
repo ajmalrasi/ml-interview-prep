@@ -13,6 +13,15 @@ system handles (what your bill reflects). Some tricks (batching) boost throughpu
 *add* latency, so you optimize for the one the product needs — usually a p99 latency
 target at the lowest cost.
 
+**See the tension.** Increase batch size below: throughput (solid line) climbs as the
+GPU is better utilized, but latency-per-batch (dashed) rises too. Small batches are
+latency-optimal; large batches are throughput-optimal. Dynamic batching just picks a
+point on this curve that fits your p99 budget.
+
+```rawhtml
+<div id="batch-widget" class="widget-host"></div>
+```
+
 ## The main levers
 
 - **Batching** — instead of running the model once per request, group several requests and

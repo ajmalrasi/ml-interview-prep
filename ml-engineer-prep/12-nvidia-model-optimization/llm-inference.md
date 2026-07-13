@@ -30,6 +30,15 @@ memory. Managing it *is* LLM-serving optimization:
 - **GQA / MQA** (grouped/multi-query attention) — multiple query heads share one K/V head,
   shrinking the cache several-fold. A standard modern-architecture answer.
 
+**Feel the memory wall.** Estimate serving VRAM below. Start at 7B / FP16 and weights
+dominate — so quantizing them is the win. Now crank context length and batch: the KV
+cache overtakes the weights and the total explodes past a single 80 GB GPU. That crossover
+is exactly why paged attention, KV quantization, and GQA exist.
+
+```rawhtml
+<div id="llmmem-widget" class="widget-host"></div>
+```
+
 ## FlashAttention (the kernel-level win)
 
 Naive attention materializes the full **N×N** score matrix in HBM — O(N²) memory and lots of

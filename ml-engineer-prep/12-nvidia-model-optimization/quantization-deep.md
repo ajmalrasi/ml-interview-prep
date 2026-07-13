@@ -21,6 +21,15 @@ Quantization is an **affine map** between a real value `r` and an integer `q`:
 That's the whole idea. Two choices define a quantizer: **how wide a range** you cover
 (calibration) and **whether zero-point is forced to 0** (symmetric vs asymmetric).
 
+**Play with the mapping.** Set a tensor range, pick a value, and watch the scale,
+zero-point, the int8 code it snaps to, and the rounding error. Notice how a *wider*
+range makes the step (scale) bigger, so every value gets a coarser approximation — and
+how symmetric wastes half a code on the unused sign when the data is all-positive.
+
+```rawhtml
+<div id="quant-widget" class="widget-host"></div>
+```
+
 ## Symmetric vs asymmetric
 
 - **Symmetric:** `zero_point = 0`, range is `[−α, α]`, `scale = α / 127`. Real 0 maps to
