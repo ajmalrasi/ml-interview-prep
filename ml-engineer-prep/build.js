@@ -100,6 +100,15 @@ const SITE = [
     { file:"experiment-walkthrough.md", title:"Experiment Walkthrough (Your Project)" },
     { file:"interview-qa.md", title:"Interview Q&A — Rapid Fire", quiz:true },
   ]},
+  { label:"13 · LLM & VLM Optimization", dir:"13-llm-vlm-optimization", items:[
+    { file:"README.md", title:"Overview" },
+    { file:"cnn-to-llm.md", title:"CNN → LLM/VLM: What Transfers" },
+    { file:"llm-quantization.md", title:"LLM Quantization" },
+    { file:"llm-opt-in-practice.md", title:"The Loop in Practice" },
+    { file:"vlm-optimization.md", title:"VLM Optimization" },
+    { file:"experiment-redo.md", title:"Experiment Redo (Your Project as LLM/VLM)" },
+    { file:"interview-qa.md", title:"Interview Q&A — LLM & VLM", quiz:true },
+  ]},
 ];
 
 /* ----------------------------- markdown parser ----------------------------- */

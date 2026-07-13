@@ -20,6 +20,7 @@ const SECTIONS = {
   "10 · ML System Design":    { icon:"🏗️", accent:"#34ad7c", tag:"Design a recommender, feature pipeline, ML platform" },
   "11 · Drill Bank":          { icon:"🎯", accent:"#cc5fab", tag:"Rapid Q&A across every topic" },
   "12 · NVIDIA Model Optimization":{ icon:"🟩", accent:"#76b900", tag:"Quantization numerics, TensorRT, GPU profiling, LLM inference" },
+  "13 · LLM & VLM Optimization":{ icon:"🖼️", accent:"#2aa7cf", tag:"Weight-only INT4, FP8, KV-cache, VLM token reduction" },
 };
 
 module.exports = { D, DIAGRAMS, SECTIONS, fig };
