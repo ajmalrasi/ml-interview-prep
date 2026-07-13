@@ -12,15 +12,20 @@ section maps your CNN skills onto that world.
 The **method / format / engine** mental model from [§12](../12-nvidia-model-optimization/README.md)
 carries over unchanged. What changes is *which choices win*:
 
-```
-  CNN (your project)                 LLM / VLM
-  ─────────────────────              ─────────────────────
-  INT8, compute-bound          →     memory-bound decode → weight-only INT4 shines
-  PTQ + QAT both practical     →     PTQ/weight-only; QAT too costly (QLoRA instead)
-  clean INT8 activations       →     activation outliers → need SmoothQuant/AWQ
-  top-1 accuracy               →     perplexity + task benchmarks (MMLU…)
-  fixed input size             →     variable seq length + a KV cache to manage
-  TensorRT engine              →     TensorRT-LLM / vLLM / llama.cpp
+```rawhtml
+<div class="diagram">
+  <table class="maptable">
+    <thead><tr><th>CNN (your project)</th><th class="marw"></th><th>LLM / VLM — which choice wins</th></tr></thead>
+    <tbody>
+      <tr><td class="mfrom">INT8, compute-bound</td><td class="marw"></td><td class="mto">memory-bound decode → weight-only INT4 shines</td></tr>
+      <tr><td class="mfrom">PTQ + QAT both practical</td><td class="marw"></td><td class="mto">PTQ / weight-only; QAT too costly (QLoRA instead)</td></tr>
+      <tr><td class="mfrom">clean INT8 activations</td><td class="marw"></td><td class="mto">activation outliers → need SmoothQuant / AWQ</td></tr>
+      <tr><td class="mfrom">top-1 accuracy</td><td class="marw"></td><td class="mto">perplexity + task benchmarks (MMLU…)</td></tr>
+      <tr><td class="mfrom">fixed input size</td><td class="marw"></td><td class="mto">variable seq length + a KV cache to manage</td></tr>
+      <tr><td class="mfrom">TensorRT engine</td><td class="marw"></td><td class="mto">TensorRT-LLM / vLLM / llama.cpp</td></tr>
+    </tbody>
+  </table>
+</div>
 ```
 
 ## What each page covers

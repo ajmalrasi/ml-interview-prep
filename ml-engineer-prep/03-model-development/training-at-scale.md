@@ -18,10 +18,21 @@ let each compute gradients, then **average the gradients** across GPUs and updat
 copies identically. You've effectively multiplied your batch throughput by N. This is
 how most large models are trained, and it's what tools like PyTorch DDP or Horovod do.
 
-```
-GPU0: model copy + data slice 0 ─┐
-GPU1: model copy + data slice 1 ─┼→ average gradients → sync update
-GPU2: model copy + data slice 2 ─┘
+```rawhtml
+<div class="diagram">
+  <div class="lanes">
+    <div class="lane-stack">
+      <span class="node ghost">GPU 0<span class="nsub">model copy + data slice 0</span></span>
+      <span class="node ghost">GPU 1<span class="nsub">model copy + data slice 1</span></span>
+      <span class="node ghost">GPU 2<span class="nsub">model copy + data slice 2</span></span>
+    </div>
+    <span class="merge-arw"></span>
+    <span class="node soft">average gradients</span>
+    <span class="arw"></span>
+    <span class="node out">sync update</span>
+  </div>
+  <div class="diagram-cap">Each GPU trains on its own slice; gradients are averaged and applied identically to every copy.</div>
+</div>
 ```
 
 The catch is **communication cost**: syncing gradients every step across many GPUs

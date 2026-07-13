@@ -37,13 +37,29 @@ words.
 
 ## The lifecycle, in one picture
 
-```
-        ┌─────────── the loop you own end-to-end ───────────┐
- raw data → PIPELINE → TRAIN → EVALUATE → DEPLOY → MONITOR → (retrain)
-   §2        §2        §3        §4        §5        §6         §6
-                       ▲                                        │
-                       └──────────── drift / new data ──────────┘
-   cross-cutting: §7 cloud & infra · §8 optimization · §9 GenAI · §10 design
+```rawhtml
+<div class="diagram">
+  <div class="loopwrap">
+    <span class="loop-top">the loop you own end-to-end</span>
+    <div class="flow">
+      <span class="node data">raw data</span>
+      <span class="arw"></span>
+      <span class="node">PIPELINE<span class="nsub">§2</span></span>
+      <span class="arw"></span>
+      <span class="node">TRAIN<span class="nsub">§3</span></span>
+      <span class="arw"></span>
+      <span class="node">EVALUATE<span class="nsub">§4</span></span>
+      <span class="arw"></span>
+      <span class="node">DEPLOY<span class="nsub">§5</span></span>
+      <span class="arw"></span>
+      <span class="node">MONITOR<span class="nsub">§6</span></span>
+      <span class="arw"></span>
+      <span class="node out">retrain<span class="nsub">§6</span></span>
+    </div>
+    <span class="loop-back"><span class="lb-arw"></span> drift / new data feeds back into <b>TRAIN</b></span>
+  </div>
+  <div class="flow-foot">Cross-cutting: §7 cloud &amp; infra · §8 optimization · §9 GenAI · §10 design</div>
+</div>
 ```
 
 ## Suggested order

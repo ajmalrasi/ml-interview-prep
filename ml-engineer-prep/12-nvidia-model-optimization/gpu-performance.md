@@ -30,13 +30,28 @@ Achievable performance is:
   perf = min( peak_compute,  memory_bandwidth × arithmetic_intensity )
 ```
 
-```
- FLOP/s │            ______________  ← compute-bound ceiling (peak tensor-core FLOP/s)
-        │           /
-        │          /  ← memory-bound region (slope = bandwidth)
-        │         /
-        └────────/──────────────────▶  arithmetic intensity (FLOP/byte)
-                 ridge point
+```rawhtml
+<div class="diagram">
+  <svg class="plotfig" viewBox="0 0 560 300" preserveAspectRatio="xMidYMid meet" role="img" aria-label="Roofline model">
+    <line class="plot-axis" x1="58" y1="30" x2="58" y2="250"/>
+    <line class="plot-axis" x1="58" y1="250" x2="540" y2="250"/>
+    <!-- memory-bound diagonal (slope = bandwidth) -->
+    <path class="plot-mem" d="M58 250 L255 95"/>
+    <!-- compute-bound ceiling -->
+    <path class="plot-line" d="M255 95 L532 95"/>
+    <!-- ridge point marker -->
+    <line class="plot-dash" x1="255" y1="95" x2="255" y2="250"/>
+    <circle cx="255" cy="95" r="4.5" fill="var(--sec-accent,var(--accent))"/>
+    <text class="plot-txt lead" x="300" y="86">compute-bound ceiling</text>
+    <text class="plot-txt" x="300" y="102">peak tensor-core FLOP/s</text>
+    <text class="plot-txt lead" x="70" y="175" transform="rotate(-32 70 175)">memory-bound</text>
+    <text class="plot-txt" x="72" y="190" transform="rotate(-32 72 190)">slope = bandwidth</text>
+    <text class="plot-txt" x="255" y="268" text-anchor="middle">ridge point</text>
+    <text class="plot-txt lead" x="34" y="40" transform="rotate(-90 34 40)" text-anchor="end">FLOP/s</text>
+    <text class="plot-txt" x="300" y="288" text-anchor="middle">arithmetic intensity (FLOP / byte) →</text>
+  </svg>
+  <div class="flow-foot">Left of the ridge you're starved for <b>bytes</b> (memory-bound); right of it you're saturating the <b>math units</b> (compute-bound). The knee is where they balance.</div>
+</div>
 ```
 
 - **Low intensity → memory-bound.** You're waiting on bytes. Fixes: fuse ops (avoid

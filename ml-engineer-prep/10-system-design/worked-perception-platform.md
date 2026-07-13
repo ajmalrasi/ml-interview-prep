@@ -18,19 +18,20 @@ gravity**: at petabyte scale you move *compute to data*, never data to compute.
 
 ## Walk the planes
 
-```
- EDGE  sensors → local buffer → bulk offload at depot (or ship disks — sneakernet is valid)
-   │
-   ▼  DATA LAYER (source of truth)  ── object store: on-prem Ceph/MinIO + cloud S3/GCS
-   │     content-addressed · immutable · tiered hot/warm/cold · Iceberg/lakeFS versioning
-   │     + catalog DB (index every clip) + feature/label store
-   ▲
- CONTROL PLANE (cloud-hosted, HA)  ── API + orchestrator (Argo/Temporal/Flyte)
-   │     + FEDERATED SCHEDULER (the "cloud or on-prem?" brain) + metadata/lineage DB
-   ▼
- COMPUTE  on-prem K8s/Slurm  ⇄  cloud K8s, joined by ONE scheduler over a private backbone
-   │
-   ▼  Centralized metrics · lineage · model registry · dashboards
+```rawhtml
+<div class="diagram">
+  <div class="vflow">
+    <span class="node">EDGE<span class="nsub">sensors → local buffer → bulk offload at depot (ship disks — sneakernet is valid)</span></span>
+    <span class="varw"></span>
+    <span class="node soft">DATA LAYER — source of truth<span class="nsub">object store (on-prem Ceph/MinIO + cloud S3/GCS) · content-addressed · immutable · tiered hot/warm/cold · Iceberg/lakeFS versioning · catalog DB + feature/label store</span></span>
+    <span class="varw"></span>
+    <span class="node">CONTROL PLANE — cloud-hosted, HA<span class="nsub">API + orchestrator (Argo/Temporal/Flyte) · FEDERATED SCHEDULER (the “cloud or on-prem?” brain) · metadata/lineage DB</span></span>
+    <span class="varw"></span>
+    <span class="node">COMPUTE<span class="nsub">on-prem K8s/Slurm ⇄ cloud K8s — joined by ONE scheduler over a private backbone</span></span>
+    <span class="varw"></span>
+    <span class="node out">Observability<span class="nsub">centralized metrics · lineage · model registry · dashboards</span></span>
+  </div>
+</div>
 ```
 
 ## The five subsystems they asked for

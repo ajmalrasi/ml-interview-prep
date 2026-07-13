@@ -8,11 +8,19 @@ project's "Option A vs Option B," in the official vocabulary.
 
 ## The pipeline
 
-```
-  PyTorch ──torch.onnx.export──▶ ONNX ──TRT Builder──▶ Engine (plan) ──Runtime──▶ inference
-                                          │
-              layer/tensor fusion · kernel (tactic) auto-tuning · precision selection ·
-              memory planning · (calibration if implicit INT8)
+```rawhtml
+<div class="diagram">
+  <div class="flow">
+    <span class="node">PyTorch</span>
+    <span class="arw labeled"><span class="al">torch.onnx.export</span></span>
+    <span class="node">ONNX</span>
+    <span class="arw labeled"><span class="al">TRT Builder</span></span>
+    <span class="node">Engine<span class="nsub">plan file</span></span>
+    <span class="arw labeled"><span class="al">Runtime</span></span>
+    <span class="node out">inference</span>
+  </div>
+  <div class="flow-foot"><b>Builder does the heavy lifting:</b> layer/tensor fusion · kernel (tactic) auto-tuning · precision selection · memory planning · calibration (if implicit INT8).</div>
+</div>
 ```
 
 - **Builder** — the expensive, offline step. It runs the optimizations below and **times

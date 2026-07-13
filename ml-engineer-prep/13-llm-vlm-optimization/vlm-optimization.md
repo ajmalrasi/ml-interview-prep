@@ -8,10 +8,32 @@ strongest bridge page — it uses both halves of your experience.
 
 ## The architecture (know the three stages)
 
-```
-  image ─▶ [Vision Encoder]  ─▶ [Projector] ─▶ image tokens ┐
-                (ViT / CLIP)      (MLP/resampler)            ├─▶ [LLM Decoder] ─▶ text
-  text  ───────────────────────────────────────▶ text tokens ┘
+```rawhtml
+<div class="diagram">
+  <div class="vflow">
+    <div class="flow">
+      <span class="node data">image</span>
+      <span class="arw"></span>
+      <span class="node">Vision Encoder<span class="nsub">ViT / CLIP</span></span>
+      <span class="arw"></span>
+      <span class="node">Projector<span class="nsub">MLP / resampler</span></span>
+      <span class="arw"></span>
+      <span class="node soft">image tokens<span class="nsub">100s–1000s</span></span>
+    </div>
+    <div class="flow">
+      <span class="node data">text</span>
+      <span class="arw"></span>
+      <span class="node soft">text tokens</span>
+    </div>
+    <span class="varw" title="both token streams feed the decoder"></span>
+    <div class="flow">
+      <span class="node">LLM Decoder<span class="nsub">attends over image + text tokens</span></span>
+      <span class="arw"></span>
+      <span class="node out">text</span>
+    </div>
+  </div>
+  <div class="diagram-cap">Image and text both become tokens the decoder attends over — image tokens dominate the count.</div>
+</div>
 ```
 
 - **Vision encoder** — a **ViT (or CNN)** that turns the image into patch embeddings. Runs

@@ -26,15 +26,18 @@ common, hardest-to-spot MLOps bugs.
 
 A feature store is a central place to **define a feature once** and serve it two ways:
 
-```
-feature definition (written once)
-        │
-   ┌────┴─────┐
-   ▼          ▼
- OFFLINE     ONLINE
- store       store
- (history,   (fresh values,
-  training)   low-latency serving)
+```rawhtml
+<div class="diagram">
+  <div class="branch">
+    <span class="node">feature definition<span class="nsub">written once</span></span>
+    <span class="split-arw"></span>
+    <div class="fork">
+      <span class="node soft">OFFLINE store<span class="nsub">history · training</span></span>
+      <span class="node soft">ONLINE store<span class="nsub">fresh values · low-latency serving</span></span>
+    </div>
+  </div>
+  <div class="diagram-cap">Define once, serve two ways — the same feature, consistent offline and online.</div>
+</div>
 ```
 
 - **Offline store** — historical feature values for training, with correct

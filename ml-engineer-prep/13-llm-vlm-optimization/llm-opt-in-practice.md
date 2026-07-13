@@ -8,14 +8,19 @@ recipe.
 
 ## The pipeline, side by side with your CNN project
 
-```
-  Your CNN notebook              LLM version
-  ─────────────────              ─────────────────
-  train FP32                     start from a pretrained FP16 checkpoint (no training)
-  PTQ / QAT (fbgemm)             AWQ / GPTQ (weight-only) · SmoothQuant / FP8 (w+a)
-  TensorRT INT8 / FP16           TensorRT-LLM engine · vLLM · llama.cpp (GGUF)
-  evaluate: top-1, latency       evaluate: perplexity + MMLU, TTFT, tokens/sec, VRAM
-  MLflow compare table           same — track every variant
+```rawhtml
+<div class="diagram">
+  <table class="maptable">
+    <thead><tr><th>Your CNN notebook</th><th class="marw"></th><th>LLM version</th></tr></thead>
+    <tbody>
+      <tr><td class="mfrom">train FP32</td><td class="marw"></td><td class="mto">start from a pretrained FP16 checkpoint (no training)</td></tr>
+      <tr><td class="mfrom">PTQ / QAT (fbgemm)</td><td class="marw"></td><td class="mto">AWQ / GPTQ (weight-only) · SmoothQuant / FP8 (w+a)</td></tr>
+      <tr><td class="mfrom">TensorRT INT8 / FP16</td><td class="marw"></td><td class="mto">TensorRT-LLM engine · vLLM · llama.cpp (GGUF)</td></tr>
+      <tr><td class="mfrom">evaluate: top-1, latency</td><td class="marw"></td><td class="mto">evaluate: perplexity + MMLU, TTFT, tokens/sec, VRAM</td></tr>
+      <tr><td class="mfrom">MLflow compare table</td><td class="marw"></td><td class="mto">same — track every variant</td></tr>
+    </tbody>
+  </table>
+</div>
 ```
 
 You don't train — you take a released checkpoint and **optimize** it. That's the norm for LLMs

@@ -54,10 +54,21 @@ class Dataset:                           # lazy plan builder — every op return
 
 ## Keeping the GPU busy (the heart of it)
 
-```
-[N fetch workers] → [decode/transform pool] → [batch+collate] → [pin] → [GPU]
-   threads (I/O)        processes (dodge GIL)                 CUDA stream H2D overlap
-        └── bounded queue ──┴──── bounded queue ────┘   ← backpressure = self-regulating
+```rawhtml
+<div class="diagram">
+  <div class="flow">
+    <span class="node">N fetch workers<span class="nsub">threads · I/O</span></span>
+    <span class="arw"></span>
+    <span class="node">decode / transform<span class="nsub">processes · dodge GIL</span></span>
+    <span class="arw"></span>
+    <span class="node">batch + collate</span>
+    <span class="arw"></span>
+    <span class="node">pin<span class="nsub">CUDA stream H2D overlap</span></span>
+    <span class="arw"></span>
+    <span class="node out">GPU</span>
+  </div>
+  <div class="flow-foot">Stages linked by <b>bounded queues</b> → backpressure makes the pipeline self-regulating: if the GPU stalls, upstream workers block instead of exploding memory.</div>
+</div>
 ```
 
 - **Right concurrency per stage** — threads for I/O (releases GIL on network waits),
