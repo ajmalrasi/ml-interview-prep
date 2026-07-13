@@ -20,31 +20,34 @@ three axes, TensorRT-style compilation, profiling. What *breaks* is the assumpti
 ## What breaks — the four flips
 
 ### 1. Compute-bound → memory-bound (the big one)
-Your CNN was doing lots of math per byte, so INT8 sped up the **compute**. LLM **decode
-generates one token at a time**, re-reading *every weight* from memory per token with little
-math — it's **bandwidth-bound**. Consequence: **weight-only INT4** (shrink the bytes you load)
-gives a big decode speedup even though it doesn't touch the math units — the opposite of the
-CNN intuition. (Roofline logic from [§12](../12-nvidia-model-optimization/gpu-performance.md).)
+- Your CNN did lots of math per byte, so INT8 sped up the **compute**.
+- LLM **decode generates one token at a time**, re-reading *every weight* from memory per token
+  with little math → **bandwidth-bound**.
+- Consequence: **weight-only INT4** (shrink the bytes you load) gives a big decode speedup even
+  though it never touches the math units — the *opposite* of the CNN intuition.
+- (Roofline logic from [§12](../12-nvidia-model-optimization/gpu-performance.md).)
 
 ### 2. Clean activations → outlier activations
-Transformer activations develop a few **massive outlier channels**. A naive per-tensor INT8
-scale then has to cover those outliers, crushing every normal value into a few codes →
-accuracy collapse. This is why plain PTQ that worked on your CNN *fails* on an LLM, and why
-**SmoothQuant / AWQ** exist (next page). Weights are still well-behaved; **activations** are
-the problem.
+- Transformer activations develop a few **massive outlier channels**.
+- A naive per-tensor INT8 scale must cover those outliers → normal values crushed into a few
+  codes → **accuracy collapse**.
+- This is why plain PTQ that worked on your CNN *fails* on an LLM — and why **SmoothQuant / AWQ**
+  exist (next page).
+- Note: weights are still well-behaved; **activations** are the problem.
 
 ### 3. Retrainable → too big to retrain
-You could run QAT on FashionMNIST in minutes. A 7B–70B model costs far too much to QAT
-end-to-end, and you rarely have the data. So the field leans on **PTQ and weight-only** methods
-that need only a little calibration data. The QAT-shaped option is **QLoRA** — fine-tune small
-**LoRA adapters** on top of a frozen 4-bit base — which recovers task accuracy cheaply without
-touching the base weights.
+- You could QAT FashionMNIST in minutes. A 7B–70B model costs far too much to QAT end-to-end,
+  and you rarely have the data.
+- So the field leans on **PTQ and weight-only** methods that need only a little calibration data.
+- The QAT-shaped option is **QLoRA** — fine-tune small **LoRA adapters** on a frozen 4-bit base
+  → recovers task accuracy cheaply, without touching the base weights.
 
 ### 4. Top-1 accuracy → perplexity + benchmarks
-Your CNN had one clean number. LLM quality is **perplexity** (how well it predicts held-out
-text) plus **downstream benchmarks** (MMLU, GSM8K…). Degradation is subtler and uneven — a
-4-bit model can look fine on perplexity but slip on multi-step reasoning or long context. You
-**measure more, and more carefully**.
+- Your CNN had one clean number. LLM quality is **perplexity** (how well it predicts held-out
+  text) **+ downstream benchmarks** (MMLU, GSM8K…).
+- Degradation is subtler and uneven — a 4-bit model can look fine on perplexity but slip on
+  multi-step reasoning or long context.
+- So you **measure more, and more carefully**.
 
 ## Two new things with no CNN analog
 

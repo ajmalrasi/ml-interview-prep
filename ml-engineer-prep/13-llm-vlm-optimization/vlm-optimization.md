@@ -72,13 +72,17 @@ So the cost profile is different from a text LLM: **attack the image tokens firs
 
 ## Visual token reduction (say this one)
 
-The highest-leverage VLM-only optimization: **cut the number of image tokens** before/at the
-decoder. Methods — adaptive **pooling** of patch embeddings, **pruning** low-attention visual
-tokens, **merging** similar tokens (à la ToMe), or a **resampler** (Q-Former/Perceiver) that
-compresses to a fixed small count. Halving image tokens roughly halves prefill cost and KV
-memory with modest quality loss. *"On a VLM, before I quantize anything I'd check whether I can
-halve the visual tokens — it hits the actual bottleneck, prefill and KV, harder than quantizing
-the decoder."*
+The highest-leverage VLM-only optimization: **cut the number of image tokens** before/at the decoder.
+
+Methods:
+- **Pooling** — adaptive pooling of patch embeddings.
+- **Pruning** — drop low-attention visual tokens.
+- **Merging** — combine similar tokens (à la ToMe).
+- **Resampler** — a Q-Former / Perceiver that compresses to a fixed small count.
+
+Halving image tokens roughly halves **prefill cost and KV memory** with modest quality loss.
+*"On a VLM, before I quantize anything I'd check whether I can halve the visual tokens — it hits
+the actual bottleneck, prefill and KV, harder than quantizing the decoder."*
 
 ## What's different from a plain LLM
 

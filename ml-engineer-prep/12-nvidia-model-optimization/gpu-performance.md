@@ -76,11 +76,12 @@ sits waiting. That's a **third regime the roofline doesn't show: overhead-bound.
   overhead; for a tiny model the launches cost more than the math. **CUDA Graphs** fix this
   by capturing the whole launch sequence once and replaying it as a single unit.
 
-Interview-ready: *"On that model, low `nvidia-smi` utilization wasn't a compute problem —
-the kernels were too small to saturate anything, so it was launch/feed overhead. I'd confirm
-with Nsight Systems and, if it were latency-critical, use CUDA Graphs to kill launch
-overhead and larger batches to amortize it."* That reframes a debugging story as a
-performance-analysis story — exactly the NVIDIA register.
+Interview-ready: *"On that model, low `nvidia-smi` utilization wasn't a compute problem — the
+kernels were too small to saturate anything, so it was launch/feed overhead. I'd confirm with
+Nsight Systems and, if it were latency-critical, use CUDA Graphs to kill launch overhead and
+larger batches to amortize it."*
+
+That reframes a debugging story as a **performance-analysis story** — exactly the NVIDIA register.
 
 ## Profiling: name the right tool
 
@@ -113,18 +114,24 @@ end.record(); torch.cuda.synchronize()
 ms = start.elapsed_time(end) / iters
 ```
 
-Key points to say out loud: **synchronize before/after**, **warm up** (first iterations pay
-one-time costs — your `benchmark_latency` warmup(10) is exactly this), report **p50/p99 not
-just mean**, and ideally **lock clocks** (`nvidia-smi -lgc`) so boost/thermal drift doesn't
-add noise. Your `itertools.cycle` fix (issue #6) is the same discipline — never let the
-harness run short.
+Key points to say out loud:
+
+- **Synchronize** before and after (kernels are async).
+- **Warm up** — first iterations pay one-time costs (your `benchmark_latency` warmup(10) is exactly this).
+- Report **p50/p99, not just mean.**
+- Ideally **lock clocks** (`nvidia-smi -lgc`) so boost/thermal drift doesn't add noise.
+
+Your `itertools.cycle` fix (issue #6) is the same discipline — never let the harness run short.
 
 ## CUDA streams & overlap
 
 A **stream** is an ordered queue of GPU work; independent streams run concurrently. The wins:
-**overlap H2D/D2H copies with compute** (copy next batch while computing this one — this is
-what `pin_memory` + `non_blocking=True` enable, which you already used), and run independent
-kernels in parallel. Triton uses multiple streams/instances to raise utilization the same way.
+
+- **Overlap H2D/D2H copies with compute** — copy the next batch while computing this one (what
+  `pin_memory` + `non_blocking=True` enable, which you already used).
+- **Run independent kernels in parallel.**
+
+Triton uses multiple streams/instances to raise utilization the same way.
 
 ## 🔗 Connecting the dots — the real stack
 

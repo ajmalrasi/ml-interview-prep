@@ -71,11 +71,15 @@ PTQ never touches weights — it just runs batches to observe activation ranges 
 | **Percentile** | α = e.g. 99.99th percentile | Cheap outlier rejection; needs the percentile tuned. |
 | **MSE** | α minimizing quantization MSE | Good, a bit slower. |
 
-The insight worth stating: **calibration is a clipping decision.** A wider α covers outliers
-but makes every step coarser; a tighter α is finer but clips the tails. Entropy calibration
-picks the α that best preserves the *distribution's information* — which is why TensorRT
-defaults to it and why swapping to `IInt8MinMaxCalibrator` (a "next step" in your notes) is a
-real experiment, not a cosmetic one.
+The insight worth stating: **calibration is a clipping decision.**
+
+- **Wider α** — covers outliers, but every step gets coarser.
+- **Tighter α** — finer steps, but clips the tails.
+- **Entropy** picks the α that best preserves the *distribution's information* — which is why
+  TensorRT defaults to it.
+
+So swapping to `IInt8MinMaxCalibrator` (a "next step" in your notes) is a real experiment, not
+a cosmetic one.
 
 ## PTQ vs QAT — the numeric picture
 
@@ -89,10 +93,10 @@ Your notes nail the intuition; here's the mechanism under it:
   the quantizer's derivative is treated as 1 in the pass-through region. Training then nudges
   weights to be robust to rounding and can even learn the ranges. Recovers accuracy PTQ can't.
 
-**STE is a classic follow-up.** "How do you backprop through a round()? Its gradient is 0
-almost everywhere." Answer: *STE — pass the gradient straight through inside the clipping
-range and zero it outside, so the network can still learn despite the non-differentiable
-rounding.*
+**STE is a classic follow-up.** *"How do you backprop through a `round()`? Its gradient is 0
+almost everywhere."* Answer: the **straight-through estimator** — pass the gradient straight
+through inside the clipping range, zero it outside, so the network still learns despite the
+non-differentiable rounding.
 
 ## Advanced PTQ (name-drop these — they're NVIDIA-adjacent)
 

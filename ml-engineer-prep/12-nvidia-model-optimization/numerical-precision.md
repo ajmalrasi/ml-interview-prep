@@ -21,18 +21,30 @@ FP16 needs loss scaling but BF16 doesn't*, is table-stakes at NVIDIA.
 The single sentence that ties it together: **exponent bits buy range, mantissa bits buy
 precision, and INT formats trade both for a single uniform step you place with a scale.**
 
+**See the bit budget.** Pick a format and watch how its bits split into sign / exponent /
+mantissa — and how that fixes its **range** (exponent) and **precision** (mantissa). Notice
+FP16 vs BF16: same total bits, but BF16 spends them on range, which is exactly why it skips
+loss scaling.
+
+```rawhtml
+<div id="format-widget" class="widget-host"></div>
+```
+
 ## Why FP16 needs loss scaling but BF16 doesn't
 
-This is a favorite question. **FP16 keeps FP32's mantissa-ish precision but has a much
-narrower exponent range** — small gradients underflow to zero and vanish. The fix is **loss
-scaling**: multiply the loss by a large constant before backward so gradients land in FP16's
-representable range, then unscale before the optimizer step (and skip the step if any Inf/NaN
-appears). Modern frameworks do this automatically (`torch.cuda.amp.GradScaler`).
+A favorite question. The whole answer is about **exponent range**, not precision.
 
-**BF16 has the *same 8-bit exponent as FP32***, so its range is identical — gradients don't
-underflow, and **no loss scaling is needed.** The cost is only 7 mantissa bits (less
-precision), which training tolerates well. That's why BF16 is now the default for large-model
-training even though FP16 has more mantissa.
+**FP16 — narrow range, needs the fix:**
+- Keeps FP32-ish mantissa precision, but a **much narrower exponent range**.
+- Small gradients **underflow to zero** and vanish.
+- Fix = **loss scaling**: multiply the loss by a big constant before `backward` so gradients
+  land in FP16's range → unscale before the optimizer step → skip the step if any Inf/NaN shows up.
+- Frameworks automate it: `torch.cuda.amp.GradScaler`.
+
+**BF16 — FP32's range, no fix needed:**
+- **Same 8-bit exponent as FP32** → identical range → gradients don't underflow → **no loss scaling.**
+- Cost is only 7 mantissa bits (less precision), which training tolerates well.
+- That's why BF16 is the default for large-model training today — even though FP16 has more mantissa.
 
 ```rawhtml
 <div class="compare">
@@ -52,19 +64,26 @@ training even though FP16 has more mantissa.
 ## TF32 — the "free" one people forget
 
 On Ampere and newer, a **plain FP32 matmul** on tensor cores actually runs in **TF32**:
-inputs are rounded to a 19-bit form (8 exp, 10 mantissa) before the multiply, accumulate in
-FP32. You get most of FP16's speed at near-FP32 accuracy, and it's **on by default** in
-cuDNN/cuBLAS. In PyTorch it's `torch.backends.cuda.matmul.allow_tf32`. Good to mention: *"a
-chunk of the FP32→FP16 speedup people report is really FP32→TF32, already happening under the
-hood."*
+
+- Inputs are rounded to a 19-bit form (**8 exp, 10 mantissa**) before the multiply; accumulation stays in FP32.
+- You get most of FP16's speed at **near-FP32 accuracy**.
+- It's **on by default** in cuDNN/cuBLAS — in PyTorch, `torch.backends.cuda.matmul.allow_tf32`.
+
+Good to mention: *"a chunk of the FP32→FP16 speedup people report is really FP32→TF32, already
+happening under the hood."*
 
 ## Mixed-precision training (the mechanism)
 
-"Mixed precision" = compute in FP16/BF16 for speed, but keep a **master copy of weights in
-FP32** so tiny updates don't get lost to rounding. Loop: forward/backward in FP16 (with loss
-scaling) or BF16, accumulate into FP32 master weights, apply the optimizer in FP32. Roughly
-**2× faster and ~half the memory** with negligible accuracy loss. Tensor cores are the reason
-it's fast — they're built for reduced-precision matmul-accumulate.
+"Mixed precision" = compute in FP16/BF16 for speed, but keep a **master copy of weights in FP32**
+so tiny updates don't get lost to rounding.
+
+The loop:
+1. Forward/backward in FP16 (with loss scaling) or BF16.
+2. Accumulate into the **FP32 master weights**.
+3. Apply the optimizer in FP32.
+
+**Payoff:** ~**2× faster** and ~**half the memory**, negligible accuracy loss. Tensor cores are
+why it's fast — they're built for reduced-precision matmul-accumulate.
 
 ## FP8 — the current frontier (Hopper / Ada)
 
@@ -74,10 +93,11 @@ FP8 comes in **two flavors** because forward and backward want different things:
 - **E5M2** (5 exponent, 2 mantissa) — more range, less precision → gradients.
 
 FP8 needs **per-tensor scaling factors** (delayed/dynamic scaling) to keep values in range,
-much like INT8 calibration. NVIDIA's **Transformer Engine** library does this automatically
-for training and inference. Why it matters: FP8 doubles tensor-core throughput vs FP16 and is
-the headline feature of Hopper (H100) — expect at least one FP8 question if the role touches
-LLMs.
+much like INT8 calibration — NVIDIA's **Transformer Engine** does this automatically for
+training and inference.
+
+Why it matters: FP8 **doubles tensor-core throughput vs FP16** and is the headline feature of
+Hopper (H100). Expect at least one FP8 question if the role touches LLMs.
 
 ## INT8 vs FP16 — when to pick which
 

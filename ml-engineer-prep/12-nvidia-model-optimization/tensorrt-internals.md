@@ -60,50 +60,63 @@ Those are the two official INT8 modes:
 | Accuracy story | "PTQ, done by TensorRT" | Matches the QAT-trained numerics |
 | Status | Legacy path; being deprecated | **Recommended** going forward |
 
-**The subtlety to nail (your notes get this right):** Q/DQ nodes are a **build-time
-instruction, not a runtime op.** The builder fuses `Q → Conv → DQ` into a single INT8 kernel
-and the Q/DQ markers vanish from the engine. So **explicit vs implicit changes achievable
-accuracy, never the runtime speed** — the executed engine is the same shape. Explicit only
-costs latency if Q/DQ nodes are placed so densely the builder can't fuse them.
+**The subtlety to nail** (your notes get this right): Q/DQ nodes are a **build-time
+instruction, not a runtime op.**
 
-*Why your project used implicit:* `nvidia-modelopt` (which produces explicit QDQ) was broken
-on your torch 2.5 stack, and fbgemm's fake-quant ops **can't export to ONNX at all**, so you
-folded QAT weights into a plain model and re-calibrated — a hybrid where the weights got
-QAT's benefit but the scales came from TRT's calibrator. That's a genuinely good war story:
-you knew the "right" path (explicit QDQ) and why the environment forced the fallback.
+- The builder fuses `Q → Conv → DQ` into a single INT8 kernel; the Q/DQ markers vanish from the engine.
+- So **explicit vs implicit changes achievable accuracy, never runtime speed** — the executed engine is the same shape.
+- Explicit only costs latency if Q/DQ nodes are placed so densely the builder can't fuse them.
+
+**Why your project used implicit** (a good war story — you knew the "right" path and why the
+environment forced a fallback):
+
+- `nvidia-modelopt` (which produces explicit QDQ) was broken on your torch 2.5 stack.
+- fbgemm's fake-quant ops **can't export to ONNX at all**.
+- So you folded QAT weights into a plain model and re-calibrated — a hybrid: weights got QAT's
+  benefit, scales came from TRT's calibrator.
 
 ## BN folding — why your issue #7b existed
 
-TensorRT (and QAT) **fold BatchNorm into the preceding conv**: since BN is an affine
-`γ·(x−μ)/σ + β` and conv is linear, the two compose into one conv with adjusted weights and
-bias. This is both an optimization (one fewer kernel) and the reason your QAT→plain-model
-weight remap had to move `bn.*` params out of the fused module. Interview-ready phrasing:
-*"BN folding is exact math, not an approximation — it's why fused Conv+BN+ReLU is one kernel
-and why my QAT state-dict keys had to be remapped."*
+TensorRT (and QAT) **fold BatchNorm into the preceding conv**. Since BN is an affine
+`γ·(x−μ)/σ + β` and conv is linear, the two compose into one conv with adjusted weights and bias.
+
+Two consequences:
+- **An optimization** — one fewer kernel.
+- **The reason for your QAT→plain-model remap** — `bn.*` params had to move out of the fused module.
+
+Interview-ready phrasing: *"BN folding is exact math, not an approximation — it's why fused
+Conv+BN+ReLU is one kernel and why my QAT state-dict keys had to be remapped."*
 
 ## Dynamic shapes & optimization profiles
 
 Your engines were fixed-batch (256), which forced the "pad the last partial batch" hack. The
-general fix is an **optimization profile**: you declare `min / opt / max` shapes for each
-dynamic dimension, and TensorRT tunes kernels for `opt` while supporting the whole range. One
-engine then serves batch sizes 1…N. This is the standard production setup and a clean "what
-would you do next" answer.
+general fix is an **optimization profile**:
+
+- Declare `min / opt / max` shapes for each dynamic dimension.
+- TensorRT tunes kernels for `opt` while supporting the whole range.
+- One engine then serves batch sizes 1…N.
+
+Standard production setup, and a clean "what would you do next" answer.
 
 ## Plugins (custom ops)
 
-If your model has an op TensorRT doesn't support natively, you write a **plugin**
-(`IPluginV3`) — a custom CUDA kernel TRT calls as a black-box layer. Common for novel
-attention variants, NMS, custom preprocessing. Know that plugins exist and break fusion
-across their boundary (the builder can't see inside them).
+If your model has an op TensorRT doesn't support natively, you write a **plugin** (`IPluginV3`)
+— a custom CUDA kernel TRT calls as a black-box layer.
+
+- Common for novel attention variants, NMS, custom preprocessing.
+- Plugins **break fusion across their boundary** — the builder can't see inside them.
 
 ## Serving it: Triton Inference Server
 
-An engine alone isn't a service. **Triton** wraps it with **dynamic batching** (group
-requests within a latency window), **concurrent model instances** (multiple engines per GPU
-to raise utilization), **model ensembles/pipelines**, multi-framework backends (TensorRT,
-ONNX, PyTorch, Python), and metrics. The production shape: *"TensorRT engine served by
-Triton with dynamic batching and a couple of concurrent instances."* This is a natural "how
-would you deploy it" follow-up to your project.
+An engine alone isn't a service. **Triton** wraps it with:
+
+- **Dynamic batching** — group requests within a latency window.
+- **Concurrent model instances** — multiple engines per GPU to raise utilization.
+- **Model ensembles / pipelines** and multi-framework backends (TensorRT, ONNX, PyTorch, Python).
+- **Metrics.**
+
+The production shape: *"TensorRT engine served by Triton with dynamic batching and a couple of
+concurrent instances."* A natural "how would you deploy it" follow-up to your project.
 
 ## 🔗 Connecting the dots — the real stack
 

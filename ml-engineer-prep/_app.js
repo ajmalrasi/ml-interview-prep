@@ -147,6 +147,7 @@ const WIDGETS = {
   "quant-widget": initQuantWidget,
   "batch-widget": initBatchWidget,
   "llmmem-widget":initLLMMemWidget,
+  "format-widget":initFormatWidget,
 };
 function mountWidgets(){
   for(const id in WIDGETS){
@@ -512,6 +513,77 @@ function initLLMMemWidget(){
   });
   ["lm-p","lm-h","lm-l","lm-s","lm-b"].forEach(id=>el(id).addEventListener("input",compute));
   compute();
+}
+
+/* ============ Number-format explorer (numerical precision page) ========= */
+// Pick a format → see how its bits split into sign / exponent / mantissa, and
+// how that fixes range (exponent) vs precision (mantissa). INT formats show the
+// "one uniform step placed by a scale" story instead.
+function initFormatWidget(){
+  const host=document.getElementById("format-widget"); if(!host) return;
+  const FMT={
+    fp32:{name:"FP32", s:1,e:8,m:23, range:"±3.4 × 10³⁸", minpos:"1.2 × 10⁻³⁸", prec:"~7 decimal digits",
+          note:"The baseline. Also the master-weight copy in mixed precision."},
+    tf32:{name:"TF32", s:1,e:8,m:10, range:"= FP32", minpos:"= FP32", prec:"~FP16 (3 digits)",
+          note:"Stored in 32 bits but only 19 are used in the multiply. Auto-on for FP32 matmuls on Ampere+."},
+    fp16:{name:"FP16", s:1,e:5,m:10, range:"±65,504", minpos:"6.1 × 10⁻⁵", prec:"~3 decimal digits",
+          loss:true, note:"Narrow exponent → small gradients underflow → needs loss scaling."},
+    bf16:{name:"BF16", s:1,e:8,m:7,  range:"= FP32", minpos:"1.2 × 10⁻³⁸", prec:"~2 decimal digits",
+          note:"Same 8-bit exponent as FP32 → no underflow → no loss scaling. Default for large-model training."},
+    e4m3:{name:"FP8 E4M3", s:1,e:4,m:3, range:"±448", minpos:"~0.016", prec:"very coarse (more mantissa)",
+          scale:true, note:"Hopper/Ada forward pass — weights & activations. Needs per-tensor scaling."},
+    e5m2:{name:"FP8 E5M2", s:1,e:5,m:2, range:"±57,344", minpos:"6.1 × 10⁻⁵", prec:"coarsest (more range)",
+          scale:true, note:"Hopper/Ada gradients — trades mantissa for the range gradients need."},
+    int8:{name:"INT8", int:8, range:"set by scale", minpos:"one step = scale", prec:"256 uniform levels",
+          scale:true, note:"No exponent/mantissa — a single uniform step you place with a scale. Needs calibration."},
+    int4:{name:"INT4", int:4, range:"set by scale", minpos:"one step = scale", prec:"16 uniform levels",
+          scale:true, note:"Just 16 levels — group-wise scales keep it usable. LLM weight-only (AWQ/GPTQ)."},
+  };
+  const order=["fp32","tf32","fp16","bf16","e4m3","e5m2","int8","int4"];
+  host.innerHTML=
+    '<div class="fmt-wrap">'+
+      '<div class="fmt-segs">'+order.map((k,i)=>
+        '<button class="qz-seg'+(i===0?" sel":"")+'" data-f="'+k+'">'+FMT[k].name+'</button>').join("")+'</div>'+
+      '<div class="fmt-bar" id="fmt-bar"></div>'+
+      '<div class="qz-out fmt-grid">'+
+        '<div class="qz-cell"><span>total bits</span><b id="fmt-bits">—</b></div>'+
+        '<div class="qz-cell"><span>dynamic range</span><b id="fmt-range">—</b></div>'+
+        '<div class="qz-cell"><span>smallest positive</span><b id="fmt-min">—</b></div>'+
+        '<div class="qz-cell"><span>precision</span><b id="fmt-prec">—</b></div>'+
+      '</div>'+
+      '<div class="fmt-flags" id="fmt-flags"></div>'+
+      '<div class="lm-note" id="fmt-note"></div>'+
+    '</div>';
+  const el=id=>host.querySelector("#"+id);
+  function draw(k){
+    const f=FMT[k];
+    let bar="", bits;
+    if(f.int){
+      bits=f.int;
+      bar='<div class="fmt-seg fmt-int" style="flex:'+f.int+'"><span>'+f.int+'-bit integer</span></div>'+
+          '<div class="fmt-scale">× scale</div>';
+    } else {
+      bits=f.s+f.e+f.m;
+      bar='<div class="fmt-seg fmt-sign" style="flex:'+f.s+'"><span>sign</span></div>'+
+          '<div class="fmt-seg fmt-exp" style="flex:'+f.e+'"><span>'+f.e+' exp · range</span></div>'+
+          '<div class="fmt-seg fmt-mant" style="flex:'+f.m+'"><span>'+f.m+' mantissa · precision</span></div>';
+    }
+    el("fmt-bar").innerHTML=bar;
+    el("fmt-bits").textContent=bits;
+    el("fmt-range").textContent=f.range;
+    el("fmt-min").textContent=f.minpos;
+    el("fmt-prec").textContent=f.prec;
+    let flags="";
+    if(f.loss) flags+='<span class="fmt-flag warn">needs loss scaling</span>';
+    else if(!f.int && !f.scale) flags+='<span class="fmt-flag ok">no loss scaling</span>';
+    if(f.scale) flags+='<span class="fmt-flag">needs scaling / calibration</span>';
+    el("fmt-flags").innerHTML=flags;
+    el("fmt-note").textContent=f.note;
+  }
+  host.querySelectorAll(".qz-seg").forEach(b=>b.onclick=()=>{
+    host.querySelectorAll(".qz-seg").forEach(x=>x.classList.toggle("sel",x===b)); draw(b.dataset.f);
+  });
+  draw("fp32");
 }
 
 /* ============================ flashcards / SRS ============================= */

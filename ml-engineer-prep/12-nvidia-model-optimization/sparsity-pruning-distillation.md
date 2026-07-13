@@ -41,18 +41,20 @@ and skips the zeros, giving **up to 2× matmul throughput**.
 </div>
 ```
 
-Workflow: train dense → prune to the 2:4 mask → **fine-tune** to recover accuracy → run on
-sparse tensor cores (TensorRT + `apex`/`ASP` support it). Why it matters: it's the rare
-pruning scheme that gives a **guaranteed hardware speedup**, so it's a likely question. Know
-that it's **50% structured**, needs a fine-tune step, and stacks with INT8/FP8.
+**Workflow:** train dense → prune to the 2:4 mask → **fine-tune** to recover accuracy → run on
+sparse tensor cores (TensorRT + `apex`/`ASP` support it).
+
+**Why it matters:** it's the rare pruning scheme with a **guaranteed hardware speedup**, so it's
+a likely question. Know that it's **50% structured**, needs a fine-tune step, and stacks with INT8/FP8.
 
 ## Knowledge distillation
 
 Train a large accurate **teacher**, then train a small **student** to match the teacher's
-**soft outputs** (the full probability distribution, "softened" by a temperature `T`), not
-just the hard labels. The soft targets carry **dark knowledge** — how the teacher spreads
-probability across classes ("this 4 looks a bit like a 9") — which is far richer supervision
-than a one-hot label.
+**soft outputs** — the full probability distribution, "softened" by a temperature `T` — not
+just the hard labels.
+
+Why soft targets help: they carry **dark knowledge** — how the teacher spreads probability
+across classes ("this 4 looks a bit like a 9") — which is far richer supervision than a one-hot label.
 
 ```rawhtml
 <div class="formula">

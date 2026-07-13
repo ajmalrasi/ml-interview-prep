@@ -416,6 +416,23 @@ details.qa.missed .cg-missed{background:#e0663f; color:#fff; border-color:#e0663
 .lm-note{font-size:12.5px; color:var(--quote); font-family:-apple-system,sans-serif; line-height:1.5}
 @media (max-width:640px){ .bt-wrap{flex-direction:column} }
 
+/* number-format explorer */
+.fmt-wrap{background:var(--bg-soft); border:1px solid var(--border); border-radius:16px; padding:16px; margin:1.4em 0}
+.fmt-segs{display:flex; flex-wrap:wrap; gap:6px; margin-bottom:14px}
+.fmt-bar{display:flex; height:46px; border-radius:10px; overflow:hidden; border:1px solid var(--border); gap:2px; background:var(--border)}
+.fmt-seg{display:flex; align-items:center; justify-content:center; text-align:center; color:#fff; font-size:11px;
+  font-weight:700; font-family:-apple-system,sans-serif; padding:0 4px; overflow:hidden; line-height:1.15; transition:flex .3s ease}
+.fmt-seg span{overflow:hidden; text-overflow:ellipsis}
+.fmt-sign{background:var(--muted)} .fmt-exp{background:#3b82f6} .fmt-mant{background:var(--accent)} .fmt-int{background:#8b5cf6}
+.fmt-scale{display:flex; align-items:center; padding:0 12px; font-size:12px; font-weight:700; color:var(--muted);
+  border:1px dashed var(--border); border-radius:10px; margin-left:2px; font-family:-apple-system,sans-serif}
+.fmt-grid{margin:14px 0 10px}
+.fmt-flags{display:flex; flex-wrap:wrap; gap:7px; margin:2px 0 10px}
+.fmt-flag{font-size:11.5px; font-weight:700; padding:3px 10px; border-radius:999px; font-family:-apple-system,sans-serif;
+  background:var(--bg); border:1px solid var(--border); color:var(--muted)}
+.fmt-flag.warn{background:rgba(234,88,12,.13); border-color:rgba(234,88,12,.4); color:#ea580c}
+.fmt-flag.ok{background:rgba(20,163,115,.13); border-color:rgba(20,163,115,.4); color:var(--accent)}
+
 /* =========================== visual diagram kit ========================== */
 /* Replaces ASCII-art code blocks with clean, theme-aware flow diagrams.     */
 .diagram{margin:1.5em 0; padding:18px 16px; border:1px solid var(--border); border-radius:16px;
