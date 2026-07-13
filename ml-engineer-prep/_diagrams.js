@@ -19,6 +19,7 @@ const SECTIONS = {
   "9 · Generative AI & LLMs": { icon:"✨", accent:"#7c6cf0", tag:"Transformers, RAG, fine-tuning, LLMOps, eval" },
   "10 · ML System Design":    { icon:"🏗️", accent:"#34ad7c", tag:"Design a recommender, feature pipeline, ML platform" },
   "11 · Drill Bank":          { icon:"🎯", accent:"#cc5fab", tag:"Rapid Q&A across every topic" },
+  "12 · NVIDIA Model Optimization":{ icon:"🟩", accent:"#76b900", tag:"Quantization numerics, TensorRT, GPU profiling, LLM inference" },
 };
 
 module.exports = { D, DIAGRAMS, SECTIONS, fig };

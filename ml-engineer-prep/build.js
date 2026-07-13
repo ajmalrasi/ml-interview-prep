@@ -89,6 +89,17 @@ const SITE = [
     { file:"decision-tradeoffs.md", title:"Decision Tradeoffs — Why X over Y" },
     { file:"cheat-sheet.md", title:"One-Page Cheat Sheet" },
   ]},
+  { label:"12 · NVIDIA Model Optimization", dir:"12-nvidia-model-optimization", items:[
+    { file:"README.md", title:"Overview" },
+    { file:"quantization-deep.md", title:"Quantization, Deeply" },
+    { file:"numerical-precision.md", title:"Numerical Precision (FP32→FP8→INT8)" },
+    { file:"tensorrt-internals.md", title:"TensorRT Internals" },
+    { file:"gpu-performance.md", title:"GPU Performance & Profiling" },
+    { file:"sparsity-pruning-distillation.md", title:"Sparsity, Pruning & Distillation" },
+    { file:"llm-inference.md", title:"LLM Inference Optimization" },
+    { file:"experiment-walkthrough.md", title:"Experiment Walkthrough (Your Project)" },
+    { file:"interview-qa.md", title:"Interview Q&A — Rapid Fire", quiz:true },
+  ]},
 ];
 
 /* ----------------------------- markdown parser ----------------------------- */
