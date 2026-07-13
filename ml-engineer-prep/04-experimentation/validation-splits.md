@@ -24,9 +24,22 @@ holding out a different part as validation), and averages the scores. You get a 
 stable estimate and use all your data for both roles. Standard k is 5 or 10. Use it
 when data is scarce; skip it when data is huge and one split is plenty.
 
-```
-5-fold: [test][    train    ]   fold 1
-        [train][test][train ]   fold 2  ... average the 5 scores
+```rawhtml
+<div class="diagram">
+  <div class="folds">
+    <div class="fold"><span class="fold-lbl">fold 1</span><div class="fold-bars">
+      <span class="fold-seg test">test</span><span class="fold-seg train">train</span><span class="fold-seg train">train</span><span class="fold-seg train">train</span><span class="fold-seg train">train</span></div></div>
+    <div class="fold"><span class="fold-lbl">fold 2</span><div class="fold-bars">
+      <span class="fold-seg train">train</span><span class="fold-seg test">test</span><span class="fold-seg train">train</span><span class="fold-seg train">train</span><span class="fold-seg train">train</span></div></div>
+    <div class="fold"><span class="fold-lbl">fold 3</span><div class="fold-bars">
+      <span class="fold-seg train">train</span><span class="fold-seg train">train</span><span class="fold-seg test">test</span><span class="fold-seg train">train</span><span class="fold-seg train">train</span></div></div>
+    <div class="fold"><span class="fold-lbl">fold 4</span><div class="fold-bars">
+      <span class="fold-seg train">train</span><span class="fold-seg train">train</span><span class="fold-seg train">train</span><span class="fold-seg test">test</span><span class="fold-seg train">train</span></div></div>
+    <div class="fold"><span class="fold-lbl">fold 5</span><div class="fold-bars">
+      <span class="fold-seg train">train</span><span class="fold-seg train">train</span><span class="fold-seg train">train</span><span class="fold-seg train">train</span><span class="fold-seg test">test</span></div></div>
+  </div>
+  <div class="diagram-cap">Each row holds out a different fifth for testing — average the 5 scores.</div>
+</div>
 ```
 
 ## The time-series trap

@@ -23,9 +23,19 @@ combine many trees, and there are two ways to do that.
   reaches higher accuracy, at the cost of more careful tuning (it can overfit if you
   push it).
 
-```
-Bagging:  many trees in parallel → average   (cuts variance, robust)
-Boosting: trees in sequence, each fixes the last's mistakes (cuts bias, top accuracy)
+```rawhtml
+<div class="compare">
+  <div class="cmp-col accent">
+    <div class="cmp-h">Bagging</div>
+    <p>Many trees in <b>parallel</b>, then average their votes.</p>
+    <span class="cmp-tag">cuts variance · robust · Random Forest</span>
+  </div>
+  <div class="cmp-col accent">
+    <div class="cmp-h">Boosting</div>
+    <p>Trees in <b>sequence</b>, each fixing the last one's mistakes.</p>
+    <span class="cmp-tag">cuts bias · top accuracy · XGBoost</span>
+  </div>
+</div>
 ```
 
 ## Why boosting wins on tabular data

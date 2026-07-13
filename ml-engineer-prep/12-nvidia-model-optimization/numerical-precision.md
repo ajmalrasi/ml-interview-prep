@@ -34,9 +34,19 @@ underflow, and **no loss scaling is needed.** The cost is only 7 mantissa bits (
 precision), which training tolerates well. That's why BF16 is now the default for large-model
 training even though FP16 has more mantissa.
 
-```
-FP16:  narrow range, more precision → underflow risk → loss scaling
-BF16:  FP32 range, less precision   → no underflow    → no loss scaling
+```rawhtml
+<div class="compare">
+  <div class="cmp-col">
+    <div class="cmp-h">FP16</div>
+    <p><b>Narrow range</b>, more precision → underflow risk.</p>
+    <span class="cmp-tag">needs loss scaling</span>
+  </div>
+  <div class="cmp-col green">
+    <div class="cmp-h">BF16</div>
+    <p><b>FP32 range</b>, less precision → no underflow.</p>
+    <span class="cmp-tag">no loss scaling needed</span>
+  </div>
+</div>
 ```
 
 ## TF32 — the "free" one people forget

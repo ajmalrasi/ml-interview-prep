@@ -9,9 +9,27 @@ model, not in it.
 
 Think of it as a pipeline you'll be asked to reason about end to end:
 
-```
-1 Problem framing → 2 Data collection → 3 Preprocessing & features
-→ 4 Model training → 5 Evaluation → 6 Deployment → 7 Monitoring → back to 3/4
+```rawhtml
+<div class="diagram">
+  <div class="loopwrap">
+    <div class="flow">
+      <span class="node"><span class="nsub">1</span>Problem framing</span>
+      <span class="arw"></span>
+      <span class="node"><span class="nsub">2</span>Data collection</span>
+      <span class="arw"></span>
+      <span class="node"><span class="nsub">3</span>Preprocessing &amp; features</span>
+      <span class="arw"></span>
+      <span class="node"><span class="nsub">4</span>Model training</span>
+      <span class="arw"></span>
+      <span class="node"><span class="nsub">5</span>Evaluation</span>
+      <span class="arw"></span>
+      <span class="node"><span class="nsub">6</span>Deployment</span>
+      <span class="arw"></span>
+      <span class="node out"><span class="nsub">7</span>Monitoring</span>
+    </div>
+    <span class="loop-back"><span class="lb-arw"></span> monitoring loops back to <b>preprocessing / training</b> as the world drifts</span>
+  </div>
+</div>
 ```
 
 **Problem framing** is deciding what you're actually predicting and how success is

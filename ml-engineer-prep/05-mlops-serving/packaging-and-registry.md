@@ -20,9 +20,21 @@ for what's deployable. Each model gets a **version number**, metadata (metrics, 
 data, who/when), and a **stage**: *staging* (under test) → *production* (live) →
 *archived*. Tools: MLflow Model Registry, SageMaker, Vertex AI.
 
-```
-train → register (v5, metrics attached) → promote to staging → test → promote to production
-                                          (v4 stays archived → instant rollback)
+```rawhtml
+<div class="diagram">
+  <div class="flow">
+    <span class="node">train</span>
+    <span class="arw"></span>
+    <span class="node">register<span class="nsub">v5 · metrics attached</span></span>
+    <span class="arw"></span>
+    <span class="node">promote to staging</span>
+    <span class="arw"></span>
+    <span class="node">test</span>
+    <span class="arw"></span>
+    <span class="node out">production</span>
+  </div>
+  <div class="flow-foot">v4 stays archived → <b>instant rollback</b> if v5 misbehaves.</div>
+</div>
 ```
 
 The registry gives you three things that matter in production: a clear record of what's

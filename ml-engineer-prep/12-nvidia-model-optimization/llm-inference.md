@@ -8,9 +8,19 @@ NVIDIA asks, because TensorRT-LLM is a flagship.
 
 ## The two phases (frame everything around this)
 
-```
-  PREFILL:  process the whole prompt in parallel   → compute-bound  (big matmuls, tensor cores)
-  DECODE:   generate 1 token, append, repeat       → memory-bound   (read all weights + KV per token)
+```rawhtml
+<div class="compare">
+  <div class="cmp-col blue">
+    <div class="cmp-h">PREFILL</div>
+    <p>Process the <b>whole prompt in parallel</b> — big matmuls on tensor cores.</p>
+    <span class="cmp-tag">compute-bound</span>
+  </div>
+  <div class="cmp-col accent">
+    <div class="cmp-h">DECODE</div>
+    <p>Generate <b>1 token, append, repeat</b> — read all weights + KV every step.</p>
+    <span class="cmp-tag">memory-bound</span>
+  </div>
+</div>
 ```
 
 Decode is the expensive part for long generations, and it's **memory-bandwidth bound**: each

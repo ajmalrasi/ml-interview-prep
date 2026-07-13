@@ -12,14 +12,20 @@ reinventing pipelines, serving, and monitoring. This tests whether you see the b
 
 ## The components (walk the lifecycle)
 
-```
-Data layer      → ingestion, storage (lake/warehouse), FEATURE STORE (shared features)
-Experiment layer→ notebooks/compute, EXPERIMENT TRACKING, data versioning
-Training layer  → scalable training (K8s/managed), pipelines, HPO
-Registry        → MODEL REGISTRY (versioned, staged promotion)
-Serving layer   → batch + online serving, autoscaling, canary rollout
-Monitoring layer→ drift, data quality, ops metrics, alerting, retraining triggers
-Cross-cutting   → CI/CD/CT automation, IaC, access control, cost tracking
+```rawhtml
+<div class="diagram">
+  <table class="maptable">
+    <tbody>
+      <tr><td class="mfrom"><b>Data layer</b></td><td class="marw"></td><td class="mto">ingestion, storage (lake / warehouse), <b>feature store</b> (shared features)</td></tr>
+      <tr><td class="mfrom"><b>Experiment layer</b></td><td class="marw"></td><td class="mto">notebooks / compute, <b>experiment tracking</b>, data versioning</td></tr>
+      <tr><td class="mfrom"><b>Training layer</b></td><td class="marw"></td><td class="mto">scalable training (K8s / managed), pipelines, HPO</td></tr>
+      <tr><td class="mfrom"><b>Registry</b></td><td class="marw"></td><td class="mto"><b>model registry</b> — versioned, staged promotion</td></tr>
+      <tr><td class="mfrom"><b>Serving layer</b></td><td class="marw"></td><td class="mto">batch + online serving, autoscaling, canary rollout</td></tr>
+      <tr><td class="mfrom"><b>Monitoring layer</b></td><td class="marw"></td><td class="mto">drift, data quality, ops metrics, alerting, retraining triggers</td></tr>
+      <tr><td class="mfrom"><b>Cross-cutting</b></td><td class="marw"></td><td class="mto">CI/CD/CT automation, IaC, access control, cost tracking</td></tr>
+    </tbody>
+  </table>
+</div>
 ```
 
 Each box maps to a section here: feature store (§2), tracking (§4), registry & CI/CD (§5),

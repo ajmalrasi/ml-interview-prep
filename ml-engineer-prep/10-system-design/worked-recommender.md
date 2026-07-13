@@ -28,12 +28,18 @@ click-through and purchase rate via A/B test.
 
 You can't score millions of items per request in 100ms, so split it:
 
-```
-all items (millions)
-  → CANDIDATE GENERATION: cheap retrieval → ~hundreds of plausible items
-      (embedding similarity / collaborative filtering / "users like you bought")
-  → RANKING: a stronger model (gradient boosting or a neural ranker) scores those
-      few hundred with rich features → top-N ordered list → user
+```rawhtml
+<div class="diagram">
+  <div class="vflow">
+    <span class="node data">all items <span class="nsub">millions</span></span>
+    <span class="varw"></span>
+    <span class="node">CANDIDATE GENERATION<span class="nsub">cheap retrieval — embedding similarity / collaborative filtering / “users like you bought” → ~hundreds</span></span>
+    <span class="varw"></span>
+    <span class="node">RANKING<span class="nsub">a stronger model (gradient boosting or neural ranker) scores those few hundred with rich features</span></span>
+    <span class="varw"></span>
+    <span class="node out">top-N ordered list → user</span>
+  </div>
+</div>
 ```
 
 Candidate generation optimizes **recall** (don't miss good items) and speed; ranking

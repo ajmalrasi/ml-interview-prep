@@ -24,9 +24,11 @@ it capture long-range relationships ("it" refers to which noun?) and, unlike old
 process the whole sequence **in parallel** — which is exactly why transformers scale to
 huge models and datasets.
 
-```
-"The cat sat on the mat because it was tired"
-attention lets "it" look back and weight "cat" strongly → resolves the reference
+```rawhtml
+<div class="example">
+  <span class="ex-q">"The cat sat on the mat because <span class="hl">it</span> was tired"</span>
+  <span class="ex-a">Attention lets <b>"it"</b> look back and weight <span class="hl">"cat"</span> strongly → resolving the reference.</span>
+</div>
 ```
 
 You don't need the matrix math for most interviews — you need "attention weighs the

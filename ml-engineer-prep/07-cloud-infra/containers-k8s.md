@@ -22,10 +22,21 @@ and automates the operational hard parts:
 - **Rolling updates & rollback** — deploy a new version gradually, revert if it's bad.
 - **Load balancing & service discovery** — spread traffic across replicas.
 
-```
-K8s cluster: [node] [node] [node]
-   your model service → 5 replicas spread across nodes
-   traffic → load-balanced; a dead replica is auto-replaced
+```rawhtml
+<div class="diagram">
+  <div class="flow">
+    <span class="node data">traffic</span>
+    <span class="arw"></span>
+    <span class="node">load balancer</span>
+    <span class="merge-arw"></span>
+    <div class="lane-stack">
+      <span class="node soft">replica<span class="nsub">node 1</span></span>
+      <span class="node soft">replica<span class="nsub">node 2</span></span>
+      <span class="node soft">replica<span class="nsub">node 3 …×5</span></span>
+    </div>
+  </div>
+  <div class="flow-foot">K8s spreads <b>5 replicas</b> of your model service across nodes; a dead replica is <b>auto-replaced</b>.</div>
+</div>
 ```
 
 For an ML engineer, K8s is *why* an online model service can handle real traffic reliably

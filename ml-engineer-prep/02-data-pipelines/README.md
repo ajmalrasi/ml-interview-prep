@@ -26,11 +26,22 @@ streaming, and always changing).
 
 ## The mental model
 
-```
-sources → ingest → store (lake/warehouse) → transform/clean → features → model
-  APIs      batch    S3 / BigQuery /          Spark / SQL /    feature    train
-  DBs       stream   Snowflake                dbt              store      + serve
-  logs
+```rawhtml
+<div class="diagram">
+  <div class="flow">
+    <span class="node data">sources<span class="nsub">APIs · DBs · logs</span></span>
+    <span class="arw"></span>
+    <span class="node">ingest<span class="nsub">batch · stream</span></span>
+    <span class="arw"></span>
+    <span class="node">store<span class="nsub">S3 / BigQuery / Snowflake</span></span>
+    <span class="arw"></span>
+    <span class="node">transform / clean<span class="nsub">Spark / SQL / dbt</span></span>
+    <span class="arw"></span>
+    <span class="node">features<span class="nsub">feature store</span></span>
+    <span class="arw"></span>
+    <span class="node out">model<span class="nsub">train + serve</span></span>
+  </div>
+</div>
 ```
 
 → Start: **[ingestion-and-storage.md](ingestion-and-storage.md)**

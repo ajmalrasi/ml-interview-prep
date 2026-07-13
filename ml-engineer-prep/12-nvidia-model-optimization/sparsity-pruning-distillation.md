@@ -26,9 +26,19 @@ Ampere (A100) and newer have **sparse tensor cores** that accelerate a specific 
 fine-grained structured sparsity). The hardware stores only the 2 non-zeros + a 2-bit index
 and skips the zeros, giving **up to 2× matmul throughput**.
 
-```
-  dense:   [ w0 w1 w2 w3 ]  →  4 multiplies
-  2:4:     [ w0  0 w2  0 ]  →  2 multiplies on sparse tensor cores  (≈2×)
+```rawhtml
+<div class="compare">
+  <div class="cmp-col">
+    <div class="cmp-h">Dense</div>
+    <p><span class="fexpr">[ w0 w1 w2 w3 ]</span></p>
+    <span class="cmp-tag">4 multiplies</span>
+  </div>
+  <div class="cmp-col accent">
+    <div class="cmp-h">2:4 structured sparse</div>
+    <p><span class="fexpr">[ w0 <span class="fv">0</span> w2 <span class="fv">0</span> ]</span></p>
+    <span class="cmp-tag">2 multiplies on sparse tensor cores · ≈2×</span>
+  </div>
+</div>
 ```
 
 Workflow: train dense → prune to the 2:4 mask → **fine-tune** to recover accuracy → run on
@@ -44,8 +54,11 @@ just the hard labels. The soft targets carry **dark knowledge** — how the teac
 probability across classes ("this 4 looks a bit like a 9") — which is far richer supervision
 than a one-hot label.
 
-```
-  loss = α · CE(student, hard_labels) + (1−α) · T² · KL(student_T ‖ teacher_T)
+```rawhtml
+<div class="formula">
+  <div class="frow"><span class="fexpr">loss = <span class="fv">α</span> · CE(student, hard_labels) + (1−<span class="fv">α</span>) · <span class="fv">T²</span> · KL(student_T ‖ teacher_T)</span></div>
+  <div class="frow"><span class="fnote">hard-label term + temperature-softened distillation term</span></div>
+</div>
 ```
 
 - **Temperature `T`>1** softens both distributions so small logit differences matter; the
@@ -59,14 +72,19 @@ than a one-hot label.
 
 They're complementary, and the standard production recipe stacks them:
 
-```
-  distill  →  smaller architecture (fundamental size cut)
-    ↓
-  prune (2:4 structured) → fewer effective weights, hardware-accelerated
-    ↓
-  quantize (INT8 / FP8) → cheaper per-op
-    ↓
-  compile (TensorRT) → fuse + pick kernels for the target GPU
+```rawhtml
+<div class="diagram">
+  <div class="vflow">
+    <span class="node">distill<span class="nsub">smaller architecture — a fundamental size cut</span></span>
+    <span class="varw"></span>
+    <span class="node">prune <span class="nsub">2:4 structured — fewer effective weights, hardware-accelerated</span></span>
+    <span class="varw"></span>
+    <span class="node">quantize <span class="nsub">INT8 / FP8 — cheaper per-op</span></span>
+    <span class="varw"></span>
+    <span class="node out">compile <span class="nsub">TensorRT — fuse + pick kernels for the target GPU</span></span>
+  </div>
+  <div class="diagram-cap">Stack them: each stage compounds the last for a smaller, faster model.</div>
+</div>
 ```
 
 The instinct to voice: *"Quantization first — cheapest big win. Distillation when I need a

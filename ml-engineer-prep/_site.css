@@ -493,3 +493,46 @@ details.qa.missed .cg-missed{background:#e0663f; color:#fff; border-color:#e0663
 .plot-txt.lead{fill:var(--text); font-weight:650}
 .plot-dash{stroke:var(--muted); stroke-width:1; stroke-dasharray:4 3; opacity:.6}
 @media (max-width:640px){ .branch .fork{gap:14px} .lanes{gap:8px} }
+
+/* --- formula display (replaces monospace math blocks) --- */
+.formula{margin:1.4em 0; padding:16px 20px; border:1px solid var(--border); border-radius:14px;
+  background:var(--bg-soft); display:flex; flex-direction:column; gap:12px}
+.frow{display:flex; align-items:baseline; gap:16px; flex-wrap:wrap; justify-content:center; text-align:center}
+.fexpr{font-family:"SF Mono",ui-monospace,"JetBrains Mono","Cascadia Code",Menlo,Consolas,monospace;
+  font-size:16.5px; font-weight:600; color:var(--text); letter-spacing:.005em; line-height:1.5}
+.fexpr .fv{color:var(--sec-accent,var(--accent))}
+.fnote{font-size:12px; color:var(--muted); font-style:italic; font-family:var(--font-sans)}
+.fnote::before{content:"— "}
+
+/* --- side-by-side compare cards (replaces two-column ASCII contrasts) --- */
+.compare{display:flex; gap:14px; margin:1.4em 0; flex-wrap:wrap; align-items:stretch}
+.cmp-col{flex:1 1 210px; border:1px solid var(--border); border-radius:14px; background:var(--bg-soft);
+  padding:14px 16px; display:flex; flex-direction:column; gap:8px}
+.cmp-col.accent{border-color:var(--sec-accent,var(--accent))}
+.cmp-h{font-size:13px; font-weight:750; letter-spacing:.01em; color:var(--text);
+  padding-bottom:8px; border-bottom:1px solid var(--border)}
+.cmp-col.accent .cmp-h{color:var(--sec-accent,var(--accent))}
+.cmp-col.blue{border-color:#3b82f6} .cmp-col.blue .cmp-h{color:#3b82f6}
+.cmp-col.green{border-color:#2f9e6f} .cmp-col.green .cmp-h{color:#2f9e6f}
+.cmp-col ul{margin:0; padding-left:18px; font-size:13.5px; line-height:1.5; color:var(--quote)}
+.cmp-col ul li{margin:3px 0}
+.cmp-col p{margin:0; font-size:13.5px; line-height:1.5; color:var(--quote)}
+.cmp-tag{align-self:flex-start; font-size:11px; font-weight:700; color:var(--muted);
+  background:var(--bg); border:1px solid var(--border); border-radius:999px; padding:2px 9px; margin-top:auto}
+
+/* --- illustrative example callout --- */
+.example{margin:1.3em 0; padding:14px 16px; border-left:3px solid var(--sec-accent,var(--accent));
+  background:var(--bg-soft); border-radius:0 12px 12px 0; font-size:14.5px; line-height:1.6}
+.example .ex-q{font-style:italic; color:var(--text)}
+.example .ex-a{display:block; margin-top:8px; font-size:13.5px; color:var(--quote)}
+.example .hl{background:var(--sec-accent-soft,var(--accent-soft)); color:var(--sec-accent,var(--accent));
+  font-weight:650; padding:0 4px; border-radius:4px}
+
+/* --- k-fold split bars --- */
+.folds{display:flex; flex-direction:column; gap:6px; margin:.4em 0}
+.fold{display:flex; align-items:center; gap:10px}
+.fold-bars{display:flex; flex:1; height:22px; border-radius:6px; overflow:hidden; border:1px solid var(--border)}
+.fold-seg{flex:1; display:flex; align-items:center; justify-content:center; font-size:10.5px; font-weight:700; color:var(--muted)}
+.fold-seg.test{background:var(--sec-accent-soft,var(--accent-soft)); color:var(--sec-accent,var(--accent))}
+.fold-seg.train{background:var(--bg)}
+.fold-lbl{font-size:11.5px; color:var(--muted); min-width:48px}

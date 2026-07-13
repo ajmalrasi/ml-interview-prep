@@ -19,9 +19,19 @@ group (new model, "B"), run both live, and compare a **business metric** — cli
 rate, conversion, revenue per user, retention. Randomization is what makes the two
 groups comparable, so any difference is attributable to the model.
 
-```
-users → randomly split → A: current model  → measure metric
-                       → B: new model      → measure metric → compare
+```rawhtml
+<div class="diagram">
+  <div class="branch">
+    <span class="node data">users</span>
+    <span class="split-arw" title="randomly split"></span>
+    <div class="fork">
+      <span class="node">A: current model<span class="nsub">measure metric</span></span>
+      <span class="node soft">B: new model<span class="nsub">measure metric</span></span>
+    </div>
+    <span class="varw"></span>
+    <span class="node out">compare</span>
+  </div>
+</div>
 ```
 
 ## Reading the statistics (without fooling yourself)

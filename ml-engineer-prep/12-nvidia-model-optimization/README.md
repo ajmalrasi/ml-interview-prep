@@ -32,10 +32,16 @@ section is written to survive that follow-up chain of "…and why?"
 
 Optimization lives on **three axes** that interviewers love to see you separate cleanly:
 
-```
-  METHOD          →  how you pick int8-friendly weights/scales   (PTQ, QAT, calibration)
-  FORMAT          →  which numbers you compute in                (FP32/TF32/FP16/BF16/FP8/INT8/INT4)
-  ENGINE          →  where/how the math runs fast                (TensorRT, Triton, CUDA kernels, fusion)
+```rawhtml
+<div class="diagram">
+  <table class="maptable">
+    <tbody>
+      <tr><td class="mfrom"><b>METHOD</b></td><td class="marw"></td><td class="mto">how you pick int8-friendly weights / scales <span style="color:var(--muted)">— PTQ, QAT, calibration</span></td></tr>
+      <tr><td class="mfrom"><b>FORMAT</b></td><td class="marw"></td><td class="mto">which numbers you compute in <span style="color:var(--muted)">— FP32 / TF32 / FP16 / BF16 / FP8 / INT8 / INT4</span></td></tr>
+      <tr><td class="mfrom"><b>ENGINE</b></td><td class="marw"></td><td class="mto">where / how the math runs fast <span style="color:var(--muted)">— TensorRT, Triton, CUDA kernels, fusion</span></td></tr>
+    </tbody>
+  </table>
+</div>
 ```
 
 Almost every question is really asking you to hold two of these apart. Your own project's

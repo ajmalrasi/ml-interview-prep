@@ -18,10 +18,24 @@ data's noise, so it looks great in training and terrible on new data. The fix is
 The tell is the gap between training and validation scores: tiny gap but both bad =
 underfitting; big gap (great train, poor validation) = overfitting.
 
-```
-underfit         good fit          overfit
-train: bad       train: good       train: great
-test:  bad       test:  good       test:  bad
+```rawhtml
+<div class="compare">
+  <div class="cmp-col">
+    <div class="cmp-h">Underfit</div>
+    <ul><li>train: <b>bad</b></li><li>test: <b>bad</b></li></ul>
+    <span class="cmp-tag">high bias — too simple</span>
+  </div>
+  <div class="cmp-col green">
+    <div class="cmp-h">Good fit</div>
+    <ul><li>train: <b>good</b></li><li>test: <b>good</b></li></ul>
+    <span class="cmp-tag">the sweet spot</span>
+  </div>
+  <div class="cmp-col">
+    <div class="cmp-h">Overfit</div>
+    <ul><li>train: <b>great</b></li><li>test: <b>bad</b></li></ul>
+    <span class="cmp-tag">high variance — memorized noise</span>
+  </div>
+</div>
 ```
 
 **Try it.** Drag the model complexity below. Degree 1–2 underfits (both errors high);

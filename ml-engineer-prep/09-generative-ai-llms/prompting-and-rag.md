@@ -28,9 +28,22 @@ giving the model the relevant facts at query time.
 
 ## How RAG works
 
-```
-question → embed → search a vector DB for similar chunks → retrieve top-k docs
-→ stuff them into the prompt → LLM answers grounded in those docs (+ cites them)
+```rawhtml
+<div class="diagram">
+  <div class="flow">
+    <span class="node data">question</span>
+    <span class="arw"></span>
+    <span class="node">embed</span>
+    <span class="arw"></span>
+    <span class="node">search vector DB<span class="nsub">similar chunks</span></span>
+    <span class="arw"></span>
+    <span class="node">retrieve top-k docs</span>
+    <span class="arw"></span>
+    <span class="node">stuff into prompt</span>
+    <span class="arw"></span>
+    <span class="node out">grounded answer<span class="nsub">+ citations</span></span>
+  </div>
+</div>
 ```
 
 1. **Index (offline):** split your documents into chunks, convert each to an **embedding**

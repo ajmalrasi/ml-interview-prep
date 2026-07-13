@@ -9,9 +9,11 @@ did PTQ and QAT; this page is the numeric layer underneath them that NVIDIA will
 
 Quantization is an **affine map** between a real value `r` and an integer `q`:
 
-```
-  r ≈ scale · (q − zero_point)          # dequantize
-  q  = round(r / scale) + zero_point    # quantize, then clamp to [qmin, qmax]
+```rawhtml
+<div class="formula">
+  <div class="frow"><span class="fexpr">r ≈ <span class="fv">scale</span> · (q − <span class="fv">zero_point</span>)</span><span class="fnote">dequantize</span></div>
+  <div class="frow"><span class="fexpr">q = round(r / <span class="fv">scale</span>) + <span class="fv">zero_point</span></span><span class="fnote">quantize, then clamp to [qmin, qmax]</span></div>
+</div>
 ```
 
 - **scale** (a float) — the size of one integer step in real units.

@@ -26,8 +26,10 @@ The performance mantra: **keep the tensor cores fed and minimize trips to global
 Every kernel has an **arithmetic intensity** = FLOPs performed per byte moved from memory.
 Achievable performance is:
 
-```
-  perf = min( peak_compute,  memory_bandwidth × arithmetic_intensity )
+```rawhtml
+<div class="formula">
+  <div class="frow"><span class="fexpr">perf = min( <span class="fv">peak_compute</span>,  <span class="fv">memory_bandwidth</span> × <span class="fv">arithmetic_intensity</span> )</span></div>
+</div>
 ```
 
 ```rawhtml

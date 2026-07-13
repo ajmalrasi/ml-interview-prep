@@ -10,12 +10,21 @@ architecture families at a level you can talk about.
 A network is layers of "neurons," each computing a weighted sum of its inputs passed
 through a non-linear **activation** (ReLU). Training is a loop:
 
-```
-forward pass: inputs → layers → prediction
-loss: how wrong is the prediction?
-backprop: compute how each weight contributed to the error (gradients)
-update: nudge weights to reduce the error (gradient descent)
-repeat over many batches (epochs)
+```rawhtml
+<div class="diagram">
+  <div class="loopwrap">
+    <div class="vflow">
+      <span class="node">forward pass<span class="nsub">inputs → layers → prediction</span></span>
+      <span class="varw"></span>
+      <span class="node">loss<span class="nsub">how wrong is the prediction?</span></span>
+      <span class="varw"></span>
+      <span class="node">backprop<span class="nsub">how each weight contributed to the error (gradients)</span></span>
+      <span class="varw"></span>
+      <span class="node out">update<span class="nsub">nudge weights down the gradient</span></span>
+    </div>
+    <span class="loop-back"><span class="lb-arw"></span> repeat over many batches (epochs)</span>
+  </div>
+</div>
 ```
 
 The magic is that with enough layers and data, the network **learns its own features**

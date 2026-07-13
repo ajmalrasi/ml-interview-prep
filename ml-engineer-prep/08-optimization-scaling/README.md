@@ -21,12 +21,26 @@ serving is prohibitively costly.
 
 ## The mental split
 
-```
-make the MODEL cheaper        make the SYSTEM scale
- quantization (lower precision) distributed training (more GPUs)
- pruning (remove weights)       batching (more per GPU pass)
- distillation (small student)   caching (skip recompute)
-                                autoscaling (match load, §7)
+```rawhtml
+<div class="compare">
+  <div class="cmp-col accent">
+    <div class="cmp-h">Make the MODEL cheaper</div>
+    <ul>
+      <li>quantization (lower precision)</li>
+      <li>pruning (remove weights)</li>
+      <li>distillation (small student)</li>
+    </ul>
+  </div>
+  <div class="cmp-col blue">
+    <div class="cmp-h">Make the SYSTEM scale</div>
+    <ul>
+      <li>distributed training (more GPUs)</li>
+      <li>batching (more per GPU pass)</li>
+      <li>caching (skip recompute)</li>
+      <li>autoscaling (match load, §7)</li>
+    </ul>
+  </div>
+</div>
 ```
 
 → Start: **[model-compression.md](model-compression.md)**

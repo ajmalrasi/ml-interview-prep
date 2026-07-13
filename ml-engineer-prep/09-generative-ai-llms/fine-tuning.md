@@ -30,9 +30,19 @@ small number of new ones. **LoRA** is the popular method: it injects tiny low-ra
 getting most of full fine-tuning's benefit at a fraction of the cost and memory.
 **QLoRA** goes further, fine-tuning on top of a quantized model so it fits on a single GPU.
 
-```
-Full FT:  update all N billion weights           → expensive, full copy per task
-LoRA:     freeze them, train small adapters (<1%) → cheap, swap adapters per task
+```rawhtml
+<div class="compare">
+  <div class="cmp-col">
+    <div class="cmp-h">Full fine-tuning</div>
+    <p>Update <b>all N billion</b> weights.</p>
+    <span class="cmp-tag">expensive · full model copy per task</span>
+  </div>
+  <div class="cmp-col green">
+    <div class="cmp-h">LoRA (PEFT)</div>
+    <p>Freeze the model, train <b>small adapters (&lt;1%)</b>.</p>
+    <span class="cmp-tag">cheap · swap adapters per task</span>
+  </div>
+</div>
 ```
 
 The bonus: LoRA adapters are small and **swappable** — one base model can serve many tasks

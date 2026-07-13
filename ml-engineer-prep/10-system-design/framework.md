@@ -36,10 +36,18 @@ A/B test (section 4), drift and quality monitoring (section 6), and a retraining
 Most large-scale ranking/recommendation/search systems use it, because scoring millions of
 items per request with a heavy model is impossible in real time:
 
-```
-millions of items
-   → CANDIDATE GENERATION (cheap, fast, high recall) → ~hundreds
-   → RANKING (expensive, accurate model) → ordered top-N → user
+```rawhtml
+<div class="diagram">
+  <div class="flow">
+    <span class="node data">millions of items</span>
+    <span class="arw"></span>
+    <span class="node">CANDIDATE GENERATION<span class="nsub">cheap · fast · high recall</span></span>
+    <span class="arw labeled"><span class="al">~hundreds</span></span>
+    <span class="node">RANKING<span class="nsub">expensive · accurate</span></span>
+    <span class="arw labeled"><span class="al">top-N</span></span>
+    <span class="node out">user</span>
+  </div>
+</div>
 ```
 
 ## Talk trade-offs out loud

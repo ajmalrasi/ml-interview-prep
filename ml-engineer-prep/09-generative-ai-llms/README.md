@@ -24,11 +24,17 @@ to fine-tune, and how to keep an LLM app reliable and affordable.
 
 ## The decision spine (hold this in your head)
 
-```
-Need the LLM to do X?
-  → try PROMPTING first (cheapest, fastest)
-  → needs your private/fresh knowledge? add RAG (retrieval)
-  → needs a specific style/behavior prompting can't get? FINE-TUNE
+```rawhtml
+<div class="diagram">
+  <table class="maptable">
+    <thead><tr><th>Need the LLM to do X?</th><th class="marw"></th><th>Reach for…</th></tr></thead>
+    <tbody>
+      <tr><td class="mfrom">start here</td><td class="marw"></td><td class="mto"><b>PROMPTING</b> — cheapest, fastest</td></tr>
+      <tr><td class="mfrom">needs your private / fresh knowledge</td><td class="marw"></td><td class="mto">add <b>RAG</b> (retrieval)</td></tr>
+      <tr><td class="mfrom">needs a style / behavior prompting can't get</td><td class="marw"></td><td class="mto"><b>FINE-TUNE</b></td></tr>
+    </tbody>
+  </table>
+</div>
 ```
 
 → Start: **[transformers-and-llms.md](transformers-and-llms.md)**

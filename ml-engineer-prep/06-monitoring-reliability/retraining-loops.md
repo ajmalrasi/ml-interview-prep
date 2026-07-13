@@ -27,10 +27,35 @@ the **evaluation gate**: a newly retrained model only gets promoted if it beats 
 *and* the current production model on a fresh holdout. Automation without a quality gate
 just ships bad models faster.
 
-```
-new data → retrain → evaluate vs production on holdout
-   → better? → register → canary rollout (§5) → monitor (§6)
-   → worse?  → keep current model, alert
+```rawhtml
+<div class="diagram">
+  <div class="branch">
+    <div class="flow">
+      <span class="node data">new data</span>
+      <span class="arw"></span>
+      <span class="node">retrain</span>
+      <span class="arw"></span>
+      <span class="node">evaluate vs production<span class="nsub">on holdout</span></span>
+    </div>
+    <span class="split-arw"></span>
+    <div class="fork" style="flex-direction:column; gap:12px">
+      <div class="flow">
+        <span class="node out">better ✓</span>
+        <span class="arw tiny"></span>
+        <span class="node">register</span>
+        <span class="arw tiny"></span>
+        <span class="node">canary rollout <span class="nsub">§5</span></span>
+        <span class="arw tiny"></span>
+        <span class="node">monitor <span class="nsub">§6</span></span>
+      </div>
+      <div class="flow">
+        <span class="node ghost">worse ✗</span>
+        <span class="arw tiny"></span>
+        <span class="node soft">keep current model · alert</span>
+      </div>
+    </div>
+  </div>
+</div>
 ```
 
 ## Don't trust a retrain blindly

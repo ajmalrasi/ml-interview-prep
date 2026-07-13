@@ -21,8 +21,20 @@ page loads. This is what most people mean by "deploying a model." It needs an
 always-running, **low-latency, scalable** service, which brings concerns like autoscaling,
 p99 latency, and load balancing (sections 7–8).
 
-```
-request → API (load balancer) → model service (N replicas) → prediction → response
+```rawhtml
+<div class="diagram">
+  <div class="flow">
+    <span class="node data">request</span>
+    <span class="arw"></span>
+    <span class="node">API<span class="nsub">load balancer</span></span>
+    <span class="arw"></span>
+    <span class="node">model service<span class="nsub">N replicas</span></span>
+    <span class="arw"></span>
+    <span class="node">prediction</span>
+    <span class="arw"></span>
+    <span class="node out">response</span>
+  </div>
+</div>
 ```
 
 ## Streaming serving

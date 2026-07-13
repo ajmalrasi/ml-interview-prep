@@ -23,9 +23,24 @@ Regular CI/CD tests code. ML pipelines also need to test the things that make ML
   register — so retraining is a repeatable pipeline, not a person in a notebook. This is
   sometimes called **Continuous Training (CT)**, the extra "CT" in MLOps.
 
-```
-code/data change → CI (tests + data checks) → train pipeline → evaluate vs prod
-→ if better & valid → register → CD (staged rollout) → monitor (§6)
+```rawhtml
+<div class="diagram">
+  <div class="flow">
+    <span class="node data">code / data change</span>
+    <span class="arw"></span>
+    <span class="node">CI<span class="nsub">tests + data checks</span></span>
+    <span class="arw"></span>
+    <span class="node">train pipeline</span>
+    <span class="arw"></span>
+    <span class="node">evaluate vs prod</span>
+    <span class="arw labeled"><span class="al">if better &amp; valid</span></span>
+    <span class="node">register</span>
+    <span class="arw"></span>
+    <span class="node">CD<span class="nsub">staged rollout</span></span>
+    <span class="arw"></span>
+    <span class="node out">monitor <span class="nsub">§6</span></span>
+  </div>
+</div>
 ```
 
 ## Safe rollout strategies
