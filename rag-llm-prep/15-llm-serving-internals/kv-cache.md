@@ -17,11 +17,19 @@ step.
 The **KV cache** just stores them. Token 501 computes only its own K/V pair,
 then attends to the 500 cached ones.
 
-```
-without cache:  step 501 = recompute K,V for tokens 1..500  + compute token 501
-with cache:     step 501 =        (read cache)              + compute token 501
-
-per-step work:  O(n) recompute  →  O(1) new work + cache reads
+```rawhtml
+<div class="compare">
+  <div class="cmp-col">
+    <div class="cmp-h">Without cache</div>
+    <p>Step 501 = <b>recompute</b> K,V for tokens 1..500 + compute token 501.</p>
+    <span class="cmp-tag">O(n) per step</span>
+  </div>
+  <div class="cmp-col green">
+    <div class="cmp-h">With KV cache</div>
+    <p>Step 501 = <b>read cache</b> + compute token 501 only.</p>
+    <span class="cmp-tag">O(1) new work + cache reads</span>
+  </div>
+</div>
 ```
 
 Plain version: instead of re-reading the whole conversation before writing

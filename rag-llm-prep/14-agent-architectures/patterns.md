@@ -22,14 +22,12 @@ sub-agent reports back to the supervisor, never to each other directly.
 Most production multi-agent systems converge on this pattern.
 Why: one point of control, one place to look when something goes wrong.
 
-```
-single:        [ agent ] ──uses──→ tools
-
-peer:          [ agent A ] ↔ [ agent B ] ↔ [ agent C ]     (no one in charge)
-
-supervisor:            [ supervisor ]
-                       ↙      ↓      ↘
-              [ agent A ] [ agent B ] [ agent C ]          (all report back up)
+```rawhtml
+<div class="diagram"><div class="vflow" style="align-items:stretch;gap:14px">
+  <div class="flow"><span class="flow-lbl">single</span><span class="node">agent</span><span class="arw labeled"><span class="al">uses</span></span><span class="node soft">tools</span></div>
+  <div class="flow"><span class="flow-lbl">peer</span><span class="node">agent A</span><span class="arw tiny"></span><span class="node">agent B</span><span class="arw tiny"></span><span class="node">agent C</span><span class="flow-lbl">no one in charge</span></div>
+  <div class="branch"><span class="flow-lbl">supervisor</span><span class="node">supervisor</span><span class="split-arw"></span><div class="fork"><span class="node soft">agent A</span><span class="node soft">agent B</span><span class="node soft">agent C</span></div><span class="flow-lbl">all report back up</span></div>
+</div></div>
 ```
 
 Plain version: a single agent is one person doing the research, writing,

@@ -7,14 +7,14 @@ the new length becomes exactly 1.0.
 
 Given a vector **v**, its L2 norm (length) is:
 
-```
-‖v‖ = √(v₁² + v₂² + v₃² + ... + vₙ²)
+```rawhtml
+<div class="formula"><div class="frow"><span class="fexpr"><span class="fv">‖v‖</span> = √(v₁² + v₂² + v₃² + … + vₙ²)</span><span class="fnote">the L2 norm = the vector's length</span></div></div>
 ```
 
 The normalized vector is:
 
-```
-v̂ = v / ‖v‖
+```rawhtml
+<div class="formula"><div class="frow"><span class="fexpr"><span class="fv">v̂</span> = v / ‖v‖</span><span class="fnote">divide by length → a unit vector</span></div></div>
 ```
 
 Each element is divided by the total length.
@@ -29,11 +29,11 @@ v = [1.0, 2.0, 3.0]
 ```
 
 **Step 1 — Calculate the length:**
-```
-‖v‖ = √(1.0² + 2.0² + 3.0²)
-    = √(1.0 + 4.0 + 9.0)
-    = √14.0
-    ≈ 3.742
+```rawhtml
+<div class="formula">
+  <div class="frow"><span class="fexpr">‖v‖ = √(1.0² + 2.0² + 3.0²)</span></div>
+  <div class="frow"><span class="fexpr">= √(1.0 + 4.0 + 9.0) = √14.0 ≈ <span class="fv">3.742</span></span></div>
+</div>
 ```
 
 **Step 2 — Divide each element by the length:**
@@ -43,11 +43,11 @@ v̂ = [1.0/3.742,  2.0/3.742,  3.0/3.742]
 ```
 
 **Step 3 — Verify the new length is 1.0:**
-```
-‖v̂‖ = √(0.267² + 0.535² + 0.802²)
-     = √(0.071 + 0.286 + 0.643)
-     = √1.000
-     = 1.0  ✓
+```rawhtml
+<div class="formula">
+  <div class="frow"><span class="fexpr">‖v̂‖ = √(0.267² + 0.535² + 0.802²)</span></div>
+  <div class="frow"><span class="fexpr">= √(0.071 + 0.286 + 0.643) = √1.000 = <span class="fv">1.0</span> ✓</span></div>
+</div>
 ```
 
 ---

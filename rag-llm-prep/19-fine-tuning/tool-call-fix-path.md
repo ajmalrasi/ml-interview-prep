@@ -13,16 +13,17 @@ closed model to an open one on the beast GPU. Watch tool-call reliability
 regress — schema drift, malformed arguments. Then fix it in a specific
 **cost order**:
 
-```
-regression detected: tool-call validity 99% → 81% after model swap
-        │
-   1. prompting          hours   few-shot examples, tighter tool descriptions
-        │ not enough?
-   2. constrained        days    Outlines/XGrammar — invalid JSON becomes
-      decoding                   *impossible* at the token level
-        │ still short?
-   3. QLoRA fine-tune    weeks   needs a training set of correct tool calls,
-                                 GPU time, before/after eval
+```rawhtml
+<div class="diagram">
+  <div class="diagram-cap" style="margin:0 0 10px">Regression: tool-call validity <b>99% → 81%</b> after a model swap. Escalate only as far as needed:</div>
+  <div class="vflow" style="align-items:stretch">
+    <span class="node">1 · Prompting <span class="nsub">hours — few-shot examples, tighter tool descriptions</span></span>
+    <span class="varw" title="not enough?"></span>
+    <span class="node">2 · Constrained decoding <span class="nsub">days — Outlines / XGrammar make invalid JSON impossible at the token level</span></span>
+    <span class="varw" title="still short?"></span>
+    <span class="node out">3 · QLoRA fine-tune <span class="nsub">weeks — needs a training set of correct tool calls, GPU time, before/after eval</span></span>
+  </div>
+</div>
 ```
 
 1. **Prompting changes first.** Cheapest to try. Few-shot examples of

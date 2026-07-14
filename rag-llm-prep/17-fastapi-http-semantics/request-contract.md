@@ -29,13 +29,18 @@ This is why DocsMind never hand-writes `request.json()` parsing or manual
 validation. The type hints *are* the contract, enforced at the framework
 boundary.
 
-```
-raw JSON body
-     ↓ parse            ← FastAPI, from the annotation
-     ↓ validate         ← pydantic; failure = 422, handler never runs
-QueryRequest object → your handler → QueryResponse object
-     ↓ filter + serialize   ← response_model
-JSON over the wire
+```rawhtml
+<div class="diagram"><div class="vflow">
+  <span class="node data">raw JSON body</span>
+  <span class="varw" title="parse — FastAPI, from the annotation"></span>
+  <span class="node">parse<span class="nsub">FastAPI, from the type annotation</span></span>
+  <span class="varw" title="validate"></span>
+  <span class="node">validate<span class="nsub">pydantic — failure = 422, handler never runs</span></span>
+  <span class="varw"></span>
+  <span class="node">your handler<span class="nsub">QueryRequest → QueryResponse</span></span>
+  <span class="varw" title="filter + serialize via response_model"></span>
+  <span class="node out">JSON over the wire<span class="nsub">filtered + serialized by response_model</span></span>
+</div></div>
 ```
 
 ## `response_model` is a security boundary

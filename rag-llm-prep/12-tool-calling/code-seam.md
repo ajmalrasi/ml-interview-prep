@@ -51,14 +51,16 @@ The `VectorStore` and `LLMClient` abstractions were built so each layer can
 be swapped without the others noticing. Tool calling respects the same
 discipline:
 
-```
-RAGPipeline.query()          ← unchanged for the simple path
-        │
-docsmind/agent/  (new loop)  ← the ONLY place that knows about iteration
-        │
-LLMClient.generate_with_tools()  ← contract widened, both clients implement it
-        │
-retrieve() / web_search() / ...  ← plain functions, registered by schema
+```rawhtml
+<div class="diagram"><div class="vflow" style="align-items:stretch">
+  <span class="node">RAGPipeline.query()<span class="nsub">unchanged for the simple path</span></span>
+  <span class="varw"></span>
+  <span class="node soft">docsmind/agent/ — new loop<span class="nsub">the ONLY place that knows about iteration</span></span>
+  <span class="varw"></span>
+  <span class="node">LLMClient.generate_with_tools()<span class="nsub">contract widened, both clients implement it</span></span>
+  <span class="varw"></span>
+  <span class="node out">retrieve() / web_search() / …<span class="nsub">plain functions, registered by schema</span></span>
+</div></div>
 ```
 
 The agent loop knows about tools. The pipeline doesn't. The tools don't know

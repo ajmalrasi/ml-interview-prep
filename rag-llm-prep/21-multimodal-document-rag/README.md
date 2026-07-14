@@ -10,14 +10,19 @@ document useful.
 **Where in the pipeline:** almost entirely the **Ingest** stage — before
 chunking even starts.
 
-```
-today:   .md/.txt/.rst/.py files → SimpleDirectoryReader → plain text → chunk...
-
-needed:  PDF w/ tables → layout-aware parser → table → markdown/text
-         PDF w/ scans  → OCR                 → text
-         PDF w/ charts → vision model        → text description
-                                    ↓ (all converge here)
-                              same chunk → embed → index → ... pipeline
+```rawhtml
+<div class="diagram">
+  <div class="flow" style="margin-bottom:12px"><span class="flow-lbl">today:</span><span class="node data">.md/.txt/.rst/.py</span><span class="arw"></span><span class="node">SimpleDirectoryReader</span><span class="arw"></span><span class="node">plain text</span><span class="arw"></span><span class="node out">chunk…</span></div>
+  <div class="lanes">
+    <div class="lane-stack">
+      <span class="node soft">PDF w/ tables → layout-aware parser</span>
+      <span class="node soft">PDF w/ scans → OCR</span>
+      <span class="node soft">PDF w/ charts → vision model</span>
+    </div>
+    <span class="merge-arw" title="all converge"></span>
+    <span class="node out">same chunk → embed → index → … pipeline</span>
+  </div>
+</div>
 ```
 
 ## Files in this folder

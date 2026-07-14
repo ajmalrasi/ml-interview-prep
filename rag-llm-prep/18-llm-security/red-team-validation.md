@@ -50,13 +50,16 @@ A red-team eval set: adversarial inputs — injection attempts, jailbreak
 templates, PII-bearing questions — run through the pipeline, scored on
 whether the guardrail held.
 
-```
-red-team set (labeled)          run through pipeline          score
-─────────────────────           ───────────────────           ─────
-20 injection payloads      →    did any change behavior?  →   held / broke
-20 jailbreak templates     →    did any bypass refusal?   →   held / broke
-20 PII-bearing questions   →    did PII reach the LLM/logs? → held / broke
-RBAC probe set             →    any cross-user leakage?   →   held / broke
+```rawhtml
+<div class="diagram"><table class="maptable">
+  <thead><tr><th>Red-team set (labeled)</th><th class="marw"></th><th>Run through pipeline → score</th></tr></thead>
+  <tbody>
+    <tr><td class="mfrom">20 injection payloads</td><td class="marw"></td><td class="mto">did any change behavior? → held / broke</td></tr>
+    <tr><td class="mfrom">20 jailbreak templates</td><td class="marw"></td><td class="mto">did any bypass refusal? → held / broke</td></tr>
+    <tr><td class="mfrom">20 PII-bearing questions</td><td class="marw"></td><td class="mto">did PII reach the LLM / logs? → held / broke</td></tr>
+    <tr><td class="mfrom">RBAC probe set</td><td class="marw"></td><td class="mto">any cross-user leakage? → held / broke</td></tr>
+  </tbody>
+</table></div>
 ```
 
 Same eval-first discipline as retrieval

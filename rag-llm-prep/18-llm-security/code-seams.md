@@ -6,12 +6,14 @@ for gating them (`rerank_enabled` → `pii_masking_enabled`).
 
 ## Insertion points, one per problem
 
-```
-question ──[jailbreak classifier]──→ retrieve ──[RBAC filter]──→ candidates
-                                                                      │
-        answer ←──[output moderation]── generate ←──[injection check]─┤
-           │                                 ▲                        │
-       response                     [PII mask, inbound]        _build_context()
+```rawhtml
+<div class="diagram"><div class="vflow" style="align-items:stretch">
+  <div class="flow"><span class="node data">question</span><span class="arw labeled"><span class="al">jailbreak classifier</span></span><span class="node">retrieve</span><span class="arw labeled"><span class="al">RBAC filter</span></span><span class="node">candidates</span></div>
+  <span class="varw" title="injection check + PII mask at _build_context()"></span>
+  <div class="flow"><span class="node">generate</span><span class="arw labeled"><span class="al">output moderation</span></span><span class="node out">answer → response</span></div>
+</div>
+<div class="flow-foot">Security lives in the <b>seams</b>: injection check + PII mask on the way in (<code>_build_context()</code>), moderation on the way out.</div>
+</div>
 ```
 
 - **PII masking / content moderation:** a filter step at two checkpoints in

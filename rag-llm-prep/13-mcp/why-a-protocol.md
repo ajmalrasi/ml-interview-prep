@@ -14,15 +14,19 @@ You hand-write your `retrieve` schema. Someone else hand-writes their
 Build ten agent projects, and you write the same "GitHub tool" glue ten
 times. And nobody else's agent can reuse yours.
 
-```
-the N × M problem:            with a standard:
-
- agent A ──┬── github glue     agent A ──┐
-           ├── slack glue                ├── one protocol ── github server
- agent B ──┬── github glue     agent B ──┤                └─ slack server
-           ├── slack glue                │
- agent C ──┴── ...             agent C ──┘
- (every pair hand-wired)       (any client ↔ any server)
+```rawhtml
+<div class="compare">
+  <div class="cmp-col">
+    <div class="cmp-h">The N × M problem</div>
+    <p>Every agent hand-wires bespoke glue to every tool — <b>github glue</b>, <b>slack glue</b>, … for A, B, C.</p>
+    <span class="cmp-tag">every pair hand-wired</span>
+  </div>
+  <div class="cmp-col green">
+    <div class="cmp-h">With a standard (MCP)</div>
+    <p>Every agent speaks <b>one protocol</b>; each tool is a server. Any client ↔ any server.</p>
+    <span class="cmp-tag">N + M, not N × M</span>
+  </div>
+</div>
 ```
 
 **MCP (Model Context Protocol)** is Anthropic's open standard that fixes

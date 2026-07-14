@@ -6,10 +6,27 @@ anytime. Topics 1–8 cover Phase 1 (the core pipeline); 9–10 cover Phases
 2–3 (better retrieval); 11–21 map the concepts the next phases and the
 target role need.
 
-```
-documents → chunk → embed → normalize → store in FAISS
-                                              ↓
-question  → embed ──────────────────→ search FAISS → top-k chunks → Claude → answer + citations
+```rawhtml
+<div class="diagram">
+  <div class="vflow">
+    <div class="flow">
+      <span class="node data">documents</span><span class="arw"></span>
+      <span class="node">chunk</span><span class="arw"></span>
+      <span class="node">embed</span><span class="arw"></span>
+      <span class="node">normalize</span><span class="arw"></span>
+      <span class="node soft">store in FAISS</span>
+    </div>
+    <span class="varw" title="index is queried"></span>
+    <div class="flow">
+      <span class="node data">question</span><span class="arw"></span>
+      <span class="node">embed</span><span class="arw"></span>
+      <span class="node">search FAISS</span><span class="arw"></span>
+      <span class="node">top-k chunks</span><span class="arw"></span>
+      <span class="node">Claude</span><span class="arw"></span>
+      <span class="node out">answer + citations</span>
+    </div>
+  </div>
+</div>
 ```
 
 ## The core pipeline (Phase 1)

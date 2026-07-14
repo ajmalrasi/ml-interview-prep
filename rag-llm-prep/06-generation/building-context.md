@@ -4,6 +4,14 @@
 `[1]`, `[2]`, `[3]`, `[4]`. These numbers are what make citations possible —
 the model cites by number, and the pipeline maps each number back to a file.
 
+**Budget the window.** Retrieved chunks, the prompt, and the reserved answer all share one
+context window. Push `k` or tokens-per-chunk up and watch it overflow — the real reason you
+can't just "retrieve more."
+
+```rawhtml
+<div id="context-widget" class="widget-host"></div>
+```
+
 ## The raw FAISS output
 
 After FAISS search, the pipeline has (real values for *"How do black holes

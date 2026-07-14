@@ -41,14 +41,18 @@ dashboard.
   the eval baseline on a schedule. For DocsMind today this is genuinely
   unplanned/frontier — closer to an MLOps concern than a RAG one.
 
-```
-RAGPipeline.query()
-   ├─ answer → user                       (unchanged)
-   └─ event {latency_ms, tokens_in/out, model, retrieval_mode}
-          → Langfuse                      (Phase 7 wiring)
-
-nightly:  golden set → pipeline → RAGAS scores → history
-                                         └─ compare vs baseline = drift signal
+```rawhtml
+<div class="diagram">
+  <div class="branch">
+    <span class="node">RAGPipeline.query()</span>
+    <span class="split-arw"></span>
+    <div class="fork" style="flex-direction:column;gap:8px">
+      <span class="node out">answer → user <span class="nsub">unchanged</span></span>
+      <span class="node soft">event {latency_ms, tokens, model, retrieval_mode} → Langfuse <span class="nsub">Phase 7 wiring</span></span>
+    </div>
+  </div>
+  <div class="flow" style="margin-top:12px"><span class="flow-lbl">nightly:</span><span class="node data">golden set</span><span class="arw"></span><span class="node">pipeline</span><span class="arw"></span><span class="node">RAGAS scores</span><span class="arw"></span><span class="node out">vs baseline = drift signal</span></div>
+</div>
 ```
 
 ## Averages hide the incidents

@@ -21,17 +21,23 @@ pattern applied one layer earlier.
    index never learn which extraction path produced the text.
 4. **Everything from chunking onward is unchanged.**
 
-```
-            incoming document
-                  │
-             [ classify ]        ← cheap: text layer? tables? images?
-        ┌────┬────┴────┬─────┐
-   digital  table    scan   chart
-     text  parser    OCR    vision
-        └────┴────┬────┴─────┘
-             [ normalize ]       ← all become LlamaIndex Document objects
-                  │
-        chunk → embed → index → ...   (existing pipeline, untouched)
+```rawhtml
+<div class="diagram"><div class="vflow">
+  <span class="node data">incoming document</span>
+  <span class="varw"></span>
+  <span class="node">classify<span class="nsub">cheap — text layer? tables? images?</span></span>
+  <span class="varw"></span>
+  <div class="flow">
+    <span class="node soft">digital text</span>
+    <span class="node soft">table → parser</span>
+    <span class="node soft">scan → OCR</span>
+    <span class="node soft">chart → vision</span>
+  </div>
+  <span class="varw" title="all converge"></span>
+  <span class="node">normalize<span class="nsub">all become LlamaIndex Document objects</span></span>
+  <span class="varw"></span>
+  <span class="node out">chunk → embed → index → …<span class="nsub">existing pipeline, untouched</span></span>
+</div></div>
 ```
 
 This is DocsMind's `VectorStore`/`LLMClient` abstraction pattern, applied

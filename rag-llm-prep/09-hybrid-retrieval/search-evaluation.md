@@ -5,10 +5,14 @@ chunks come back, and were they ranked well? It stops before the LLM. Nothing
 here is about the answer's wording, correctness, or hallucination (that's
 answer/LLM evaluation, a different box — Phase 6).
 
-```
-Query → Embed → [ SEARCH ] → Rerank → Generate → Cite
-                    ▲
-        everything below grades ONLY this box
+```rawhtml
+<div class="diagram">
+  <div class="flow">
+    <span class="node data">Query</span><span class="arw"></span><span class="node">Embed</span><span class="arw"></span>
+    <span class="node soft">SEARCH</span><span class="arw"></span><span class="node">Rerank</span><span class="arw"></span><span class="node">Generate</span><span class="arw"></span><span class="node out">Cite</span>
+  </div>
+  <div class="flow-foot">Everything on this page grades <b>only the SEARCH box</b> — retrieval quality, isolated from generation.</div>
+</div>
 ```
 
 The real numbers these metrics produce on DocsMind live in
@@ -87,8 +91,8 @@ since you feed the LLM only the top few.
 
 ### MRR (Mean Reciprocal Rank)
 `1/rank` of the *first* relevant chunk, averaged over queries.
-```
-first relevant at rank 1 → 1.0 ;  rank 2 → 0.5 ;  rank 3 → 0.33
+```rawhtml
+<div class="formula"><div class="frow"><span class="fexpr">MRR: rank 1 → <span class="fv">1.0</span></span><span class="fexpr">rank 2 → <span class="fv">0.5</span></span><span class="fexpr">rank 3 → <span class="fv">0.33</span></span><span class="fnote">reciprocal of the first relevant rank</span></div></div>
 ```
 Only cares about the **first** hit. Perfect for "I need one good chunk, fast."
 

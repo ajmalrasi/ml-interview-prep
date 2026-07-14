@@ -25,12 +25,14 @@ The one-line version for an interview:
 
 ## Where each sits in the pipeline
 
-```
-Ingest → Chunk → Embed → Index → [Search → Generate → Cite]
-└────── LlamaIndex ──────┘         └── LangChain helps here ──┘
-
-            the loop AROUND the whole thing:
-            └── LangGraph (one loop) / CrewAI (many agents) ──┘
+```rawhtml
+<div class="diagram">
+  <div class="flow">
+    <span class="node data">Ingest</span><span class="arw tiny"></span><span class="node">Chunk</span><span class="arw tiny"></span><span class="node">Embed</span><span class="arw tiny"></span><span class="node">Index</span>
+    <span class="arw tiny"></span><span class="node soft">Search</span><span class="arw tiny"></span><span class="node soft">Generate</span><span class="arw tiny"></span><span class="node out">Cite</span>
+  </div>
+  <div class="flow-foot"><b>LlamaIndex</b> owns ingest→index · <b>LangChain</b> helps search→cite · <b>LangGraph</b> (one loop) / <b>CrewAI</b> (many agents) wrap the whole thing in a loop.</div>
+</div>
 ```
 
 They're not four answers to one question — they're answers to four

@@ -11,16 +11,19 @@ Naive batching groups N requests and waits for **all of them** to finish
 before starting the next batch. One long request stalls everyone behind it.
 The GPU sits idle waiting for the straggler.
 
-```
-static batch:      req A ████████████████████████  (long)
-                   req B ████░░░░░░░░░░░░░░░░░░░░  done early, slot wasted
-                   req C ██████░░░░░░░░░░░░░░░░░░  done early, slot wasted
-                   req D (queued)  ← waits for A to finish
-
-continuous:        req A ████████████████████████
-                   req B ████ → D slots in ██████████
-                   req C ██████ → E slots in ████████
-                            ▲ freed slots refill immediately, mid-batch
+```rawhtml
+<div class="compare">
+  <div class="cmp-col">
+    <div class="cmp-h">Static batching</div>
+    <p>A runs long; B and C <b>finish early but their slots sit idle</b> until the whole batch ends. D waits for A.</p>
+    <span class="cmp-tag">wasted GPU slots</span>
+  </div>
+  <div class="cmp-col green">
+    <div class="cmp-h">Continuous batching</div>
+    <p>As B and C finish, <b>D and E slot into the freed slots mid-batch</b> — the GPU never idles.</p>
+    <span class="cmp-tag">slots refill immediately</span>
+  </div>
+</div>
 ```
 
 ## How continuous batching works

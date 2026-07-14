@@ -22,14 +22,18 @@ parameters you touch*.
 They're not mutually exclusive: LoRA-based RLHF and full-parameter RLHF
 both exist.
 
-```
-     how many parameters?                what objective?
-   ┌──────────────────────┐          ┌──────────────────────┐
-   │ full fine-tune (all) │          │ supervised (SFT)     │
-   │ PEFT (few)           │    ×     │ preference (RLHF/DPO)│
-   │  └─ LoRA             │          └──────────────────────┘
-   │      └─ QLoRA        │       any row pairs with any column
-   └──────────────────────┘
+```rawhtml
+<div class="compare">
+  <div class="cmp-col accent">
+    <div class="cmp-h">How many parameters?</div>
+    <ul><li>full fine-tune (all)</li><li>PEFT (few)</li><li>└ LoRA</li><li>&nbsp;&nbsp;&nbsp;└ QLoRA</li></ul>
+  </div>
+  <div class="cmp-col blue">
+    <div class="cmp-h">What objective?</div>
+    <ul><li>supervised (SFT)</li><li>preference (RLHF / DPO)</li></ul>
+  </div>
+</div>
+<div class="flow-foot" style="text-align:center">Any row pairs with any column — e.g. <b>QLoRA + DPO</b>.</div>
 ```
 
 ## The memory math that makes QLoRA matter

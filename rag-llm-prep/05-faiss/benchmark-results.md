@@ -5,11 +5,20 @@
 Phase 1 hard-wired `flat` here; Phase 2 makes the index type a config dial and
 measures what each choice costs you.
 
-```
-Ingest → Chunk → Embed → [ INDEX ]      ← build time, memory
-Query  → Embed → [ SEARCH ] → Generate  ← latency, recall@k
-                     ▲
-            flat | ivf | hnsw | ivfpq   ← the only thing that changes
+```rawhtml
+<div class="diagram">
+  <div class="vflow">
+    <div class="flow">
+      <span class="node data">Ingest</span><span class="arw"></span><span class="node">Chunk</span><span class="arw"></span>
+      <span class="node">Embed</span><span class="arw"></span><span class="node soft">INDEX<span class="nsub">build time · memory</span></span>
+    </div>
+    <div class="flow">
+      <span class="node data">Query</span><span class="arw"></span><span class="node">Embed</span><span class="arw"></span>
+      <span class="node soft">SEARCH<span class="nsub">latency · recall@k</span></span><span class="arw"></span><span class="node out">Generate</span>
+    </div>
+  </div>
+  <div class="flow-foot">The index — <b>flat · ivf · hnsw · ivfpq</b> — is the only thing that changes.</div>
+</div>
 ```
 
 The previous doc ([phase1-vs-phase2.md](phase1-vs-phase2.md)) gave the *theory*.
@@ -59,13 +68,10 @@ Read it as **what you pay and what you get**:
 
 Same benchmark at **500,000 vectors** (10× the data):
 
-```
-              p50 latency
-index       50k  →  500k
------------------------------
-flat       0.78  →  7.22 ms     10× data = 10× slower   (linear scan)
-ivf        0.10  →  0.95 ms     stays ~1 ms             (probes a fixed slice)
-```
+| Index | p50 @ 50k | p50 @ 500k | Behavior |
+|---|---|---|---|
+| **flat** | 0.78 ms | 7.22 ms | 10× data = 10× slower (linear scan) |
+| **ivf** | 0.10 ms | 0.95 ms | stays ~1 ms (probes a fixed slice) |
 
 That single comparison is the reason approximate indexes exist. Flat's cost
 grows with the corpus; IVF's barely moves. At 50k, flat's 0.78 ms is fine —

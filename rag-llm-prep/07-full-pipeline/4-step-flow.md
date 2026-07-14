@@ -9,35 +9,16 @@
 make ingest
 ```
 
-```
-Step 1: LOAD
-  LlamaIndex SimpleDirectoryReader
-  → reads all files in data/sample_docs/
-  → produces: list of Document objects (raw text + filename)
-
-         ↓
-
-Step 2: CHUNK
-  LlamaIndex SentenceSplitter (chunk_size=512, chunk_overlap=64)
-  → splits each Document into overlapping pieces
-  → produces: list of Chunk objects
-              each has: id, text (~380 words), source (filename), metadata
-
-         ↓
-
-Step 3: EMBED
-  sentence-transformers bge-small-en-v1.5
-  → converts each chunk's text to a 384-float vector
-  → normalizes each vector to length 1.0 (L2 normalization)
-  → produces: numpy array of shape (N_chunks, 384)
-
-         ↓
-
-Step 4: INDEX
-  FAISS IndexFlatIP
-  → stores all N vectors in a flat array in memory
-  → saves to disk: data/index/index.faiss + data/index/meta.json
-  → produces: a searchable index ready for queries
+```rawhtml
+<div class="diagram"><div class="vflow" style="align-items:stretch">
+  <span class="node data">1 · LOAD<span class="nsub">SimpleDirectoryReader reads data/sample_docs/ → list of Document objects (raw text + filename)</span></span>
+  <span class="varw"></span>
+  <span class="node">2 · CHUNK<span class="nsub">SentenceSplitter (size 512, overlap 64) → Chunk objects: id, text ~380 words, source, metadata</span></span>
+  <span class="varw"></span>
+  <span class="node">3 · EMBED<span class="nsub">bge-small-en-v1.5 → 384-float vector per chunk, L2-normalized → array (N, 384)</span></span>
+  <span class="varw"></span>
+  <span class="node out">4 · INDEX<span class="nsub">FAISS IndexFlatIP stores all N vectors, saves index.faiss + meta.json → searchable index</span></span>
+</div></div>
 ```
 
 ## Phase B: Query (every request)

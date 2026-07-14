@@ -86,11 +86,16 @@ A **red-team eval set** — and no claim of "it's secure" counts without one.
 Adversarial inputs run through the pipeline, scored on whether the guardrail
 held:
 
-```
-20 injection payloads   →  did any change behavior?    →  held / broke
-20 jailbreak templates  →  did any bypass refusal?     →  held / broke
-20 PII-bearing queries  →  did PII reach the LLM/logs? →  held / broke
-RBAC probe set          →  any cross-user leakage?     →  held / broke
+```rawhtml
+<div class="diagram"><table class="maptable">
+  <thead><tr><th>Probe set</th><th class="marw"></th><th>Question → verdict</th></tr></thead>
+  <tbody>
+    <tr><td class="mfrom">20 injection payloads</td><td class="marw"></td><td class="mto">did any change behavior? → held / broke</td></tr>
+    <tr><td class="mfrom">20 jailbreak templates</td><td class="marw"></td><td class="mto">did any bypass refusal? → held / broke</td></tr>
+    <tr><td class="mfrom">20 PII-bearing queries</td><td class="marw"></td><td class="mto">did PII reach the LLM / logs? → held / broke</td></tr>
+    <tr><td class="mfrom">RBAC probe set</td><td class="marw"></td><td class="mto">any cross-user leakage? → held / broke</td></tr>
+  </tbody>
+</table></div>
 ```
 
 Same eval-first discipline as retrieval and faithfulness: the test set gets

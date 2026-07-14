@@ -8,16 +8,22 @@ with a stronger model. Each piece patches a specific weakness of the others.
 
 Phase 3 only touches the **Search** stage. Nothing before or after changes.
 
-```
-Ingest → Chunk → Embed → Index → [ SEARCH ] → Generate → Cite
-                                      ▲
-        ┌─────────────────────────────┘
-        │  question
-        │     ├─ embed → dense search   (by meaning)
-        │     └─ BM25 search            (by exact words)
-        │              ↓ Reciprocal Rank Fusion   (combine the two)
-        │              ↓ cross-encoder rerank      (optional, top few)
-        │              ↓ top_k chunks → LLM
+```rawhtml
+<div class="diagram">
+  <div class="flow" style="margin-bottom:12px">
+    <span class="node data">Ingest</span><span class="arw tiny"></span><span class="node">Chunk</span><span class="arw tiny"></span><span class="node">Embed</span><span class="arw tiny"></span><span class="node">Index</span><span class="arw tiny"></span><span class="node soft">SEARCH</span><span class="arw tiny"></span><span class="node">Generate</span><span class="arw tiny"></span><span class="node out">Cite</span>
+  </div>
+  <div class="lanes">
+    <div class="lane-stack">
+      <span class="node">embed → dense search<span class="nsub">by meaning</span></span>
+      <span class="node">BM25 search<span class="nsub">by exact words</span></span>
+    </div>
+    <span class="merge-arw" title="Reciprocal Rank Fusion"></span>
+    <span class="node soft">RRF fuse</span><span class="arw"></span>
+    <span class="node soft">rerank<span class="nsub">cross-encoder, top few</span></span><span class="arw"></span>
+    <span class="node out">top_k → LLM</span>
+  </div>
+</div>
 ```
 
 ## The three pieces, in plain words

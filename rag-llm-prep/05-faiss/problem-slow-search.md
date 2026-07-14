@@ -7,14 +7,19 @@ For millions of vectors it becomes too slow. FAISS solves this.
 
 You have 50 chunks, each a 384-dimensional vector. A question comes in.
 
-```
-Step 1: Embed the question → 384 numbers
-Step 2: Compare to chunk 1  → compute similarity score
-Step 3: Compare to chunk 2  → compute similarity score
-...
-Step 51: Compare to chunk 50 → compute similarity score
-Step 52: Sort all 50 scores
-Step 53: Return top-4
+```rawhtml
+<div class="diagram">
+  <div class="flow">
+    <span class="node data">embed question<span class="nsub">384 numbers</span></span>
+    <span class="arw"></span>
+    <span class="node soft">compare to <b>every</b> chunk<span class="nsub">50 similarity scores — O(N)</span></span>
+    <span class="arw"></span>
+    <span class="node">sort scores</span>
+    <span class="arw"></span>
+    <span class="node out">top-4</span>
+  </div>
+  <div class="flow-foot">The middle step scales linearly — 50 chunks is nothing, but 50M means 50M comparisons per query. That's the problem an index solves.</div>
+</div>
 ```
 
 Total comparisons: **50**. Time: **< 1ms**. No problem.
@@ -47,9 +52,19 @@ Phase 1 uses **#1** because the corpus is small. Phase 2 benchmarks **#2 and #3*
 
 ## The trade-off at the core of all this
 
-```
-Exact  → 100% recall, slower as scale grows
-Approx → ~95-99% recall, fast even at millions of vectors
+```rawhtml
+<div class="compare">
+  <div class="cmp-col">
+    <div class="cmp-h">Exact (flat)</div>
+    <p><b>100% recall</b> — checks every vector.</p>
+    <span class="cmp-tag">slower as scale grows</span>
+  </div>
+  <div class="cmp-col green">
+    <div class="cmp-h">Approximate (IVF / HNSW)</div>
+    <p><b>~95–99% recall</b> — checks a smart subset.</p>
+    <span class="cmp-tag">fast even at millions of vectors</span>
+  </div>
+</div>
 ```
 
 For most RAG applications, losing 1–5% of relevant results is acceptable

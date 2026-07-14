@@ -14,8 +14,12 @@ recall, and complexity. Phase 1 uses Flat. Phase 2 benchmarks the rest.
 - **Training:** None
 - **Good for:** Small corpora, ground-truth benchmarking
 
-```
-Query ──→ [compare to all N vectors] ──→ top-k
+```rawhtml
+<div class="diagram"><div class="flow">
+  <span class="node data">Query</span><span class="arw"></span>
+  <span class="node">compare to <b>all N</b> vectors</span><span class="arw"></span>
+  <span class="node out">top-k</span>
+</div></div>
 ```
 
 ### 2. IndexIVF (Inverted File)
@@ -28,9 +32,16 @@ Query ──→ [compare to all N vectors] ──→ top-k
 - **Training:** Requires running k-means on a representative sample first
 - **Good for:** 100k–10M vectors where exact search is too slow
 
-```
-Build: cluster all vectors into groups (k-means)
-Query ──→ [find closest nprobe groups] ──→ [compare to those vectors only] ──→ top-k
+```rawhtml
+<div class="diagram">
+  <div class="flow">
+    <span class="node data">Query</span><span class="arw"></span>
+    <span class="node">find closest <b>nprobe</b> groups</span><span class="arw"></span>
+    <span class="node">compare within those only</span><span class="arw"></span>
+    <span class="node out">top-k</span>
+  </div>
+  <div class="flow-foot"><b>Build:</b> cluster all vectors into groups (k-means).</div>
+</div>
 ```
 
 ### 3. IndexHNSW (Hierarchical Navigable Small World)
@@ -44,9 +55,15 @@ Query ──→ [find closest nprobe groups] ──→ [compare to those vectors
 - **Training:** None — graph is built incrementally as vectors are added
 - **Good for:** Up to ~5–10M vectors in RAM where latency is critical
 
-```
-Build: link each vector to its M nearest neighbors at each layer
-Query ──→ [start at top layer, greedy graph walk] ──→ top-k (approximate)
+```rawhtml
+<div class="diagram">
+  <div class="flow">
+    <span class="node data">Query</span><span class="arw"></span>
+    <span class="node">start at top layer, <b>greedy graph walk</b></span><span class="arw"></span>
+    <span class="node out">top-k <span class="nsub">approximate</span></span>
+  </div>
+  <div class="flow-foot"><b>Build:</b> link each vector to its M nearest neighbors at each layer.</div>
+</div>
 ```
 
 Key parameters:
@@ -63,9 +80,15 @@ Key parameters:
 - **Training:** Requires training the quantizer
 - **Good for:** Billion-scale corpora where you can't fit raw vectors in RAM
 
-```
-Compress: [0.267, 0.535, 0.802, ..., (384 floats)] → [42, 17, 8] (3 codes)
-Query ──→ [compare codes, not full floats] ──→ top-k (approximate, lossy)
+```rawhtml
+<div class="diagram">
+  <div class="flow">
+    <span class="node data">Query</span><span class="arw"></span>
+    <span class="node">compare <b>codes</b>, not full floats</span><span class="arw"></span>
+    <span class="node out">top-k <span class="nsub">approximate, lossy</span></span>
+  </div>
+  <div class="flow-foot"><b>Compress:</b> [0.267, 0.535, 0.802, … 384 floats] → [42, 17, 8] (3 codes).</div>
+</div>
 ```
 
 ---

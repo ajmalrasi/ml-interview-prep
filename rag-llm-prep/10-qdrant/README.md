@@ -10,10 +10,16 @@ about raw speed.
 Phase 2b only swaps the **Index** box. Same `VectorStore` contract, so the
 retriever and pipeline never learn which backend is underneath.
 
-```
-Ingest → Chunk → Embed → [ INDEX: faiss | qdrant ] → Search → Generate
-                              ▲
-                  the only thing that changes
+```rawhtml
+<div class="diagram">
+  <div class="flow">
+    <span class="node data">Ingest</span><span class="arw"></span><span class="node">Chunk</span><span class="arw"></span>
+    <span class="node">Embed</span><span class="arw"></span>
+    <span class="node soft">INDEX<span class="nsub">faiss | qdrant</span></span><span class="arw"></span>
+    <span class="node">Search</span><span class="arw"></span><span class="node out">Generate</span>
+  </div>
+  <div class="flow-foot">The index is <b>the only thing that changes</b> — everything else stays put.</div>
+</div>
 ```
 
 ## Embedded vs. service (the core idea)

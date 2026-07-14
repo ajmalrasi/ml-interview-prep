@@ -11,13 +11,17 @@ tool, look at the result, maybe call another"), the graph shape pays off.
 [tool calling](../12-tool-calling/README.md). Section 14 answered *which shape*
 (one loop vs many). This section answers *how you actually write it.*
 
-```
-today (RAGPipeline.query):   question → retrieve → generate → answer
-                                         (one straight function call)
-
-as a LangGraph:              START → [retrieve] → [generate] → END
-                                        node        node
-                                     └──── state flows along edges ────┘
+```rawhtml
+<div class="diagram">
+  <div class="vflow">
+    <div class="loopwrap" style="width:100%"><span class="loop-top">today · RAGPipeline.query — one straight function call</span>
+      <div class="flow"><span class="node data">question</span><span class="arw"></span><span class="node">retrieve</span><span class="arw"></span><span class="node">generate</span><span class="arw"></span><span class="node out">answer</span></div>
+    </div>
+    <div class="loopwrap" style="width:100%"><span class="loop-top">as a LangGraph — state flows along edges</span>
+      <div class="flow"><span class="node ghost">START</span><span class="arw"></span><span class="node">retrieve<span class="nsub">node</span></span><span class="arw"></span><span class="node">generate<span class="nsub">node</span></span><span class="arw"></span><span class="node ghost">END</span></div>
+    </div>
+  </div>
+</div>
 ```
 
 ## Why this section exists

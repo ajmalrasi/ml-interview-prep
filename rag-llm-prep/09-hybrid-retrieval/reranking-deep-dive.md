@@ -4,11 +4,18 @@
 RRF fusion and right before the top chunks go to the LLM. Everything upstream
 (dense, BM25, fusion) exists to hand the reranker a good shortlist.
 
-```
-question → dense ─┐
-                  ├→ RRF → ~20 candidates → [ RERANK ] → top_k → LLM
-question → BM25 ──┘                              ▲
-                                          this page
+```rawhtml
+<div class="diagram"><div class="lanes">
+  <div class="lane-stack">
+    <span class="node">question → dense</span>
+    <span class="node">question → BM25</span>
+  </div>
+  <span class="merge-arw"></span>
+  <span class="node soft">RRF</span><span class="arw"></span>
+  <span class="node">~20 candidates</span><span class="arw"></span>
+  <span class="node soft">RERANK<span class="nsub">this page</span></span><span class="arw"></span>
+  <span class="node out">top_k → LLM</span>
+</div></div>
 ```
 
 **Where in the code:** `CrossEncoderReranker` in

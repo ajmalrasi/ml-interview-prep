@@ -27,14 +27,13 @@ embedder.encode(["How do black holes form?"])
 FAISS compares the question vector to all 5 chunk vectors.
 Top-4 by inner product (= cosine similarity), real measured scores:
 
-```
-Score   Source
-0.8141  black_holes.md        ← direct hit
-0.6333  stellar_lifecycle.md  ← genuinely related (massive stars → black holes)
-0.5691  solar_system.md       ← same domain, off-topic
-0.5240  rocket_propulsion.md  ← same domain, off-topic
-0.5140  the_iss.md            ← 5th place, not in top-4
-```
+| Score | Source | |
+|---|---|---|
+| **0.8141** | `black_holes.md` | ← direct hit |
+| 0.6333 | `stellar_lifecycle.md` | ← genuinely related (massive stars → black holes) |
+| 0.5691 | `solar_system.md` | same domain, off-topic |
+| 0.5240 | `rocket_propulsion.md` | same domain, off-topic |
+| 0.5140 | `the_iss.md` | 5th place, not in top-4 |
 
 ---
 

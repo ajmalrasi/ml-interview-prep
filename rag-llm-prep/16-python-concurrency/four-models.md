@@ -25,12 +25,19 @@ The distinction that decides almost every question in this space:
 Async and threading in Python give you concurrency.
 Only multiprocessing gives you parallelism.
 
-```
-concurrency (1 core):   A──A    A──A          interleaved — progress on both,
-                            B──B    B──B      never simultaneous
-
-parallelism (2 cores):  A──A──A──A──A         literally at the same instant
-                        B──B──B──B──B
+```rawhtml
+<div class="compare">
+  <div class="cmp-col">
+    <div class="cmp-h">Concurrency · 1 core</div>
+    <p>Tasks A and B <b>interleave</b> — progress on both, but never at the same instant.</p>
+    <span class="cmp-tag">A─A · B─B · A─A · B─B</span>
+  </div>
+  <div class="cmp-col green">
+    <div class="cmp-h">Parallelism · 2 cores</div>
+    <p>A and B run <b>literally simultaneously</b>, one per core.</p>
+    <span class="cmp-tag">A─A─A─A ‖ B─B─B─B</span>
+  </div>
+</div>
 ```
 
 ## The GIL, in plain words

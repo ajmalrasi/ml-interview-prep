@@ -10,11 +10,18 @@ A normal edge always goes to the same next node. A **conditional edge** runs a
 small router function that *looks at the state* and returns the name of where to
 go next.
 
-```
-unconditional:   retrieve ────────────→ generate
-
-conditional:     retrieve ──┬─ chunks found? ──→ generate
-                            └─ empty?         ──→ refuse
+```rawhtml
+<div class="diagram">
+  <div class="flow" style="margin-bottom:10px"><span class="flow-lbl">unconditional:</span><span class="node">retrieve</span><span class="arw"></span><span class="node out">generate</span></div>
+  <div class="branch">
+    <span class="node">retrieve</span>
+    <span class="split-arw"></span>
+    <div class="fork">
+      <span class="node out">chunks found? → generate</span>
+      <span class="node ghost">empty? → refuse</span>
+    </div>
+  </div>
+</div>
 ```
 
 ## The guardrail as an edge

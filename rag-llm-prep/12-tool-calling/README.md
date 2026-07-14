@@ -9,16 +9,14 @@ Phase 5's agent needs.
 
 **Where in the pipeline:** at the **Generate** stage.
 
-```
-today:     question → retrieve(top_k) → ONE generate call → answer
-
-tool calling:  question → generate call ──┬─→ model says "call retrieve('x')"
-                                           │        ↓
-                                           │   your code runs it, returns result
-                                           │        ↓
-                                           └─→ generate call again, sees result
-                                                    ↓ (repeat until model is done)
-                                                 final answer
+```rawhtml
+<div class="diagram">
+  <div class="flow" style="margin-bottom:12px"><span class="flow-lbl">today:</span><span class="node data">question</span><span class="arw"></span><span class="node">retrieve(top_k)</span><span class="arw"></span><span class="node">ONE generate call</span><span class="arw"></span><span class="node out">answer</span></div>
+  <div class="loopwrap"><span class="loop-top">tool calling — loop until the model is done</span>
+    <div class="flow"><span class="node data">question</span><span class="arw"></span><span class="node">generate call</span><span class="arw"></span><span class="node soft">model: "call retrieve('x')"</span><span class="arw"></span><span class="node">your code runs it</span><span class="arw"></span><span class="node out">final answer</span></div>
+    <span class="loop-back"><span class="lb-arw"></span> result feeds back into the next <b>generate call</b></span>
+  </div>
+</div>
 ```
 
 ## Files in this folder

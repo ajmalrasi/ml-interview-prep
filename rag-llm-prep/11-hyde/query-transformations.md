@@ -8,12 +8,19 @@ same seam in `retriever.py`, and all of them get validated by the same eval.
 
 All three live at the same "rewrite the query before search" stage:
 
-```
-                       ┌─ Multi-Query:    N rephrasings → N searches → RRF fuse
-question → transform ──┼─ Decomposition:  sub-questions → search each → combine
-                       └─ HyDE:           fake answer → one search
-                                ↓
-                    same dense/BM25/rerank machinery after this point
+```rawhtml
+<div class="diagram">
+  <div class="branch">
+    <div class="flow"><span class="node data">question</span><span class="arw"></span><span class="node">transform</span></div>
+    <span class="split-arw"></span>
+    <div class="fork" style="flex-direction:column; gap:8px">
+      <span class="node soft"><b>Multi-Query</b> — N rephrasings → N searches → RRF fuse</span>
+      <span class="node soft"><b>Decomposition</b> — sub-questions → search each → combine</span>
+      <span class="node soft"><b>HyDE</b> — fake answer → one search</span>
+    </div>
+  </div>
+  <div class="flow-foot">All converge into the <b>same dense / BM25 / rerank machinery</b> after this point.</div>
+</div>
 ```
 
 **Multi-Query.** Rephrase the question N ways, search with all of them, fuse

@@ -20,11 +20,19 @@ Row/column structure is gone — which number belonged to which header is
 lost. A chunk of raw scraped table text is close to useless, for retrieval
 and for the LLM.
 
-```
-the table:                       naive extraction:
-│ Planet │ Mass  │ Moons │       "Planet Mass Moons Mars 0.64 2
-│ Mars   │ 0.64  │ 2     │        Jupiter 1898 95"
-│ Jupiter│ 1898  │ 95    │        ← which number goes with what? gone.
+```rawhtml
+<div class="compare">
+  <div class="cmp-col green">
+    <div class="cmp-h">The table (structure intact)</div>
+    <table class="maptable" style="margin:0"><thead><tr><th>Planet</th><th>Mass</th><th>Moons</th></tr></thead>
+      <tbody><tr><td>Mars</td><td>0.64</td><td>2</td></tr><tr><td>Jupiter</td><td>1898</td><td>95</td></tr></tbody></table>
+  </div>
+  <div class="cmp-col">
+    <div class="cmp-h">Naive extraction (flattened)</div>
+    <p><code>"Planet Mass Moons Mars 0.64 2 Jupiter 1898 95"</code></p>
+    <span class="cmp-tag">which number goes with what? gone.</span>
+  </div>
+</div>
 ```
 
 The fix: a layout-aware parser (`unstructured`, Azure Document

@@ -6,12 +6,12 @@ meanings close together in that 384-dimensional space.
 
 ## The transformation
 
-```
-Text:      "The event horizon is the boundary of a black hole"
-              ↓  (bge-small-en-v1.5 model)
-Embedding: [0.12, -0.45, 0.78, 0.32, -0.21, 0.05, ..., 0.18]
-            └─────────────────────────────────────────────────┘
-                           384 numbers total
+```rawhtml
+<div class="diagram"><div class="vflow">
+  <span class="node data">"The event horizon is the boundary of a black hole"</span>
+  <span class="varw" title="bge-small-en-v1.5 model"></span>
+  <span class="node out">384-dimensional vector<span class="nsub">[0.12, −0.45, 0.78, 0.32, −0.21, … 0.18]</span></span>
+</div></div>
 ```
 
 That list of 384 numbers is called a **vector**. The text and the vector
@@ -27,13 +27,19 @@ space.
 
 A rough intuition (positions don't actually mean this, but it helps):
 
-```
-Position 0: "Is this about astronomy?"     → 0.12 (somewhat yes)
-Position 1: "Is this about motion/speed?"  → -0.45 (not particularly)
-Position 2: "Is this about gravity?"       → 0.78 (strongly yes)
-Position 3: "Is this about light?"         → 0.32 (a bit)
-...
-Position 383: (some other learned pattern) → 0.18
+```rawhtml
+<div class="diagram"><table class="maptable">
+  <thead><tr><th>Dimension (an imagined "question")</th><th class="marw"></th><th>Value</th></tr></thead>
+  <tbody>
+    <tr><td class="mfrom">Position 0 — "Is this about astronomy?"</td><td class="marw"></td><td class="mto">0.12 <span style="color:var(--muted)">somewhat yes</span></td></tr>
+    <tr><td class="mfrom">Position 1 — "Is this about motion / speed?"</td><td class="marw"></td><td class="mto">−0.45 <span style="color:var(--muted)">not particularly</span></td></tr>
+    <tr><td class="mfrom">Position 2 — "Is this about gravity?"</td><td class="marw"></td><td class="mto">0.78 <span style="color:var(--muted)">strongly yes</span></td></tr>
+    <tr><td class="mfrom">Position 3 — "Is this about light?"</td><td class="marw"></td><td class="mto">0.32 <span style="color:var(--muted)">a bit</span></td></tr>
+    <tr><td class="mfrom">… Position 383 — some other learned pattern</td><td class="marw"></td><td class="mto">0.18</td></tr>
+  </tbody>
+</table>
+<div class="flow-foot">The model learns these axes — they aren't literally labeled, but each dimension captures some direction of meaning.</div>
+</div>
 ```
 
 ## Why 384 dimensions?

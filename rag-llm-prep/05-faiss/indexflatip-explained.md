@@ -5,6 +5,14 @@ inner product (dot product) between the query and every stored vector. With
 L2-normalized vectors, this equals cosine similarity. Exact, simple, fast
 enough for small corpora.
 
+**Size the index.** A flat index holds every vector in full. Slide the corpus size and
+dimension to see the memory wall — this is exactly when you reach for quantization or an
+approximate (IVF / HNSW) index instead.
+
+```rawhtml
+<div id="index-widget" class="widget-host"></div>
+```
+
 ## What "Flat" means
 
 No structure, no organization. Every vector is stored sequentially:
@@ -25,8 +33,8 @@ Sort. Return top-k. That's it.
 
 IP = **Inner Product** = dot product.
 
-```
-inner_product(query, chunk_0) = q₁×c₁ + q₂×c₂ + ... + q₃₈₄×c₃₈₄
+```rawhtml
+<div class="formula"><div class="frow"><span class="fexpr"><span class="fv">inner_product(query, chunk₀)</span> = q₁×c₁ + q₂×c₂ + … + q₃₈₄×c₃₈₄</span></div></div>
 ```
 
 Because all vectors are L2-normalized (length = 1.0), this equals cosine

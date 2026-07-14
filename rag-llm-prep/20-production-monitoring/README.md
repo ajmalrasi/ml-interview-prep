@@ -10,13 +10,17 @@ response object" into "a monitored system" is what Phase 7
 **Where in the pipeline:** everywhere and nowhere — like logging in a
 normal backend.
 
-```
-ingest → chunk → embed → index → [ query → embed → search → rerank →
-                                    filter → generate → cite → EVAL ]
-           ▲                                    ▲                ▲
-      already measured:                   already measured:   not built:
-   05-faiss benchmark.py             pipeline.py: latency_ms   RAGAS/drift/
-   (recall/latency/memory)           on every QueryResponse   cost dashboards
+```rawhtml
+<div class="diagram">
+  <div class="flow">
+    <span class="node data">ingest</span><span class="arw tiny"></span><span class="node">chunk</span><span class="arw tiny"></span><span class="node">embed</span><span class="arw tiny"></span><span class="node">index</span><span class="arw tiny"></span><span class="node">search</span><span class="arw tiny"></span><span class="node">rerank</span><span class="arw tiny"></span><span class="node">generate</span><span class="arw tiny"></span><span class="node out">EVAL</span>
+  </div>
+  <div class="cx-legend" style="margin-top:12px">
+    <span><i style="background:#2f9e6f"></i><b>index</b> — already measured (05-faiss benchmark.py: recall/latency/memory)</span>
+    <span><i style="background:#2f9e6f"></i><b>generate</b> — already measured (pipeline.py latency_ms per response)</span>
+    <span><i style="background:var(--accent)"></i><b>EVAL</b> — not built (RAGAS / drift / cost dashboards)</span>
+  </div>
+</div>
 ```
 
 ## Files in this folder

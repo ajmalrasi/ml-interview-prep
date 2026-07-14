@@ -20,12 +20,14 @@ all of them in a single pass. Correct guesses are accepted for free. The
 first wrong guess is thrown away, and the big model's own token is used
 instead.
 
-```
-draft (small, fast):   "the" "cache" "grows" "with" "context"
-                         ↓ all 5 handed to the big model at once
-verify (big, 1 pass):   ✓     ✓       ✓       ✗ ─ rejected here
-result:                 3 tokens accepted + big model's own 4th token
-                        = 4 tokens for ~1 big-model pass instead of 4
+```rawhtml
+<div class="diagram"><div class="vflow" style="align-items:stretch">
+  <span class="node data">draft model <span class="nsub">small, fast — proposes: "the" "cache" "grows" "with" "context"</span></span>
+  <span class="varw" title="all 5 handed to the big model at once"></span>
+  <span class="node">verify <span class="nsub">big model, 1 pass — ✓ ✓ ✓ ✗ (rejected at token 4)</span></span>
+  <span class="varw"></span>
+  <span class="node out">3 accepted + big model's own 4th token <span class="nsub">= 4 tokens for ~1 big-model pass instead of 4</span></span>
+</div></div>
 ```
 
 Plain version: instead of writing word by word, pausing to think after each

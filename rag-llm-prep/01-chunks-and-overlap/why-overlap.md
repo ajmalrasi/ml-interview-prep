@@ -3,6 +3,14 @@
 **TL;DR:** Overlap repeats the last few words of one chunk at the start of the
 next, so an idea that sits right on a boundary doesn't get cut in half.
 
+**Try it.** Slide chunk size and overlap and watch the chunk count, overlap %, and
+redundancy (total tokens embedded ÷ document length). More overlap protects
+boundary-straddling ideas but multiplies the vectors you store and search.
+
+```rawhtml
+<div id="chunk-widget" class="widget-host"></div>
+```
+
 ## The boundary problem
 
 Say a long black-hole document has this passage:

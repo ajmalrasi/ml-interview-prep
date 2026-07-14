@@ -12,10 +12,11 @@ wrapping the pipeline, in
 HTTP-and-FastAPI layer; the sync/async execution model *underneath* it is
 [16-python-concurrency](../16-python-concurrency/README.md).
 
-```
-client ── GET  /health ──→ no body, no state change, safe to poll ──→ status
-client ── POST /query  ──→ JSON body (question, top_k)
-                            → pydantic validates → retrieval + LLM call → answer
+```rawhtml
+<div class="diagram"><div class="vflow" style="align-items:stretch;gap:12px">
+  <div class="flow"><span class="node data">GET /health</span><span class="arw"></span><span class="node ghost">no body · no state change · safe to poll</span><span class="arw"></span><span class="node out">status</span></div>
+  <div class="flow"><span class="node data">POST /query</span><span class="arw"></span><span class="node">JSON body<span class="nsub">question, top_k</span></span><span class="arw"></span><span class="node">pydantic validates</span><span class="arw"></span><span class="node">retrieval + LLM</span><span class="arw"></span><span class="node out">answer</span></div>
+</div></div>
 ```
 
 ## Files in this folder

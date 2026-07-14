@@ -49,14 +49,17 @@ Cosine similarity(A, B) = 0.999  ← near-identical meaning, correctly detected
 
 Think of each vector as an **arrow** in 384-dimensional space.
 
-```
-Before normalization:
-  →    Chunk A (short arrow, same direction)
-  ────────→  Chunk B (long arrow, same direction)
-
-After normalization:
-  →  Chunk A (length 1.0)
-  →  Chunk B (length 1.0)  ← now identical
+```rawhtml
+<div class="compare">
+  <div class="cmp-col">
+    <div class="cmp-h">Before normalization</div>
+    <p>Chunk A: short arrow · Chunk B: long arrow — <b>same direction, different length</b>. Dot product is skewed by length.</p>
+  </div>
+  <div class="cmp-col green">
+    <div class="cmp-h">After normalization</div>
+    <p>Both length 1.0 → <b>now identical</b>. Only the angle (meaning) remains, so dot product = cosine similarity.</p>
+  </div>
+</div>
 ```
 
 Both arrows point the same direction — same meaning. The only difference was
@@ -67,8 +70,8 @@ reflecting that they're both about event horizons.
 
 `IndexFlatIP` computes the **inner product** (dot product) of two vectors:
 
-```
-inner_product(A, B) = A₁×B₁ + A₂×B₂ + ... + Aₙ×Bₙ
+```rawhtml
+<div class="formula"><div class="frow"><span class="fexpr"><span class="fv">inner_product(A, B)</span> = A₁×B₁ + A₂×B₂ + … + Aₙ×Bₙ</span></div></div>
 ```
 
 When both vectors are normalized (length = 1.0), the inner product equals

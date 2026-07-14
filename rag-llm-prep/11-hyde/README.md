@@ -11,9 +11,11 @@ section maps the concept before the code lands.
 the question and embedding it. Everything downstream (index, fusion, rerank)
 is untouched.
 
-```
-today:  question ────────────────────────────→ embed → search
- HyDE:  question → LLM writes a fake answer ──→ embed → search
+```rawhtml
+<div class="diagram">
+  <div class="flow" style="margin-bottom:10px"><span class="flow-lbl">today:</span><span class="node data">question</span><span class="arw"></span><span class="node">embed</span><span class="arw"></span><span class="node out">search</span></div>
+  <div class="flow"><span class="flow-lbl">HyDE:</span><span class="node data">question</span><span class="arw"></span><span class="node soft">LLM writes a fake answer</span><span class="arw"></span><span class="node">embed</span><span class="arw"></span><span class="node out">search</span></div>
+</div>
 ```
 
 ## Files in this folder

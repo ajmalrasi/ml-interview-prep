@@ -10,14 +10,12 @@ Cite path, not inside it. Today, `RAGPipeline.query()` is the entire
 "agent": one retrieve, one generate, no decisions. This section is about
 what replaces that single function once Phase 5 adds a planning loop.
 
-```
-today (Phase 1-3):     question → retrieve → generate → answer   (no loop)
-
-single agent (Phase 5): question → [ plan → tool? → observe → plan → ... ] → answer
-                                     ▲ one LLM, one loop, DocsMind's target shape
-
-multi-agent:            question → supervisor → routes to sub-agent(s) → merge → answer
-                                     ▲ several LLM loops, one deciding who goes next
+```rawhtml
+<div class="diagram"><div class="vflow" style="align-items:stretch;gap:12px">
+  <div class="flow"><span class="flow-lbl">today · Phase 1–3</span><span class="node data">question</span><span class="arw"></span><span class="node">retrieve</span><span class="arw"></span><span class="node">generate</span><span class="arw"></span><span class="node out">answer</span><span class="flow-lbl">no loop</span></div>
+  <div class="flow"><span class="flow-lbl">single agent · Phase 5</span><span class="node data">question</span><span class="arw"></span><span class="node soft">plan → tool? → observe → plan → …</span><span class="arw"></span><span class="node out">answer</span><span class="flow-lbl">one LLM, one loop — DocsMind's target</span></div>
+  <div class="flow"><span class="flow-lbl">multi-agent</span><span class="node data">question</span><span class="arw"></span><span class="node">supervisor</span><span class="arw"></span><span class="node soft">routes to sub-agent(s)</span><span class="arw"></span><span class="node">merge</span><span class="arw"></span><span class="node out">answer</span></div>
+</div></div>
 ```
 
 ## Files in this folder

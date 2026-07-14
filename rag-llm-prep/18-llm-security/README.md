@@ -7,13 +7,13 @@ points, and DocsMind's one shipped guardrail (`INSUFFICIENT_CONTEXT`) covers
 
 **Where in the pipeline:** several different points, not one.
 
-```
-ingest → chunk → embed → index → [ query → embed → search → rerank →
-                                    filter → GENERATE → cite → eval ]
-                                                ▲
-                          DocsMind's one shipped guardrail lives here:
-                          "answer only from context, or say INSUFFICIENT_CONTEXT"
-                          — that's a hallucination guardrail, NOT a security guardrail.
+```rawhtml
+<div class="diagram">
+  <div class="flow">
+    <span class="node data">ingest</span><span class="arw tiny"></span><span class="node">chunk</span><span class="arw tiny"></span><span class="node">embed</span><span class="arw tiny"></span><span class="node">index</span><span class="arw tiny"></span><span class="node">search</span><span class="arw tiny"></span><span class="node">rerank</span><span class="arw tiny"></span><span class="node">filter</span><span class="arw tiny"></span><span class="node soft">GENERATE</span><span class="arw tiny"></span><span class="node out">cite</span>
+  </div>
+  <div class="flow-foot">DocsMind's one shipped guardrail lives at <b>GENERATE</b>: <i>"answer only from context, or say INSUFFICIENT_CONTEXT."</i> That's a <b>hallucination</b> guardrail — not yet a security one.</div>
+</div>
 ```
 
 ## Files in this folder

@@ -16,14 +16,14 @@ know anything about FAISS, BM25, or RRF fusion underneath. That's the pitch:
 the retrieval internals stay hidden behind one schema, reusable outside this
 repo.
 
-```
-any MCP client (Claude Desktop, another team's agent, an IDE...)
-        │  one protocol
-        ▼
-  MCP server: "docsmind-retrieve"
-        │  ordinary function call
-        ▼
-  HybridRetriever.retrieve()   ← FAISS + BM25 + RRF + rerank, invisible above
+```rawhtml
+<div class="diagram"><div class="vflow">
+  <span class="node data">any MCP client<span class="nsub">Claude Desktop · another team's agent · an IDE…</span></span>
+  <span class="varw" title="one protocol"></span>
+  <span class="node">MCP server: "docsmind-retrieve"</span>
+  <span class="varw" title="ordinary function call"></span>
+  <span class="node out">HybridRetriever.retrieve()<span class="nsub">FAISS + BM25 + RRF + rerank — invisible above</span></span>
+</div></div>
 ```
 
 This is the same pattern the repo already uses twice: `VectorStore` hides

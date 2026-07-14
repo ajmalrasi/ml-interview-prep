@@ -12,13 +12,19 @@ the box DocsMind treats as opaque — and why the roadmap swaps Ollama for
 a black box. Nothing here changes the `LLMClient` interface. It changes what
 sits behind it at serving time.
 
-```
-today:   docsmind → LocalLLMClient.generate() → Ollama (opaque) → tokens back
-
-roadmap: docsmind → LocalLLMClient.generate() → vLLM server ──┐
-                                                                ├─ KV cache
-                                                                ├─ continuous batching
-                                                                └─ (optionally) speculative decoding
+```rawhtml
+<div class="diagram">
+  <div class="flow" style="margin-bottom:12px"><span class="flow-lbl">today:</span><span class="node data">docsmind</span><span class="arw"></span><span class="node">LocalLLMClient.generate()</span><span class="arw"></span><span class="node ghost">Ollama<span class="nsub">opaque</span></span><span class="arw"></span><span class="node out">tokens</span></div>
+  <div class="lanes">
+    <div class="flow"><span class="flow-lbl">roadmap:</span><span class="node data">docsmind</span><span class="arw"></span><span class="node">LocalLLMClient.generate()</span><span class="arw"></span><span class="node soft">vLLM server</span></div>
+    <span class="merge-arw"></span>
+    <div class="lane-stack">
+      <span class="node ghost">KV cache</span>
+      <span class="node ghost">continuous batching</span>
+      <span class="node ghost">speculative decoding</span>
+    </div>
+  </div>
+</div>
 ```
 
 ## Files in this folder

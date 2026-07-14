@@ -15,13 +15,14 @@ just a docstring:
 That's a **single-agent** design. One LangGraph loop, several tools, no
 sub-agents:
 
-```
-            ┌──────────── LangGraph state ────────────┐
-question →  plan → tool? ──yes──→ run tool → observe ─┘
-              │                     (retrieve / web_search / code_exec)
-              no
-              ↓
-            cite → guardrail check → answer
+```rawhtml
+<div class="diagram">
+  <div class="loopwrap"><span class="loop-top">LangGraph state</span>
+    <div class="flow"><span class="node data">question</span><span class="arw"></span><span class="node">plan</span><span class="arw labeled"><span class="al">tool? yes</span></span><span class="node soft">run tool<span class="nsub">retrieve / web_search / code_exec</span></span><span class="arw labeled"><span class="al">observe</span></span></div>
+    <span class="loop-back"><span class="lb-arw"></span> observation loops back into <b>plan</b></span>
+  </div>
+  <div class="flow" style="margin-top:10px"><span class="flow-lbl">when no more tools:</span><span class="node">cite</span><span class="arw"></span><span class="node">guardrail check</span><span class="arw"></span><span class="node out">answer</span></div>
+</div>
 ```
 
 Each box is a graph node; the state (messages so far, retrieved chunks,
