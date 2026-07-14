@@ -10,8 +10,17 @@
 - Sweet spot: **< ~1–2 ppl/m²**.
 
 ## Density-estimation
-```
-image → CNN → density map D(x,y);  count = ΣΣ D over region
+```rawhtml
+<div class="diagram">
+  <div class="flow">
+    <span class="node data">image</span>
+    <span class="arw"></span>
+    <span class="node">CNN</span>
+    <span class="arw"></span>
+    <span class="node out">density map <span class="nsub">D(x, y)</span></span>
+  </div>
+  <div class="formula"><div class="frow"><span class="fexpr">count = <span class="fv">ΣΣ D</span> over region</span><span class="fnote">sum the density map, don't detect individuals</span></div></div>
+</div>
 ```
 - Train target: **head points blurred with Gaussians** (integral = count).
 - Models: **MCNN** (multi-scale), **CSRNet** (dilated conv, strong baseline), **P2PNet**.

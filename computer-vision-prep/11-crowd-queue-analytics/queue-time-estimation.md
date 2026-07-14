@@ -15,11 +15,19 @@
 - **Breaks on:** multi-lane / unordered crowds (join-order ≠ service-order).
 
 ## 3. Little's Law (no tracking — dense crowds)
-```
-L = λ · W     →     W = L / λ
-L = people in queue (occupancy)
-λ = arrival rate (people/sec entering)
-W = avg wait
+```rawhtml
+<div class="diagram">
+  <div class="formula">
+    <div class="frow"><span class="fexpr"><span class="fv">L</span> = <span class="fv">λ</span> · <span class="fv">W</span></span><span class="fnote">Little's Law</span><span class="fexpr" style="margin-left:8px">⇒  W = L / λ</span></div>
+  </div>
+  <table class="maptable">
+    <tbody>
+      <tr><td class="mfrom"><b>L</b></td><td class="marw"></td><td class="mto">people in queue (occupancy)</td></tr>
+      <tr><td class="mfrom"><b>λ</b></td><td class="marw"></td><td class="mto">arrival rate (people/sec entering)</td></tr>
+      <tr><td class="mfrom"><b>W</b></td><td class="marw"></td><td class="mto">average wait — what you report</td></tr>
+    </tbody>
+  </table>
+</div>
 ```
 - **L** = density-map count (survives occlusion). **λ** = line-crossing counter (just counts crossings).
 - Both inputs are **occlusion-robust counts** — no identities needed.

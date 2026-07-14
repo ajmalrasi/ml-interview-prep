@@ -17,6 +17,14 @@ world. You did exactly this in surround-view (fisheye correction + calibration).
 
 The full pinhole model: `pixel = K · [R | t] · world_point` (in homogeneous coords).
 
+**See the projection.** A known-height object shrinks as `f·H/d` — the 1/distance law
+that lets you turn pixels into metres for crowd density and queue length. Change focal
+length to see the field-of-view / resolution tradeoff.
+
+```rawhtml
+<div id="camera-widget" class="widget-host"></div>
+```
+
 ## Distortion (why straight lines curve)
 
 - **Radial:** straight lines bow outward (**barrel**, common on wide/fisheye) or

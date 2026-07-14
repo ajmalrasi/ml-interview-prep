@@ -30,10 +30,24 @@ Start from ImageNet/COCO pretrained → **fine-tune** on your data. Less data/co
 - **Pruning** — drop low-importance weights/channels + fine-tune.
 - **Distillation** — small student mimics big teacher; keep accuracy at edge cost.
 - **TensorRT** — fuse layers, autotune, precision → hardware engine. **Re-measure mAP after** (optimization that tanks accuracy = fail → §13 watches).
-```
-train (transfer+aug) → validate on held-out SCENE
-→ optimize (FP16/INT8 PTQ→QAT, prune, distill) → TensorRT engine
-→ RE-MEASURE mAP+latency → deploy (§13 canary) → monitor drift (§13)
+```rawhtml
+<div class="diagram">
+  <div class="flow">
+    <span class="node data">train<span class="nsub">transfer + aug</span></span>
+    <span class="arw"></span>
+    <span class="node">validate<span class="nsub">held-out SCENE</span></span>
+    <span class="arw"></span>
+    <span class="node">optimize<span class="nsub">FP16/INT8 PTQ→QAT · prune · distill</span></span>
+    <span class="arw"></span>
+    <span class="node">TensorRT engine</span>
+    <span class="arw"></span>
+    <span class="node">re-measure<span class="nsub">mAP + latency</span></span>
+    <span class="arw"></span>
+    <span class="node">deploy<span class="nsub">§13 canary</span></span>
+    <span class="arw"></span>
+    <span class="node out">monitor drift<span class="nsub">§13</span></span>
+  </div>
+</div>
 ```
 
 ## Active learning (improve in closed site)

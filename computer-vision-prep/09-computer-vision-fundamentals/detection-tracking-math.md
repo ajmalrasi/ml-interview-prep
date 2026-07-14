@@ -9,9 +9,21 @@ math you put *on top of* the ML team's models.
 ## IoU — Intersection over Union
 
 The fundamental box-overlap metric:
+
+```rawhtml
+<div class="formula">
+  <div class="frow"><span class="fexpr">IoU = area(<span class="fv">A ∩ B</span>) / area(<span class="fv">A ∪ B</span>)</span><span class="fnote">0 = no overlap, 1 = identical</span></div>
+</div>
 ```
-IoU = area(A ∩ B) / area(A ∪ B)     # 0 = no overlap, 1 = identical
+
+**Try it.** Drag the prediction box around the ground truth and watch IoU. Notice the
+cliff around 0.5 — that single threshold decides whether a detection counts as a match
+(TP) in mAP, and whether NMS suppresses it.
+
+```rawhtml
+<div id="iou-widget" class="widget-host"></div>
 ```
+
 Used everywhere: NMS, matching detections to ground truth (mAP), and associating
 detections to tracks frame-to-frame.
 

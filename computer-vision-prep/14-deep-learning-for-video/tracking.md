@@ -9,11 +9,16 @@
 - Loitering → "same person > T sec".
 
 ## Core = tracking-by-detection
-```
-predict track's next pos (motion model)
-→ match detections↔tracks (cost = IoU and/or appearance)
-   solved by HUNGARIAN (optimal assignment)
-→ update matched, birth new, kill stale
+```rawhtml
+<div class="diagram">
+  <div class="vflow">
+    <span class="node">predict<span class="nsub">track's next position — motion model</span></span>
+    <span class="varw"></span>
+    <span class="node">match detections ↔ tracks<span class="nsub">cost = IoU and/or appearance · solved by Hungarian (optimal assignment)</span></span>
+    <span class="varw"></span>
+    <span class="node out">update<span class="nsub">update matched · birth new · kill stale</span></span>
+  </div>
+</div>
 ```
 - **Kalman** = motion model (constant-velocity predict + smooth + bridge short gaps).
 - **Hungarian** = optimal one-to-one detection↔track assignment.

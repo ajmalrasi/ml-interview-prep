@@ -21,6 +21,19 @@ function hexToRgba(hex, a){
   return "rgba("+((n>>16)&255)+","+((n>>8)&255)+","+(n&255)+","+a+")";
 }
 
+/* --------------------- tiny persistent store (localStorage) ---------------- */
+// All study state (progress, flashcard grades) lives under one namespaced key.
+const STORE_KEY = "mlprep-v1";
+function loadStore(){ try{ return JSON.parse(localStorage.getItem(STORE_KEY)) || {}; }catch(_){ return {}; } }
+function saveStore(s){ try{ localStorage.setItem(STORE_KEY, JSON.stringify(s)); }catch(_){} }
+let STATE = loadStore();
+STATE.done   = STATE.done   || {};   // { path: true }         pages marked complete
+STATE.cards  = STATE.cards  || {};   // { "path#cardhash": 1|-1 }  flashcard grades
+STATE.last   = STATE.last   || null; // last visited path (for "resume")
+function persist(){ saveStore(STATE); }
+// stable short hash for card ids
+function hashStr(s){ let h=5381; for(let i=0;i<s.length;i++) h=((h<<5)+h+s.charCodeAt(i))|0; return (h>>>0).toString(36); }
+
 function resolvePath(curPath, href){
   if(href.charAt(0)==="#") return null;
   if(/\/$/.test(href)) href += "README.md";
@@ -38,7 +51,8 @@ function buildNav(){
     const wrap=document.createElement("div"); wrap.className="sec";
     wrap.style.setProperty("--card", sec.accent);
     const h=document.createElement("div"); h.className="sec-h";
-    h.innerHTML='<span class="sec-ic">'+(sec.icon||"")+'</span> '+sec.label;
+    h.innerHTML='<span class="sec-ic">'+(sec.icon||"")+'</span> '+sec.label+
+      '<span class="sec-count"></span>';
     wrap.appendChild(h);
     sec.items.forEach(it=>{
       const a=document.createElement("a");
@@ -64,7 +78,12 @@ function renderPageTools(pg){
     html += '<div class="quizbar">'+
       '<button class="qbtn" id="hideAll">Quiz me · hide answers</button>'+
       '<button class="qbtn" id="showAll">Show all</button>'+
-      '<span class="hint">Tap a question to reveal its answer.</span></div>';
+      '<button class="qbtn" id="shuffleCards">🔀 Shuffle</button>'+
+      '<span class="qfilter">Show: '+
+        '<button class="fbtn sel" data-f="all">all</button>'+
+        '<button class="fbtn" data-f="unseen">unseen</button>'+
+        '<button class="fbtn" data-f="misses">misses</button></span>'+
+      '<span class="quiz-stats" id="quizStats"></span></div>';
   }
   if(pg.toc && pg.toc.length>=3){
     html += '<details class="toc"><summary>On this page</summary><ul>'+
@@ -77,6 +96,12 @@ function renderPageTools(pg){
     const hb=document.getElementById("hideAll"), sb=document.getElementById("showAll");
     if(hb) hb.onclick=()=>set(false);
     if(sb) sb.onclick=()=>set(true);
+    const shuf=document.getElementById("shuffleCards");
+    if(shuf) shuf.onclick=()=>shuffleCards();
+    host.querySelectorAll(".fbtn").forEach(b=>b.onclick=()=>{
+      host.querySelectorAll(".fbtn").forEach(x=>x.classList.toggle("sel",x===b));
+      applyQuizFilter(b.dataset.f);
+    });
   }
 }
 
@@ -105,9 +130,348 @@ function loadPage(path){
   else { root.removeProperty("--sec-accent"); root.removeProperty("--sec-accent-soft"); }
   content.innerHTML=pg.html;
   renderPageTools(pg);
+  if(pg.quiz) initFlashcards(pg);
   renderPager(path);
+  mountWidgets();
+  markVisited(path);
   window.scrollTo(0,0);
   closeSidebar();
+}
+
+/* ----------------------------- widget registry ----------------------------- */
+// Each widget is a <div id="…"> placed in a markdown page via a ```rawhtml fence.
+// After a page renders we mount whichever hosts are present. Add new widgets here.
+const WIDGETS = {
+  "iou-widget":     initIoUWidget,
+  "latency-widget": initLatencyWidget,
+  "camera-widget":  initCameraWidget,
+  "conv-widget":    initConvWidget,
+};
+function mountWidgets(){
+  for(const id in WIDGETS){
+    if(document.getElementById(id)){ try{ WIDGETS[id](); }catch(e){ console.error("widget "+id, e); } }
+  }
+}
+
+/* ===================== CV interactive-learning widgets ==================== */
+
+/* -------- IoU explorer: drag a prediction box against ground truth -------- */
+function initIoUWidget(){
+  const host=document.getElementById("iou-widget"); if(!host) return;
+  const W=340,H=240, A={x:95,y:65,w:150,h:110};   // fixed ground-truth box
+  host.innerHTML=
+   '<div class="bv-wrap"><svg class="bv-svg iou-svg" viewBox="0 0 '+W+' '+H+'" preserveAspectRatio="xMidYMid meet">'+
+     '<rect id="iou-inter" class="iou-inter"/>'+
+     '<rect x="'+A.x+'" y="'+A.y+'" width="'+A.w+'" height="'+A.h+'" class="iou-a"/>'+
+     '<rect id="iou-b" class="iou-b"/>'+
+     '<text x="'+(A.x+7)+'" y="'+(A.y+17)+'" class="iou-tag-a">ground truth</text>'+
+     '<text id="iou-blbl" class="iou-tag-b">prediction</text>'+
+   '</svg>'+
+   '<div class="bv-controls"><div class="bt-sliders">'+
+     '<label>Prediction offset X <b id="iou-dxv">45</b> px<input id="iou-dx" type="range" min="-150" max="150" step="1" value="45"></label>'+
+     '<label>Prediction offset Y <b id="iou-dyv">25</b> px<input id="iou-dy" type="range" min="-95" max="95" step="1" value="25"></label>'+
+     '<label>Prediction size <b id="iou-sv">1.00</b>×<input id="iou-s" type="range" min="0.4" max="1.8" step="0.05" value="1"></label>'+
+   '</div>'+
+   '<div class="bv-metrics">'+
+     '<div class="bv-m"><span class="bv-mlab">IoU</span><b id="iou-val">—</b></div>'+
+     '<div class="bv-m"><span class="bv-mlab">Overlap of GT</span><b id="iou-ov">—</b></div>'+
+     '<div class="bv-m"><span class="bv-mlab">@ 0.5 threshold</span><b id="iou-verdict" class="bv-diag">—</b></div>'+
+   '</div></div></div>';
+  const el=id=>host.querySelector("#"+id);
+  function compute(){
+    const dx=+el("iou-dx").value, dy=+el("iou-dy").value, s=+el("iou-s").value;
+    const B={x:A.x+dx, y:A.y+dy, w:A.w*s, h:A.h*s};
+    const b=el("iou-b");
+    b.setAttribute("x",B.x); b.setAttribute("y",B.y); b.setAttribute("width",B.w); b.setAttribute("height",B.h);
+    el("iou-blbl").setAttribute("x",B.x+7); el("iou-blbl").setAttribute("y",B.y+17);
+    const ix=Math.max(A.x,B.x), iy=Math.max(A.y,B.y);
+    const iw=Math.max(0,Math.min(A.x+A.w,B.x+B.w)-ix), ih=Math.max(0,Math.min(A.y+A.h,B.y+B.h)-iy);
+    const inter=iw*ih, uni=A.w*A.h+B.w*B.h-inter, iou=uni>0?inter/uni:0;
+    const ir=el("iou-inter");
+    ir.setAttribute("x",ix); ir.setAttribute("y",iy); ir.setAttribute("width",iw); ir.setAttribute("height",ih);
+    el("iou-dxv").textContent=dx; el("iou-dyv").textContent=dy; el("iou-sv").textContent=s.toFixed(2);
+    el("iou-val").textContent=iou.toFixed(2);
+    el("iou-ov").textContent=(inter/(A.w*A.h)*100).toFixed(0)+"%";
+    const v=el("iou-verdict"), ok=iou>=0.5;
+    v.textContent=ok?"match ✓":"miss ✗"; v.className="bv-diag "+(ok?"bv-good":"bv-bad");
+  }
+  ["iou-dx","iou-dy","iou-s"].forEach(id=>el(id).addEventListener("input",compute));
+  compute();
+}
+
+/* --------- Latency budget: do the pipeline stages fit the frame? --------- */
+function initLatencyWidget(){
+  const host=document.getElementById("latency-widget"); if(!host) return;
+  host.innerHTML=
+   '<div class="bv-wrap"><div class="bv-controls">'+
+     '<div class="lm-row"><label>Target frame rate</label><span>'+
+       '<button class="qz-seg" data-fps="15">15 fps</button>'+
+       '<button class="qz-seg sel" data-fps="30">30 fps</button>'+
+       '<button class="qz-seg" data-fps="60">60 fps</button></span></div>'+
+     '<div class="bt-sliders">'+
+       '<label>Decode <b id="lat-dv">6</b> ms<input id="lat-d" type="range" min="0" max="40" step="0.5" value="6"></label>'+
+       '<label>Preprocess <b id="lat-pv">3</b> ms<input id="lat-p" type="range" min="0" max="40" step="0.5" value="3"></label>'+
+       '<label>Inference <b id="lat-iv">14</b> ms<input id="lat-i" type="range" min="0" max="90" step="0.5" value="14"></label>'+
+       '<label>Postprocess <b id="lat-ov">2</b> ms<input id="lat-o" type="range" min="0" max="40" step="0.5" value="2"></label>'+
+     '</div>'+
+     '<div class="lm-stack lat-stack" id="lat-stack"></div>'+
+     '<div class="lat-legend" id="lat-legend"></div>'+
+     '<div class="bv-metrics">'+
+       '<div class="bv-m"><span class="bv-mlab">Total</span><b id="lat-total">—</b></div>'+
+       '<div class="bv-m"><span class="bv-mlab">Frame budget</span><b id="lat-budget">—</b></div>'+
+       '<div class="bv-m"><span class="bv-mlab">Max FPS</span><b id="lat-maxfps">—</b></div>'+
+       '<div class="bv-m"><span class="bv-mlab">Verdict</span><b id="lat-verdict" class="bv-diag">—</b></div>'+
+     '</div></div></div>';
+  let fps=30; const el=id=>host.querySelector("#"+id);
+  const names=["Decode","Preprocess","Inference","Postprocess"], cols=["#3b82f6","#0e8f8f","var(--accent)","#9a5cd0"];
+  function compute(){
+    const parts=[+el("lat-d").value,+el("lat-p").value,+el("lat-i").value,+el("lat-o").value];
+    el("lat-dv").textContent=parts[0]; el("lat-pv").textContent=parts[1]; el("lat-iv").textContent=parts[2]; el("lat-ov").textContent=parts[3];
+    const total=parts.reduce((a,b)=>a+b,0), budget=1000/fps, scale=Math.max(total,budget)||1;
+    el("lat-stack").innerHTML=parts.map((v,k)=>'<div class="lm-seg" style="width:'+(v/scale*100)+'%;background:'+cols[k]+'">'+(v/scale>0.09?v:'')+'</div>').join("")+
+      '<div class="lat-mark" style="left:'+(budget/scale*100)+'%"></div>';
+    el("lat-legend").innerHTML=names.map((n,k)=>'<span><i style="background:'+cols[k]+'"></i>'+n+'</span>').join("")+'<span><i class="lat-mk"></i>budget</span>';
+    el("lat-total").textContent=total.toFixed(1)+" ms";
+    el("lat-budget").textContent=budget.toFixed(1)+" ms";
+    el("lat-maxfps").textContent=(total>0?(1000/total).toFixed(0):"∞")+" fps";
+    const v=el("lat-verdict"), ok=total<=budget;
+    v.textContent=ok?("fits ✓ +"+(budget-total).toFixed(1)+"ms"):("over "+(total-budget).toFixed(1)+"ms");
+    v.className="bv-diag "+(ok?"bv-good":"bv-bad");
+  }
+  host.querySelectorAll(".qz-seg").forEach(b=>b.onclick=()=>{fps=+b.dataset.fps;host.querySelectorAll(".qz-seg").forEach(x=>x.classList.toggle("sel",x===b));compute();});
+  ["lat-d","lat-p","lat-i","lat-o"].forEach(id=>el(id).addEventListener("input",compute));
+  compute();
+}
+
+/* --------- Camera pinhole: pixels <-> metres for a CCTV view --------- */
+function initCameraWidget(){
+  const host=document.getElementById("camera-widget"); if(!host) return;
+  host.innerHTML=
+   '<div class="bv-wrap"><div class="bv-controls"><div class="bt-sliders">'+
+     '<label>Focal length <b id="cam-fv">900</b> px<input id="cam-f" type="range" min="300" max="2400" step="10" value="900"></label>'+
+     '<label>Image width <b id="cam-wv">1920</b> px<input id="cam-w" type="range" min="640" max="3840" step="16" value="1920"></label>'+
+     '<label>Object height <b id="cam-hv">1.7</b> m<input id="cam-h" type="range" min="0.3" max="4" step="0.1" value="1.7"></label>'+
+     '<label>Distance <b id="cam-dv">12</b> m<input id="cam-d" type="range" min="2" max="80" step="1" value="12"></label>'+
+   '</div>'+
+   '<div class="bv-metrics">'+
+     '<div class="bv-m"><span class="bv-mlab">Projected height</span><b id="cam-px">—</b></div>'+
+     '<div class="bv-m"><span class="bv-mlab">Horizontal FOV</span><b id="cam-fov">—</b></div>'+
+     '<div class="bv-m"><span class="bv-mlab">Ground per pixel</span><b id="cam-gsd">—</b></div>'+
+   '</div>'+
+   '<div class="lm-note" id="cam-note"></div></div></div>';
+  const el=id=>host.querySelector("#"+id);
+  function compute(){
+    const f=+el("cam-f").value,Wp=+el("cam-w").value,Hm=+el("cam-h").value,d=+el("cam-d").value;
+    el("cam-fv").textContent=f; el("cam-wv").textContent=Wp; el("cam-hv").textContent=Hm.toFixed(1); el("cam-dv").textContent=d;
+    const px=f*Hm/d, fov=2*Math.atan(Wp/(2*f))*180/Math.PI, gsd=d/f;
+    el("cam-px").textContent=px.toFixed(0)+" px";
+    el("cam-fov").textContent=fov.toFixed(0)+"°";
+    el("cam-gsd").textContent=(gsd*100).toFixed(1)+" cm";
+    el("cam-note").textContent="A "+Hm.toFixed(1)+" m object at "+d+" m projects to ≈ "+px.toFixed(0)+" px tall; each pixel covers ≈ "+(gsd*100).toFixed(1)+" cm of ground. Double the distance → half the size (the pinhole 1/d law that underlies calibration and crowd density).";
+  }
+  ["cam-f","cam-w","cam-h","cam-d"].forEach(id=>el(id).addEventListener("input",compute));
+  compute();
+}
+
+/* --------- Conv sizing: output size + receptive field per layer --------- */
+function initConvWidget(){
+  const host=document.getElementById("conv-widget"); if(!host) return;
+  host.innerHTML=
+   '<div class="bv-wrap"><div class="bv-controls"><div class="bt-sliders">'+
+     '<label>Input size <b id="cv-nv">224</b> px<input id="cv-n" type="range" min="32" max="512" step="16" value="224"></label>'+
+     '<label>Kernel <b id="cv-kv">3</b><input id="cv-k" type="range" min="1" max="11" step="2" value="3"></label>'+
+     '<label>Stride <b id="cv-sv">2</b><input id="cv-s" type="range" min="1" max="4" step="1" value="2"></label>'+
+     '<label>Padding <b id="cv-pv">1</b><input id="cv-p" type="range" min="0" max="5" step="1" value="1"></label>'+
+     '<label>Layers <b id="cv-lv">5</b><input id="cv-l" type="range" min="1" max="10" step="1" value="5"></label>'+
+   '</div>'+
+   '<div class="conv-chain" id="cv-chain"></div>'+
+   '<div class="bv-metrics">'+
+     '<div class="bv-m"><span class="bv-mlab">Final feature map</span><b id="cv-out">—</b></div>'+
+     '<div class="bv-m"><span class="bv-mlab">Receptive field</span><b id="cv-rf">—</b></div>'+
+     '<div class="bv-m"><span class="bv-mlab">Total downsample</span><b id="cv-ds">—</b></div>'+
+   '</div></div></div>';
+  const el=id=>host.querySelector("#"+id);
+  function compute(){
+    let n=+el("cv-n").value; const k=+el("cv-k").value,s=+el("cv-s").value,p=+el("cv-p").value,L=+el("cv-l").value;
+    el("cv-nv").textContent=n; el("cv-kv").textContent=k; el("cv-sv").textContent=s; el("cv-pv").textContent=p; el("cv-lv").textContent=L;
+    const N0=n; let rf=1, jump=1; const sizes=[n];
+    for(let i=0;i<L;i++){
+      const out=Math.floor((n+2*p-k)/s)+1;
+      rf=rf+(k-1)*jump; jump=jump*s; n=Math.max(1,out); sizes.push(n);
+    }
+    el("cv-chain").innerHTML=sizes.map((v,i)=>'<span class="node ghost conv-node">'+v+'²</span>'+(i<sizes.length-1?'<span class="arw tiny"></span>':'')).join("");
+    el("cv-out").textContent=n+"×"+n;
+    el("cv-rf").textContent=rf+" px";
+    el("cv-ds").textContent=(N0/n).toFixed(1)+"×";
+  }
+  ["cv-n","cv-k","cv-s","cv-p","cv-l"].forEach(id=>el(id).addEventListener("input",compute));
+  compute();
+}
+
+/* ============================ flashcards / SRS ============================= */
+// Turn each quiz <details.qa> into a gradeable card (Got it / Missed),
+// persisted in STATE.cards. Adds shuffle + "review misses only" + a counter.
+function cardKey(path, q){ return path + "#" + hashStr(q); }
+function initFlashcards(pg){
+  const content=document.getElementById("content");
+  const cards=[...content.querySelectorAll("details.qa")];
+  if(!cards.length) return;
+  cards.forEach(d=>{
+    const q=(d.querySelector("summary")?.textContent||"").trim();
+    const key=cardKey(pg.path, q);
+    d.dataset.key=key;
+    const grade=STATE.cards[key];
+    d.classList.toggle("known", grade===1);
+    d.classList.toggle("missed", grade===-1);
+    const body=d.querySelector(".qa-body");
+    if(body && !body.querySelector(".card-grade")){
+      const bar=document.createElement("div");
+      bar.className="card-grade";
+      bar.innerHTML='<button class="cg cg-known" data-g="1">✓ Got it</button>'+
+        '<button class="cg cg-missed" data-g="-1">✗ Missed</button>'+
+        '<button class="cg cg-clear" data-g="0">clear</button>';
+      body.appendChild(bar);
+    }
+  });
+  updateQuizStats(pg);
+}
+function gradeCard(d, g, pg){
+  const key=d.dataset.key; if(!key) return;
+  if(g===0) delete STATE.cards[key]; else STATE.cards[key]=g;
+  persist();
+  d.classList.toggle("known", g===1);
+  d.classList.toggle("missed", g===-1);
+  updateQuizStats(pg);
+}
+function updateQuizStats(pg){
+  const content=document.getElementById("content");
+  const cards=[...content.querySelectorAll("details.qa")];
+  const total=cards.length;
+  let known=0, missed=0;
+  cards.forEach(d=>{ if(d.classList.contains("known"))known++; else if(d.classList.contains("missed"))missed++; });
+  const el=document.getElementById("quizStats");
+  if(el) el.innerHTML='<b class="qs-known">'+known+'</b> mastered · <b class="qs-missed">'+missed+
+    '</b> missed · '+(total-known-missed)+' left <span class="qs-total">('+total+' cards)</span>';
+}
+// filter: "all" | "misses" | "unseen"
+function applyQuizFilter(mode){
+  const content=document.getElementById("content");
+  content.querySelectorAll("details.qa").forEach(d=>{
+    let show=true;
+    if(mode==="misses") show=d.classList.contains("missed");
+    else if(mode==="unseen") show=!d.classList.contains("known") && !d.classList.contains("missed");
+    d.classList.toggle("qa-hide", !show);
+  });
+}
+function shuffleCards(){
+  const content=document.getElementById("content");
+  // shuffle within each H2 group so section headers still make sense
+  const kids=[...content.children];
+  let group=[];
+  const flush=()=>{
+    for(let i=group.length-1;i>0;i--){ const j=Math.floor(Math.random()*(i+1)); [group[i],group[j]]=[group[j],group[i]]; }
+    group.forEach(n=>content.appendChild(n));
+    group=[];
+  };
+  kids.forEach(n=>{
+    if(n.tagName==="H2"||n.tagName==="H1"||n.tagName==="HR"){ flush(); content.appendChild(n); }
+    else if(n.classList.contains("qa")) group.push(n);
+    else { flush(); content.appendChild(n); }
+  });
+  flush();
+}
+
+/* ============================ progress tracking =========================== */
+function isDone(path){ return !!STATE.done[path]; }
+function setDone(path, v){ if(v) STATE.done[path]=true; else delete STATE.done[path]; persist(); refreshProgressUI(); }
+function markVisited(path){
+  STATE.last=path; persist();
+  setActiveDone();
+  renderPageStatus(path);
+  refreshProgressUI();
+}
+// count only real content pages (exclude the home overview) toward totals
+function progressPages(){ return PAGES.filter(p=>p.path!=="README.md"); }
+function refreshProgressUI(){
+  const all=progressPages();
+  const done=all.filter(p=>isDone(p.path)).length;
+  const pct=all.length?Math.round(done/all.length*100):0;
+  const bar=document.getElementById("progBar"), lbl=document.getElementById("progLbl");
+  if(bar) bar.style.width=pct+"%";
+  if(lbl) lbl.textContent=done+" / "+all.length+" pages · "+pct+"%";
+  // per-item checks + per-section counts in the nav
+  document.querySelectorAll("nav a.item").forEach(a=>{
+    a.classList.toggle("done", isDone(a.dataset.path));
+  });
+  document.querySelectorAll("nav .sec").forEach(secEl=>{
+    const links=[...secEl.querySelectorAll("a.item")].filter(a=>a.dataset.path!=="README.md" || secEl.querySelectorAll("a.item").length===1);
+    const count=secEl.querySelector(".sec-count");
+    if(count){
+      const d=links.filter(a=>isDone(a.dataset.path)).length;
+      count.textContent=d+"/"+links.length;
+      count.classList.toggle("all-done", d===links.length && links.length>0);
+    }
+  });
+}
+function setActiveDone(){
+  document.querySelectorAll("nav a.item").forEach(a=>a.classList.toggle("done", isDone(a.dataset.path)));
+}
+// A small status strip appended under the pager: mark complete + next.
+function renderPageStatus(path){
+  const existing=document.querySelector(".page-status"); if(existing) existing.remove();
+  if(path==="README.md") return; // home has no "complete" concept
+  const host=document.getElementById("pager");
+  if(!host) return;
+  const done=isDone(path);
+  const strip=document.createElement("div");
+  strip.className="page-status";
+  strip.innerHTML='<button class="complete-btn'+(done?" is-done":"")+'" id="completeBtn">'+
+    (done?"✓ Completed — click to unmark":"Mark this page complete")+'</button>';
+  host.parentNode.insertBefore(strip, host);
+  strip.querySelector("#completeBtn").onclick=()=>{
+    setDone(path, !isDone(path));
+    renderPager(path);            // re-render pager block…
+    const old=document.querySelector(".page-status"); if(old) old.remove();
+    renderPageStatus(path);       // …and this strip
+  };
+}
+
+/* =============================== study timer ============================== */
+// Global floating timer that survives SPA navigation (lives outside #content).
+const Timer=(function(){
+  let total=25*60, left=25*60, running=false, tick=null;
+  function fmt(s){ const m=Math.floor(s/60), ss=s%60; return m+":"+(ss<10?"0":"")+ss; }
+  function paint(){
+    const t=document.getElementById("timerTime");
+    const ring=document.getElementById("timerRing");
+    if(t) t.textContent=fmt(left);
+    if(ring){ const frac=total?left/total:0; ring.style.background=
+      "conic-gradient(var(--accent) "+(frac*360)+"deg, var(--border) 0)"; }
+    const panel=document.getElementById("timerPanel");
+    if(panel) panel.classList.toggle("done", left<=0);
+    const pb=document.getElementById("timerPlay"); if(pb) pb.textContent=running?"❚❚":"▶";
+  }
+  function step(){ if(left>0){ left--; if(left<=0){ stop(); flash(); } paint(); } }
+  function flash(){ const p=document.getElementById("timerPanel"); if(p){ p.classList.add("ring"); setTimeout(()=>p.classList.remove("ring"),3000);} }
+  function start(){ if(running||left<=0) return; running=true; tick=setInterval(step,1000); paint(); }
+  function stop(){ running=false; if(tick) clearInterval(tick); tick=null; paint(); }
+  function toggle(){ running?stop():start(); }
+  function reset(sec){ stop(); total=sec; left=sec; paint(); }
+  function open(){ const p=document.getElementById("timerPanel"); if(p){ p.classList.add("show"); paint(); } }
+  function close(){ const p=document.getElementById("timerPanel"); if(p) p.classList.remove("show"); }
+  return { start, stop, toggle, reset, open, close, paint };
+})();
+function initTimer(){
+  const launch=document.getElementById("timerBtn");
+  if(launch) launch.onclick=()=>Timer.open();
+  const panel=document.getElementById("timerPanel");
+  if(!panel) return;
+  panel.querySelector("#timerPlay").onclick=()=>Timer.toggle();
+  panel.querySelector("#timerClose").onclick=()=>Timer.close();
+  panel.querySelectorAll(".timer-preset").forEach(b=>{
+    b.onclick=()=>{ Timer.reset(+b.dataset.min*60); panel.querySelectorAll(".timer-preset").forEach(x=>x.classList.toggle("sel",x===b)); };
+  });
+  Timer.paint();
 }
 
 function go(path){ location.hash="#"+encodeURI(path); }
@@ -194,7 +558,28 @@ addEventListener("keydown", e=>{ if(e.key==="Escape") closeSidebar(); });
   }
 })();
 
+/* ------------------------- flashcard grade clicks -------------------------- */
+// Delegated on #content (the node persists; only its innerHTML changes).
+document.getElementById("content").addEventListener("click", e=>{
+  const btn=e.target.closest(".cg"); if(!btn) return;
+  e.preventDefault(); e.stopPropagation();
+  const card=btn.closest("details.qa"); if(!card) return;
+  gradeCard(card, +btn.dataset.g, byPath[currentPath]);
+});
+
+/* --------------------------------- resume ---------------------------------- */
+function renderResume(){
+  const slot=document.getElementById("resumeSlot"); if(!slot) return;
+  const p=STATE.last && byPath[STATE.last];
+  if(p && p.path!=="README.md"){
+    slot.innerHTML='<a class="resume-link" href="#'+encodeURI(p.path)+'">↻ Resume: '+p.title+'</a>';
+  } else slot.innerHTML="";
+}
+
 /* ----------------------------------- init ---------------------------------- */
 buildNav();
-window.addEventListener("hashchange", onHash);
+initTimer();
+refreshProgressUI();
+renderResume();
+window.addEventListener("hashchange", ()=>{ onHash(); renderResume(); });
 onHash();

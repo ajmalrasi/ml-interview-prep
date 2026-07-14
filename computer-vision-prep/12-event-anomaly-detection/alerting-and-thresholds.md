@@ -4,8 +4,25 @@
 
 ## Why this layer decides success
 Anomalies are **rare** → 99% specific × thousands of frames × dozens of cameras = flood of false positives → operators mute. Engineer the **alert**, not just the detector.
-```
-raw trigger → K-of-N confirm → hysteresis → debounce/cooldown → dedupe → severity+evidence → operator
+```rawhtml
+<div class="diagram">
+  <div class="flow">
+    <span class="node data">raw trigger</span>
+    <span class="arw"></span>
+    <span class="node">K-of-N confirm</span>
+    <span class="arw"></span>
+    <span class="node">hysteresis</span>
+    <span class="arw"></span>
+    <span class="node">debounce / cooldown</span>
+    <span class="arw"></span>
+    <span class="node">dedupe</span>
+    <span class="arw"></span>
+    <span class="node">severity + evidence</span>
+    <span class="arw"></span>
+    <span class="node out">operator</span>
+  </div>
+  <div class="flow-foot">Each stage suppresses false alarms — the difference between a trusted alert and one operators mute.</div>
+</div>
 ```
 
 ## Techniques

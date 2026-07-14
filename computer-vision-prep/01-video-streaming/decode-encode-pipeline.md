@@ -7,16 +7,31 @@ hand to your model. The single biggest performance lever is **decoding on the GP
 
 ## The full path
 
-```
-RTSP/RTP packets
-   → depayload (rtph264depay)        # strip RTP, get raw H.264 bitstream
-   → parse (h264parse)               # find frame boundaries, NAL units
-   → DECODE                          # bitstream → raw frame (YUV/NV12)
-        ├─ CPU: avdec_h264 (FFmpeg)  # portable, burns CPU
-        └─ GPU: nvv4l2decoder/NVDEC  # hardware, frees CPU, stays in GPU mem
-   → color convert (NV12 → BGR)      # models usually want BGR/RGB
-   → (optional resize/crop)
-   → frame ready  → inference
+```rawhtml
+<div class="diagram">
+  <div class="vflow">
+    <span class="node data">RTSP / RTP packets</span>
+    <span class="varw"></span>
+    <span class="node">depayload <span class="nsub">rtph264depay — strip RTP, get raw H.264 bitstream</span></span>
+    <span class="varw"></span>
+    <span class="node">parse <span class="nsub">h264parse — frame boundaries, NAL units</span></span>
+    <span class="varw"></span>
+    <div class="branch">
+      <span class="node">DECODE <span class="nsub">bitstream → raw frame (YUV / NV12)</span></span>
+      <span class="split-arw"></span>
+      <div class="fork">
+        <span class="node ghost">CPU: avdec_h264 <span class="nsub">portable, burns CPU</span></span>
+        <span class="node soft">GPU: nvv4l2decoder / NVDEC <span class="nsub">hardware, stays in GPU mem</span></span>
+      </div>
+    </div>
+    <span class="varw"></span>
+    <span class="node">color convert <span class="nsub">NV12 → BGR/RGB for the model</span></span>
+    <span class="varw"></span>
+    <span class="node">optional resize / crop</span>
+    <span class="varw"></span>
+    <span class="node out">frame ready → inference</span>
+  </div>
+</div>
 ```
 
 ## CPU decode vs hardware decode (the key decision)

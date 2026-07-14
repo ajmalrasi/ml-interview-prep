@@ -29,13 +29,19 @@ Show you can size it:
 ## Step 3 — Architect (the diagram)
 
 A defensible default:
-```
-Cameras (RTSP) → Edge node(s): GStreamer/DeepStream decode (NVDEC) + batched
-                 TRT inference + tracking → results as metadata
-                       │ (only small metadata + optional clips leave the edge)
-                       ▼
-              Message bus (Kafka/Pub/Sub) → Cloud: aggregation, storage
-                 (SQL/NoSQL), dashboards, WebRTC live view, retraining data
+```rawhtml
+<div class="diagram">
+  <div class="vflow">
+    <span class="node data">Cameras <span class="nsub">RTSP</span></span>
+    <span class="varw"></span>
+    <span class="node">Edge node(s)<span class="nsub">GStreamer/DeepStream decode (NVDEC) + batched TRT inference + tracking → results as metadata</span></span>
+    <span class="varw" title="only small metadata + optional clips leave the edge"></span>
+    <span class="node soft">Message bus <span class="nsub">Kafka / Pub/Sub</span></span>
+    <span class="varw"></span>
+    <span class="node out">Cloud<span class="nsub">aggregation · storage (SQL/NoSQL) · dashboards · WebRTC live view · retraining data</span></span>
+  </div>
+  <div class="diagram-cap">Only small metadata + optional clips leave the edge — bandwidth and privacy stay bounded.</div>
+</div>
 ```
 Key decisions to justify: edge vs cloud inference, per-camera isolation, batching
 at the mux, bounded buffers, hardware decode.

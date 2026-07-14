@@ -189,6 +189,10 @@ function renderMarkdown(md){
         out.push(D[name] ? fig(D[name], cap) : '<pre><code>'+escapeHtml(code)+'</code></pre>');
         continue;
       }
+      if(lang === "rawhtml"){                        // pass raw HTML through verbatim
+        out.push(code);
+        continue;
+      }
       out.push('<pre><code'+(lang?' class="language-'+lang+'"':'')+'>'+highlight(code, lang)+'</code></pre>');
       continue;
     }
@@ -350,8 +354,14 @@ const HTML =
 '      <div class="sub">AI Data Scientist · CCTV Crowd &amp; Queue Analytics</div>\n' +
 '      <div class="tools">\n' +
 '        <input id="search" type="search" placeholder="Search all pages…" autocomplete="off" autocapitalize="off" spellcheck="false">\n' +
+'        <button class="iconbtn" id="timerBtn" title="Study / exam timer">⏱</button>\n' +
 '        <button class="iconbtn theme-toggle" title="Toggle light / dark">◐</button>\n' +
 '      </div>\n' +
+'      <div class="progwrap">\n' +
+'        <div class="progtrack"><div class="progbar" id="progBar"></div></div>\n' +
+'        <div class="proglbl" id="progLbl"></div>\n' +
+'      </div>\n' +
+'      <div id="resumeSlot"></div>\n' +
 '      <a id="jupyterLink" class="jbtn" target="_blank" rel="noopener">🚀 Open live notebooks ↗</a>\n' +
 '    </div>\n' +
 '    <nav id="nav"></nav>\n' +
@@ -372,6 +382,17 @@ const HTML =
 '</div>\n' +
 '<div class="scrim" id="scrim"></div>\n' +
 '<div class="searchpanel" id="searchpanel"></div>\n' +
+'<div class="timer-panel" id="timerPanel">\n' +
+'  <div class="timer-head"><span class="timer-title">Study timer</span>' +
+'    <button class="iconbtn timer-x" id="timerClose" aria-label="Close">✕</button></div>\n' +
+'  <div class="timer-face"><div class="timer-ring" id="timerRing"><div class="timer-time" id="timerTime">25:00</div></div></div>\n' +
+'  <div class="timer-presets">' +
+'    <button class="timer-preset sel" data-min="25">25m</button>' +
+'    <button class="timer-preset" data-min="45">45m</button>' +
+'    <button class="timer-preset" data-min="60">60m</button>' +
+'    <button class="timer-preset" data-min="90">90m mock</button></div>\n' +
+'  <button class="timer-play" id="timerPlay">▶</button>\n' +
+'</div>\n' +
 '<script>\nconst DATA=' + dataJson + ';\n' + APP + '\n</script>\n' +
 '</body>\n</html>\n';
 

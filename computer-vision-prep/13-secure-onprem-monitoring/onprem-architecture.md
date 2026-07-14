@@ -9,11 +9,19 @@
 - **Bandwidth** — don't stream dozens of HD cameras to cloud; process at edge, ship events.
 
 ## Topology
-```
-Cameras ─(private VLAN, RTSP)→ Jetson edge: decode(NVDEC)+detect+track+events
-       → on-prem GPU server: aggregation, cross-camera fusion, heavy models
-       → local DB (events) + object store (clips, retention) + LAN dashboard
-NO outbound internet.
+```rawhtml
+<div class="diagram">
+  <div class="vflow">
+    <span class="node data">Cameras<span class="nsub">private VLAN · RTSP</span></span>
+    <span class="varw"></span>
+    <span class="node">Jetson edge<span class="nsub">decode (NVDEC) + detect + track + events</span></span>
+    <span class="varw"></span>
+    <span class="node">on-prem GPU server<span class="nsub">aggregation · cross-camera fusion · heavy models</span></span>
+    <span class="varw"></span>
+    <span class="node out">local DB (events) + object store (clips) + LAN dashboard</span>
+  </div>
+  <div class="diagram-cap">🔒 No outbound internet.</div>
+</div>
 ```
 **Edge-first:** do detect+track+events on Jetson → raw video stays local (privacy) + only metadata leaves (bandwidth). (§02/§03)
 

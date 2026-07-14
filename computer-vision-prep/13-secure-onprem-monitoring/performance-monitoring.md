@@ -17,10 +17,29 @@
 **Drift types:** **covariate** = inputs shift (lighting/season → recalibrate/retrain) · **concept** = meaning shifts (zone repurposed → relabel).
 
 ## Close the loop
-```
-monitor → detect drift → collect+label hard cases (active learning §14)
-→ retrain/recalibrate → offline-validate on site clips
-→ CANARY on few cameras → compare → roll forward or ROLL BACK
+```rawhtml
+<div class="diagram">
+  <div class="branch">
+    <div class="flow">
+      <span class="node">monitor</span>
+      <span class="arw tiny"></span>
+      <span class="node">detect drift</span>
+      <span class="arw tiny"></span>
+      <span class="node">collect + label hard cases<span class="nsub">active learning §14</span></span>
+      <span class="arw tiny"></span>
+      <span class="node">retrain / recalibrate</span>
+      <span class="arw tiny"></span>
+      <span class="node">offline-validate<span class="nsub">on site clips</span></span>
+      <span class="arw tiny"></span>
+      <span class="node">canary<span class="nsub">few cameras</span></span>
+    </div>
+    <span class="split-arw"></span>
+    <div class="fork">
+      <span class="node out">roll forward ✓</span>
+      <span class="node ghost">ROLL BACK ✗</span>
+    </div>
+  </div>
+</div>
 ```
 - **Canary + rollback** — never hot-swap fleet blind; keep old engine pinned.
 - **Shadow mode** — run candidate alongside prod, log diffs (no cloud A/B).

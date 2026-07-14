@@ -8,11 +8,17 @@ file makes the *why* crisp.
 
 ## The flow
 
-```
-PyTorch/TF model → export ONNX → trtexec / TRT builder → engine (.plan/.engine)
-                                      │
-                          chooses kernels for THIS GPU,
-                          fuses layers, sets precision
+```rawhtml
+<div class="diagram">
+  <div class="flow">
+    <span class="node">PyTorch / TF model</span>
+    <span class="arw labeled"><span class="al">export</span></span>
+    <span class="node">ONNX</span>
+    <span class="arw labeled"><span class="al">trtexec / TRT builder</span></span>
+    <span class="node out">engine<span class="nsub">.plan / .engine</span></span>
+  </div>
+  <div class="flow-foot"><b>The builder</b> chooses kernels for <b>this</b> GPU, fuses layers, and sets precision.</div>
+</div>
 ```
 
 > The engine is hardware-specific. An engine built on an A100 won't be optimal (or

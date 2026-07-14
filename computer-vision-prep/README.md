@@ -8,11 +8,20 @@ The role in one line: **turn live CCTV into operational decisions** — count an
 time crowds, flag anomalies, and run computer-vision + deep-learning models on
 the NVIDIA edge, deployed in a secure on-prem environment that never phones home.
 
-```
-CCTV cameras → ingest/decode → detect + track → analytics → events/alerts
-     ↑             ↑              ↑                 ↑              ↑
-  reconnect     GStreamer      CNN / YOLO      queue time /    anomaly +
-  (on-prem)     /DeepStream    + ByteTrack     crowd density   thresholds
+```rawhtml
+<div class="diagram">
+  <div class="flow">
+    <span class="node data">CCTV cameras<span class="nsub">reconnect · on-prem</span></span>
+    <span class="arw"></span>
+    <span class="node">ingest / decode<span class="nsub">GStreamer / DeepStream</span></span>
+    <span class="arw"></span>
+    <span class="node">detect + track<span class="nsub">CNN / YOLO + ByteTrack</span></span>
+    <span class="arw"></span>
+    <span class="node">analytics<span class="nsub">queue time / crowd density</span></span>
+    <span class="arw"></span>
+    <span class="node out">events / alerts<span class="nsub">anomaly + thresholds</span></span>
+  </div>
+</div>
 ```
 
 ## What this role actually wants (and how you stack up)

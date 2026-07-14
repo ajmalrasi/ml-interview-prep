@@ -25,29 +25,47 @@ available (Jetson Orin / dGPU). Tell me if any of that's wrong."
 
 ## 3. Architecture
 
-```
-                 EDGE NODE (×N, each handles a camera group)
- ┌─────────────────────────────────────────────────────────────┐
- cam1..16 RTSP ─► GStreamer/DeepStream:
-                  nvv4l2decoder (NVDEC) ─► nvstreammux (batch=16)
-                  ─► nvinfer (INT8 TRT detector) ─► nvtracker (IDs)
-                  ─► pad probe: extract metadata (boxes, ids, ts)
-                       │                              │
-                       ▼                              ▼
-               local ring buffer of            results → local queue
-               recent frames (for clips)              │
-                                                       ▼
-                              local agent: dedup/aggregate, write event clips
- └───────────────────────────────────┬─────────────────────────┘
-                                      │ metadata + clips (small)
-                                      ▼
-                    Message bus (Kafka / GCP Pub/Sub)
-                                      │
-                                      ▼
-                 CLOUD: stream processor → SQL/NoSQL (events, analytics)
-                        ├─ dashboards / alerting
-                        ├─ WebRTC/FastRTC live annotated view for operators
-                        └─ sampled frames → retraining dataset
+```rawhtml
+<div class="diagram">
+  <div class="vflow">
+    <div class="loopwrap" style="width:100%">
+      <span class="loop-top">EDGE NODE ×N — each handles a camera group</span>
+      <div class="flow">
+        <span class="node data">cam 1..16<span class="nsub">RTSP</span></span>
+        <span class="arw tiny"></span>
+        <span class="node">nvv4l2decoder<span class="nsub">NVDEC</span></span>
+        <span class="arw tiny"></span>
+        <span class="node">nvstreammux<span class="nsub">batch = 16</span></span>
+        <span class="arw tiny"></span>
+        <span class="node">nvinfer<span class="nsub">INT8 TRT detector</span></span>
+        <span class="arw tiny"></span>
+        <span class="node">nvtracker<span class="nsub">IDs</span></span>
+        <span class="arw tiny"></span>
+        <span class="node">pad probe<span class="nsub">metadata: boxes, ids, ts</span></span>
+      </div>
+      <div class="flow" style="margin-top:8px">
+        <span class="node soft">ring buffer<span class="nsub">recent frames for clips</span></span>
+        <span class="node soft">local agent<span class="nsub">dedup / aggregate · write event clips</span></span>
+      </div>
+    </div>
+    <span class="varw" title="metadata + clips (small)"></span>
+    <span class="node soft">Message bus<span class="nsub">Kafka / GCP Pub/Sub</span></span>
+    <span class="varw"></span>
+    <div class="loopwrap" style="width:100%">
+      <span class="loop-top">CLOUD</span>
+      <div class="flow">
+        <span class="node">stream processor</span>
+        <span class="arw"></span>
+        <span class="node">SQL / NoSQL<span class="nsub">events, analytics</span></span>
+      </div>
+      <div class="fork" style="flex-direction:column; gap:8px; margin-top:8px">
+        <span class="node ghost">dashboards / alerting</span>
+        <span class="node ghost">WebRTC / FastRTC live annotated view</span>
+        <span class="node ghost">sampled frames → retraining dataset</span>
+      </div>
+    </div>
+  </div>
+</div>
 ```
 
 **Why these choices:**

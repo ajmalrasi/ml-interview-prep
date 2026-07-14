@@ -8,9 +8,17 @@ always **drop the oldest, keep latest**.
 
 ## The core problem (producer/consumer mismatch)
 
-```
-Camera @ 30fps  ──>  [ queue ]  ──>  Model @ 22fps
-   producer          buffer            consumer (slower!)
+```rawhtml
+<div class="diagram">
+  <div class="flow">
+    <span class="node data">Camera @ 30 fps<span class="nsub">producer</span></span>
+    <span class="arw"></span>
+    <span class="node soft">queue<span class="nsub">buffer</span></span>
+    <span class="arw"></span>
+    <span class="node">Model @ 22 fps<span class="nsub">consumer — slower!</span></span>
+  </div>
+  <div class="flow-foot">Producer outruns consumer → the queue fills → <b>backpressure</b> (drop frames or block) is the only escape.</div>
+</div>
 ```
 
 If producer > consumer forever, the queue grows without bound → **memory leak,

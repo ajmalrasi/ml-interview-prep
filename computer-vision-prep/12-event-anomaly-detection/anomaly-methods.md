@@ -9,8 +9,21 @@ Can you name it? → it's an **event** → use a rule (higher precision). Reserv
 - **Statistical (no learning)** — track a scalar (occupancy, speed, flow); flag with **z-score/MAD, EWMA, control charts**. Use **seasonal baseline** (6pm ≠ 6am). Cheap, explainable, first line. Catches surges, stampede onset.
 - **Classical unsupervised** — features → **One-Class SVM / Isolation Forest / GMM/KDE**; score = distance outside normal.
 - **Autoencoder (reconstruction)** — train on **normal only**; **high reconstruction error = anomaly**. Self-supervised (no anomaly labels). ⚠ too-strong AE reconstructs anomalies too → misses (fix: MemAE).
-```
-frame → encoder → latent → decoder → recon;  score = ||frame − recon||
+```rawhtml
+<div class="diagram">
+  <div class="flow">
+    <span class="node data">frame</span>
+    <span class="arw"></span>
+    <span class="node">encoder</span>
+    <span class="arw"></span>
+    <span class="node soft">latent</span>
+    <span class="arw"></span>
+    <span class="node">decoder</span>
+    <span class="arw"></span>
+    <span class="node out">recon</span>
+  </div>
+  <div class="formula"><div class="frow"><span class="fexpr">score = <span class="fv">‖ frame − recon ‖</span></span><span class="fnote">high reconstruction error = anomaly (never seen in training)</span></div></div>
+</div>
 ```
 - **Prediction-based** — predict next frame/positions; **big prediction error = anomaly**. Good for **motion** anomalies (wrong-way, fall, scatter) an AE misses.
 - **Optical-flow** — model normal motion field; flag running-in-walk-zone, reverse flow, panic dispersal. Light + effective for crowd motion.

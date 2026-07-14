@@ -9,17 +9,18 @@ systems. **Prepare to whiteboard one of these.**
 
 ## The pattern
 
-```
-model detections (boxes + classes + track IDs)
-        │
-        ▼
- geometry: which zone? crossed which line? where on the floor?
-        │
-        ▼
- statistics/temporal: count, dwell time, rate, smoothing, dedupe
-        │
-        ▼
- events: "3 forklifts in bay 2 for >5 min", "pallet crossed dock line"
+```rawhtml
+<div class="diagram">
+  <div class="vflow">
+    <span class="node data">model detections<span class="nsub">boxes + classes + track IDs</span></span>
+    <span class="varw"></span>
+    <span class="node">geometry<span class="nsub">which zone? crossed which line? where on the floor?</span></span>
+    <span class="varw"></span>
+    <span class="node">statistics / temporal<span class="nsub">count, dwell time, rate, smoothing, dedupe</span></span>
+    <span class="varw"></span>
+    <span class="node out">events<span class="nsub">"3 forklifts in bay 2 for &gt;5 min" · "pallet crossed dock line"</span></span>
+  </div>
+</div>
 ```
 
 ## Core geometric primitives

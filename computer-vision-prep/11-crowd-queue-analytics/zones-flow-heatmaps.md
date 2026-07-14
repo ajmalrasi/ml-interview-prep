@@ -8,10 +8,16 @@
 - Occupancy > threshold for K sec = **overcrowding event** (→ §12).
 
 ## Line-crossing / flow
-```
-crossed?  sign of cross-product (line × track-step) flips
-dir?      which sign → IN vs OUT
-rate?     crossings/min per direction
+```rawhtml
+<div class="diagram">
+  <table class="maptable">
+    <tbody>
+      <tr><td class="mfrom"><b>crossed?</b></td><td class="marw"></td><td class="mto">sign of the cross-product (line × track-step) flips</td></tr>
+      <tr><td class="mfrom"><b>direction?</b></td><td class="marw"></td><td class="mto">which sign → IN vs OUT</td></tr>
+      <tr><td class="mfrom"><b>rate?</b></td><td class="marw"></td><td class="mto">crossings / min per direction</td></tr>
+    </tbody>
+  </table>
+</div>
 ```
 - Count **unique ID once** per crossing (never per frame); **debounce** past the line.
 - **In − Out = room occupancy** (never watch the whole room).

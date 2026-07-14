@@ -7,10 +7,34 @@ goals — know which the question is asking.
 
 ## The stages (and where time hides)
 
+```rawhtml
+<div class="diagram">
+  <div class="flow">
+    <span class="node ghost">camera capture / encode<span class="nsub">out of your hands</span></span>
+    <span class="arw"></span>
+    <span class="node">network transport<span class="nsub">jitter buffer</span></span>
+    <span class="arw"></span>
+    <span class="node">decode<span class="nsub">NVDEC</span></span>
+    <span class="arw"></span>
+    <span class="node">preprocess<span class="nsub">resize / normalize / color</span></span>
+    <span class="arw"></span>
+    <span class="node">inference</span>
+    <span class="arw"></span>
+    <span class="node">postprocess<span class="nsub">NMS, decode boxes</span></span>
+    <span class="arw"></span>
+    <span class="node">tracking / logic</span>
+    <span class="arw"></span>
+    <span class="node out">output</span>
+  </div>
+</div>
 ```
-camera capture/encode   →   network transport   →   decode   →   preprocess
-   (out of your hands)        (jitter buffer)        (NVDEC)     (resize/normalize/color)
-        →   inference   →   postprocess (NMS, decode boxes)   →   tracking/logic   →   output
+
+**Budget it.** Every stage below eats into the frame interval (33 ms at 30 fps). Push
+inference up and watch the total blow past the budget — then the max sustainable FPS
+drops. This is the "does it fit real-time?" question interviewers probe.
+
+```rawhtml
+<div id="latency-widget" class="widget-host"></div>
 ```
 
 Typical fat slices and fixes:

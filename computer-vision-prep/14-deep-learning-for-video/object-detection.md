@@ -28,11 +28,13 @@ IoU = intersection/union (0..1)
 localization (IoU/GIoU/CIoU) + objectness + classification (**focal loss** for fg/bg imbalance).
 
 ## mAP (must explain)
-```
-IoU ≥ thr → True Positive
-precision = TP/(TP+FP), recall = TP/(TP+FN)
-AP = area under PR curve (per class);  mAP = mean AP over classes
-mAP@0.5 = loose;  mAP@[0.5:0.95] = COCO strict (avg over IoU thrs)
+```rawhtml
+<div class="formula">
+  <div class="frow"><span class="fexpr"><span class="fv">IoU ≥ thr</span> → True Positive</span></div>
+  <div class="frow"><span class="fexpr">precision = TP/(TP+FP)</span><span class="fexpr" style="margin-left:12px">recall = TP/(TP+FN)</span></div>
+  <div class="frow"><span class="fexpr"><span class="fv">AP</span> = area under PR curve (per class)</span><span class="fexpr" style="margin-left:12px"><span class="fv">mAP</span> = mean AP over classes</span></div>
+  <div class="frow"><span class="fnote">mAP@0.5 = loose · mAP@[0.5:0.95] = COCO strict (averaged over IoU thresholds)</span></div>
+</div>
 ```
 - PR trade-off = the **confidence threshold**. Always state the IoU thr.
 - **Counting → recall** (miss = under-count). **Security alert → precision**.

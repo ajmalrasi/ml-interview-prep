@@ -2,12 +2,24 @@
 
 **TL;DR:** Gov/enterprise CCTV rule: **no cloud, data never leaves site, everything auditable.** Same skills as your cloud work — constraint **inverted**.
 
-```
-┌────────── ON-PREM / AIR-GAPPED ──────────┐
- cameras → Jetson edge (decode+detect+track)
-         → on-prem GPU server (analytics+events) → local DB → operator dashboard
- NO internet egress. Model updates via controlled offline channel.
-└───────────────────────────────────────────┘
+```rawhtml
+<div class="diagram">
+  <div class="loopwrap">
+    <span class="loop-top">🔒 ON-PREM / AIR-GAPPED</span>
+    <div class="flow">
+      <span class="node data">cameras</span>
+      <span class="arw"></span>
+      <span class="node">Jetson edge<span class="nsub">decode + detect + track</span></span>
+      <span class="arw"></span>
+      <span class="node">on-prem GPU server<span class="nsub">analytics + events</span></span>
+      <span class="arw"></span>
+      <span class="node">local DB</span>
+      <span class="arw"></span>
+      <span class="node out">operator dashboard</span>
+    </div>
+    <div class="flow-foot"><b>No internet egress.</b> Model updates arrive via a controlled offline channel.</div>
+  </div>
+</div>
 ```
 
 **Bridge from your résumé:** *"I've shipped Dockerized inference on GKE; on-prem it's the same containers + TensorRT engines, but registry, model updates, and monitoring all live inside the perimeter with no egress."*
