@@ -35,6 +35,7 @@ carries over unchanged. What changes is *which choices win*:
 | CNN → LLM/VLM | "My experiment was a CNN — what transfers and what breaks?" |
 | LLM Quantization | "Weight-only INT4 vs W8A8/FP8, GPTQ/AWQ/SmoothQuant, KV-cache quant." |
 | The Loop in Practice | "How would you actually run baseline→quantize→serve→compare for an LLM?" |
+| Serving Architecture | "Where does the inference engine sit — Deployment vs Job vs serverless, and how do I not pay for an idle GPU?" |
 | VLM Optimization | "A vision-language model has a vision tower *and* an LLM — optimize which, how?" |
 | Experiment Redo | "Redo my FashionMNIST table as an LLM/VLM project." |
 | Interview Q&A | Rapid-fire drill. |

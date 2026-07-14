@@ -105,6 +105,7 @@ const SITE = [
     { file:"cnn-to-llm.md", title:"CNN → LLM/VLM: What Transfers" },
     { file:"llm-quantization.md", title:"LLM Quantization" },
     { file:"llm-opt-in-practice.md", title:"The Loop in Practice" },
+    { file:"serving-architecture.md", title:"Serving Architecture (Internal Deployment)" },
     { file:"vlm-optimization.md", title:"VLM Optimization" },
     { file:"experiment-redo.md", title:"Experiment Redo (Your Project as LLM/VLM)" },
     { file:"interview-qa.md", title:"Interview Q&A — LLM & VLM", quiz:true },
