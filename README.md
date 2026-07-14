@@ -1,6 +1,6 @@
 # Interview Prep
 
-Three self-contained interview-prep tracks. Each is a static site — edit the
+Four self-contained interview-prep tracks. Each is a static site — edit the
 `.md` files, run `node build.js`, and open the generated `index.html`.
 
 ## Tracks
@@ -18,6 +18,13 @@ Three self-contained interview-prep tracks. Each is a static site — edit the
   (chunking, embeddings, FAISS/Qdrant, hybrid retrieval, reranking) plus LLM
   serving internals, tool calling, MCP, agent architectures, fine-tuning,
   security, and production monitoring.
+
+- **[automotive-soc-prep/](automotive-soc-prep/)** — AI Application Engineer
+  (Automotive SoC). Deploying CV/BEV models on embedded NPU/DSP/CNNIP: the ONNX
+  toolchain (graph surgery, QDQ, partitioning), quantization for embedded
+  (PTQ/QAT, accuracy mitigation), detection/segmentation/BEV models, SoC
+  architecture (memory/DMA/IPMMU, multi-core scheduling), and Linux/QNX runtime,
+  SIL/HIL validation, ISO 26262 functional safety.
 
 ## Build a track
 
