@@ -9,7 +9,7 @@ needs lives in `index.html`. It ships as one track inside the **monorepo**
 
 ## Deployed instance
 
-Running on **http://192.168.3.20:9002** — served by the `ml-prep` systemd service
+Running on **http://192.168.3.20:9002** — served by the `ml-engineer-prep` systemd service
 (auto-starts on boot). User: `ajmalrasi`, path:
 `/home/ajmalrasi/ml-interview-prep/ml-engineer-prep`.
 
@@ -26,7 +26,7 @@ directly.
 git clone https://github.com/ajmalrasi/ml-interview-prep.git /home/ajmalrasi/ml-interview-prep
 
 # persistent server on 9002 (survives reboot + crash)
-sudo tee /etc/systemd/system/ml-prep.service >/dev/null <<'UNIT'
+sudo tee /etc/systemd/system/ml-engineer-prep.service >/dev/null <<'UNIT'
 [Unit]
 Description=ML/Cloud Engineer study website
 After=network.target
@@ -42,8 +42,8 @@ WantedBy=multi-user.target
 UNIT
 
 sudo systemctl daemon-reload
-sudo systemctl enable --now ml-prep.service
-sudo systemctl status ml-prep.service --no-pager
+sudo systemctl enable --now ml-engineer-prep.service
+sudo systemctl status ml-engineer-prep.service --no-pager
 ```
 
 ---
@@ -60,7 +60,7 @@ ssh rpi 'cd ml-interview-prep && git pull'       # static re-serve, no restart
 ```
 
 No Pi restart needed — the static file is re-served immediately. Restart only if you change
-the systemd unit itself: `sudo systemctl restart ml-prep.service`.
+the systemd unit itself: `sudo systemctl restart ml-engineer-prep.service`.
 
 ---
 
@@ -74,6 +74,8 @@ curl -sI http://192.168.3.20:9002/ | head -1     # expect: HTTP/1.0 200 OK
 ## Notes
 - **No Node on the Pi** — `node build.js` runs on your machine; the Pi only serves the
   committed `index.html`. Only Python 3 (preinstalled on Raspberry Pi OS) is required.
-- **Ports already in use on this Pi:** `koi-prep` :9000, `docsmind` :9001, `ml-prep` :9002,
-  `koi-jupyter` :8888 — don't duplicate. Check with `ss -ltnp` before adding a unit.
+- **Ports / services in use on this Pi** (each service is named after its track dir):
+  `computer-vision-prep` :9000, `rag-llm-prep` :9001, `ml-engineer-prep` :9002,
+  `automotive-soc-prep` :9003, `koi-jupyter` :8888 — don't duplicate. Check with
+  `ss -ltnp` before adding a unit.
 - **Firewall**: if `ufw` is on, `sudo ufw allow 9002/tcp`. LAN only — don't expose publicly.
