@@ -109,12 +109,14 @@ const SITE = [
     { file:"framework-comparison.md", title:"Frameworks — Four Tools, Four Layers" },
     { file:"patterns.md", title:"Single vs Multi-Agent vs Supervisor" },
     { file:"docsmind-choice.md", title:"DocsMind's Choice — One LangGraph Loop" },
+    { file:"interview-questions.md", title:"Interview Questions" },
   ]},
   { label:"15 · LLM Serving Internals", dir:"15-llm-serving-internals", items:[
     { file:"README.md", title:"Overview" },
     { file:"kv-cache.md", title:"KV Cache — Memory for Compute" },
     { file:"continuous-batching.md", title:"Continuous Batching — No Idle GPU" },
     { file:"speculative-decoding.md", title:"Speculative Decoding — Guess & Verify" },
+    { file:"interview-questions.md", title:"Interview Questions" },
   ]},
   { label:"16 · Python Concurrency", dir:"16-python-concurrency", items:[
     { file:"README.md", title:"Overview" },
@@ -132,6 +134,7 @@ const SITE = [
     { file:"five-problems.md", title:"The Five Problems" },
     { file:"code-seams.md", title:"The Code Seams — Where Defenses Slot In" },
     { file:"red-team-validation.md", title:"Costs, Severity & Red-Team Validation" },
+    { file:"interview-questions.md", title:"Interview Questions" },
   ]},
   { label:"19 · Fine-Tuning", dir:"19-fine-tuning", items:[
     { file:"README.md", title:"Overview" },
@@ -143,6 +146,7 @@ const SITE = [
     { file:"README.md", title:"Overview" },
     { file:"four-signals.md", title:"The Four Signals — Cost, Latency, Quality, Drift" },
     { file:"wiring-it-in.md", title:"Wiring It In — Seams & Fire-Testing" },
+    { file:"interview-questions.md", title:"Interview Questions" },
   ]},
   { label:"21 · Multimodal Document RAG", dir:"21-multimodal-document-rag", items:[
     { file:"README.md", title:"Overview" },
@@ -154,6 +158,7 @@ const SITE = [
     { file:"state-nodes-edges.md", title:"State, Nodes, Edges — The Whole Model" },
     { file:"build-a-graph.md", title:"Build a Graph — Retrieve → Generate" },
     { file:"conditional-edges.md", title:"Conditional Edges — Branch & Loop" },
+    { file:"interview-questions.md", title:"Interview Questions" },
   ]},
 ];
 
