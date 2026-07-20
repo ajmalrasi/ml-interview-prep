@@ -12,12 +12,14 @@ gradient-boosted trees on tabular data. A strong ML engineer knows *both* and pi
 the problem, not the hype. This section gives you enough of each to reason well and to
 answer "how would you model this?" credibly.
 
-## The four pages
+## The five pages
 
 - **Classical ML** — trees, random forests, and gradient boosting (XGBoost/LightGBM):
   the tabular workhorses.
 - **Deep learning essentials** — neurons, backprop, and the main architectures (CNN,
   RNN/Transformer) at a level you can discuss.
+- **PyTorch, TensorFlow & Keras in practice** — what changes between frameworks and
+  the production training loop invariants that do not.
 - **Training at scale** — what to do when data or the model won't fit on one machine.
 - **Hyperparameter tuning** — how to search the knobs efficiently.
 

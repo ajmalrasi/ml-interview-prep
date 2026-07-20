@@ -16,6 +16,7 @@ const { D, DIAGRAMS, SECTIONS, fig } = require("./_diagrams.js");
 const SITE = [
   { label:"Start here", items:[
     { dir:"", file:"README.md", title:"Overview & Learning Path" },
+    { dir:"", file:"idfc-ai-infra-path.md", title:"IDFC AI Infrastructure — 2-Day Path" },
     { dir:"", file:"RUN-ON-PI.md", title:"Run on a Raspberry Pi" },
   ]},
   { label:"1 · Chunks & Overlap", dir:"01-chunks-and-overlap", items:[
@@ -113,9 +114,12 @@ const SITE = [
   ]},
   { label:"15 · LLM Serving Internals", dir:"15-llm-serving-internals", items:[
     { file:"README.md", title:"Overview" },
+    { file:"prefill-decode-scheduling.md", title:"Prefill, Decode & Chunked Scheduling" },
     { file:"kv-cache.md", title:"KV Cache — Memory for Compute" },
     { file:"continuous-batching.md", title:"Continuous Batching — No Idle GPU" },
     { file:"speculative-decoding.md", title:"Speculative Decoding — Guess & Verify" },
+    { file:"latency-benchmarking.md", title:"TTFT, ITL & Reproducible Benchmarks" },
+    { file:"vllm-production.md", title:"vLLM in Production" },
     { file:"interview-questions.md", title:"Interview Questions" },
   ]},
   { label:"16 · Python Concurrency", dir:"16-python-concurrency", items:[

@@ -22,6 +22,7 @@ section is written to survive that follow-up chain of "…and why?"
 | Quantization numerics | Quantization, Deeply | "Derive the INT8 scale. Symmetric or asymmetric — why?" |
 | GPU number formats | Numerical Precision | "FP16 vs BF16 vs FP8 vs TF32 — when each, and why loss scaling?" |
 | TensorRT | TensorRT Internals | "How does TensorRT make it fast? Implicit vs explicit quantization?" |
+| Inference ecosystem | The Modern Inference Stack | "Where do vLLM, SGLang, Triton, Dynamo, compilers, and kernels fit?" |
 | Performance analysis | GPU Performance & Profiling | "Is this kernel compute- or memory-bound? Prove it." |
 | Model compression | Sparsity, Pruning, Distillation | "What's 2:4 sparsity and why does hardware care?" |
 | LLM serving | LLM Inference Optimization | "KV cache, FlashAttention, in-flight batching, TP vs PP." |

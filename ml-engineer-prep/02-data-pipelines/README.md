@@ -14,11 +14,13 @@ bugs, not model bugs. Interviewers probe this because it separates people who've
 done Kaggle (clean CSV handed to them) from people who've shipped (data that's messy,
 streaming, and always changing).
 
-## The four pages
+## The five pages
 
 - **Ingestion & storage** — where data comes from and where it lands (lakes,
   warehouses, lakehouses).
 - **Batch vs streaming** — the two processing modes and how to choose.
+- **Spark & Hadoop at scale** — partitioning, shuffles, skew, memory pressure, and
+  how distributed data processing feeds ML training.
 - **Preprocessing & data quality** — cleaning, validation, and stopping bad data
   early.
 - **Feature engineering & feature stores** — turning raw data into model inputs, and

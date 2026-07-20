@@ -5,6 +5,10 @@ data all the way to a model running, and being *watched*, in production on the
 cloud. The through-line is the **ML lifecycle** — data → model → deploy → monitor →
 improve — and every section is one stage of it.
 
+Preparing for the IDFC ML Engineer role in two days? Start with the focused
+**[IDFC ML Engineer path](idfc-ml-engineer-path.md)**. It reuses the relevant pages
+from this ML track and the RAG/LLM track without copying their content.
+
 ## What this role actually is
 
 An ML Engineer sits between a data scientist and a backend engineer. You're expected

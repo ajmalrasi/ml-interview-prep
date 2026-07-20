@@ -12,10 +12,12 @@ Optimization is how you fit a good model into a real latency budget and a real c
 bill. It's also increasingly essential for large models (LLMs, section 9), where naive
 serving is prohibitively costly.
 
-## The three pages
+## The four pages
 
 - **Quantization, pruning, distillation** — shrinking the model itself.
 - **Distributed training** — scaling the training side (a companion to section 3).
+- **NCCL & distributed collectives** — all-reduce, all-gather, reduce-scatter,
+  topology, overlap, and diagnosing communication bottlenecks.
 - **Inference & serving optimization** — batching, caching, and serving tricks that cut
   latency and cost.
 

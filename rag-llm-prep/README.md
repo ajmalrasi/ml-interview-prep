@@ -6,6 +6,10 @@ anytime. Topics 1–8 cover Phase 1 (the core pipeline); 9–10 cover Phases
 2–3 (better retrieval); 11–21 map the concepts the next phases and the
 target role need.
 
+Preparing for the IDFC LLM Inference & AI Infrastructure role in two days? Use the
+focused **[IDFC AI Infrastructure path](idfc-ai-infra-path.md)**. It links only the
+reusable serving, GPU, distributed-systems, and production lessons that match that JD.
+
 ```rawhtml
 <div class="diagram">
   <div class="vflow">
@@ -57,7 +61,7 @@ target role need.
 | 12 🛠️ | [12-tool-calling/](12-tool-calling/) | The LLM asks, your code answers — the agent's core mechanic |
 | 13 🔌 | [13-mcp/](13-mcp/) | A USB port for tools — standardize the plug, not the electricity |
 | 14 🕸️ | [14-agent-architectures/](14-agent-architectures/) | One loop vs many, and who's in charge |
-| 15 ⚙️ | [15-llm-serving-internals/](15-llm-serving-internals/) | KV cache, continuous batching, speculative decoding |
+| 15 ⚙️ | [15-llm-serving-internals/](15-llm-serving-internals/) | Prefill/decode, KV cache, chunked scheduling, batching, benchmarking, vLLM |
 | 16 🧵 | [16-python-concurrency/](16-python-concurrency/) | Sync, async, threads, processes — and why `/query` is a plain `def` |
 | 17 🌐 | [17-fastapi-http-semantics/](17-fastapi-http-semantics/) | GET vs POST, and contracts that enforce themselves |
 | 18 🛡️ | [18-llm-security/](18-llm-security/) | PII, injection, jailbreaks, RBAC, moderation — five problems, five fixes |

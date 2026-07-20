@@ -16,6 +16,7 @@ const { D, DIAGRAMS, SECTIONS, fig } = require("./_diagrams.js");
 const SITE = [
   { label:"Start here", items:[
     { dir:"", file:"README.md", title:"Overview & How to Use" },
+    { dir:"", file:"idfc-ml-engineer-path.md", title:"IDFC ML Engineer — 2-Day Path" },
   ]},
   { label:"1 · ML Foundations", dir:"01-ml-foundations", items:[
     { file:"README.md", title:"Overview" },
@@ -28,6 +29,7 @@ const SITE = [
     { file:"README.md", title:"Overview" },
     { file:"ingestion-and-storage.md", title:"Ingestion & Storage" },
     { file:"batch-vs-streaming.md", title:"Batch vs Streaming" },
+    { file:"spark-hadoop-at-scale.md", title:"Spark & Hadoop at Scale" },
     { file:"preprocessing-and-quality.md", title:"Preprocessing & Data Quality" },
     { file:"feature-stores.md", title:"Feature Engineering & Feature Stores" },
   ]},
@@ -35,6 +37,7 @@ const SITE = [
     { file:"README.md", title:"Overview" },
     { file:"classical-ml.md", title:"Classical ML (Trees & Boosting)" },
     { file:"deep-learning.md", title:"Deep Learning Essentials" },
+    { file:"frameworks-in-practice.md", title:"PyTorch, TensorFlow & Keras in Practice" },
     { file:"training-at-scale.md", title:"Training at Scale" },
     { file:"hyperparameter-tuning.md", title:"Hyperparameter Tuning" },
   ]},
@@ -60,12 +63,14 @@ const SITE = [
     { file:"README.md", title:"Overview" },
     { file:"cloud-ml-stacks.md", title:"AWS / GCP / Azure ML Stacks" },
     { file:"containers-k8s.md", title:"Containers, Kubernetes & Kubeflow" },
+    { file:"gpu-kubernetes-operations.md", title:"GPU Kubernetes Operations" },
     { file:"iac-and-cost.md", title:"IaC, GPUs & Cost Control" },
   ]},
   { label:"8 · Optimization & Scaling", dir:"08-optimization-scaling", items:[
     { file:"README.md", title:"Overview" },
     { file:"model-compression.md", title:"Quantization, Pruning, Distillation" },
     { file:"distributed-training.md", title:"Distributed Training" },
+    { file:"nccl-collectives.md", title:"NCCL & Distributed Collectives" },
     { file:"inference-optimization.md", title:"Inference & Serving Optimization" },
   ]},
   { label:"9 · Generative AI & LLMs", dir:"09-generative-ai-llms", items:[
@@ -94,6 +99,7 @@ const SITE = [
     { file:"quantization-deep.md", title:"Quantization, Deeply" },
     { file:"numerical-precision.md", title:"Numerical Precision (FP32→FP8→INT8)" },
     { file:"tensorrt-internals.md", title:"TensorRT Internals" },
+    { file:"inference-stack.md", title:"The Modern Inference Stack" },
     { file:"gpu-performance.md", title:"GPU Performance & Profiling" },
     { file:"sparsity-pruning-distillation.md", title:"Sparsity, Pruning & Distillation" },
     { file:"llm-inference.md", title:"LLM Inference Optimization" },

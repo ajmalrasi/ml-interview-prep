@@ -31,9 +31,12 @@ sits behind it at serving time.
 
 | File | What it covers |
 |------|----------------|
+| [prefill-decode-scheduling.md](prefill-decode-scheduling.md) | Why prefill and decode behave differently; chunked prefill and scheduler trade-offs |
 | [kv-cache.md](kv-cache.md) | Stop recomputing attention history — and why serving is *memory*-bound |
 | [continuous-batching.md](continuous-batching.md) | The core trick behind vLLM: never let the GPU idle behind a slow request |
 | [speculative-decoding.md](speculative-decoding.md) | A draft model guesses ahead; the big model verifies in bulk |
+| [latency-benchmarking.md](latency-benchmarking.md) | TTFT, ITL/TPOT, throughput, load shapes, and reproducible performance evidence |
+| [vllm-production.md](vllm-production.md) | Deploying and operating vLLM behind a production application layer |
 
 ## How the three stack
 
