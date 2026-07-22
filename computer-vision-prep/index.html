@@ -48,6 +48,18 @@
     position:sticky; top:0; height:100vh; height:100dvh; overflow-y:auto; padding-bottom:env(safe-area-inset-bottom)}
   .brand{padding:20px 20px 14px; border-bottom:1px solid var(--border);
     position:sticky; top:0; background:var(--bg-side); z-index:2}
+  .nav-hide{position:static;display:inline-flex;align-items:center;gap:6px;margin-top:10px;border:0;background:transparent;color:var(--muted);
+    border-radius:7px;padding:5px 0;font-size:11.5px;font-weight:600;cursor:pointer}
+  .nav-hide:hover{color:var(--accent)}
+  .nav-collapsed-bar{display:none}
+  .nav-show{display:none;position:static;width:auto;height:36px;padding:0 12px;gap:7px;font-size:12.5px;box-shadow:var(--shadow)}
+  .app.nav-hidden{grid-template-columns:minmax(0,1fr)}
+  .app.nav-hidden .sidebar{display:none}
+  .app.nav-hidden .nav-collapsed-bar{display:flex;position:sticky;z-index:45;top:0;height:53px;align-items:center;
+    padding:8px max(16px,env(safe-area-inset-left));border-bottom:1px solid var(--border);background:var(--header-bg);
+    backdrop-filter:saturate(140%) blur(10px);-webkit-backdrop-filter:saturate(140%) blur(10px)}
+  .app.nav-hidden .nav-show{display:flex}
+  .app.nav-hidden .content-wrap{padding-top:32px}
   .brand h1{font-size:15px; margin:0 0 3px; letter-spacing:.2px; font-weight:700}
   .brand .sub{font-size:12px; color:var(--muted)}
   .tools{display:flex; gap:8px; margin-top:14px}
@@ -244,6 +256,7 @@
     nav a.item{padding:11px 14px; font-size:15px}
     nav a.item.sub{padding-left:18px}
     .searchpanel{top:60px}
+    .nav-collapsed-bar,.nav-show{display:none!important}
   }
   @media (max-width:380px){ .topbar .tb-title{font-size:14px} }
 
@@ -293,7 +306,7 @@
 
 /* ======================= interactive-study additions ====================== */
 
-/* --- sidebar progress bar + resume --- */
+/* --- sidebar progress bar + study shortcuts --- */
 .progwrap{margin-top:12px}
 .progtrack{height:6px; border-radius:4px; background:var(--border); overflow:hidden}
 .progbar{height:100%; width:0; border-radius:4px; background:linear-gradient(90deg,var(--accent),var(--accent-2)); transition:width .35s ease}
@@ -302,23 +315,33 @@
 .resume-link{display:block; font-size:12.5px; color:var(--accent); font-weight:600; padding:6px 10px;
   border:1px solid var(--border); border-radius:9px; background:var(--bg)}
 .resume-link:hover{border-color:var(--accent); text-decoration:none}
+.pinned-block{margin-top:9px; padding:8px 9px; border:1px solid var(--border); border-radius:9px; background:var(--bg)}
+.pinned-title{font-size:10px; font-weight:800; color:var(--muted); letter-spacing:.08em; text-transform:uppercase; margin-bottom:3px}
+.pinned-link{display:flex; align-items:flex-start; gap:6px; padding:4px 0; color:var(--text); font-size:12px; line-height:1.3}
+.pinned-link span{color:#d39a1f}
+.pinned-link:hover{color:var(--accent); text-decoration:none}
 
 /* --- nav done markers + section counts --- */
 .sec-h{position:relative}
+.item.pinned::before{content:"★"; position:absolute; right:27px; top:50%; transform:translateY(-50%); color:#d39a1f; font-size:11px}
 .sec-count{float:right; font-size:10.5px; font-weight:700; color:var(--muted);
   background:var(--bg); border:1px solid var(--border); border-radius:999px; padding:1px 7px; letter-spacing:.02em}
 .sec-count.all-done{color:#2f9e6f; border-color:#2f9e6f}
-nav a.item{position:relative; padding-right:26px}
+nav a.item{position:relative; padding-right:44px}
 nav a.item.done::after{content:"✓"; position:absolute; right:9px; top:50%; transform:translateY(-50%);
   color:#2f9e6f; font-weight:800; font-size:12px}
 
 /* --- page complete strip --- */
-.page-status{margin:26px 0 4px}
-.complete-btn{width:100%; padding:12px 16px; border-radius:12px; cursor:pointer; font-weight:700; font-size:14px;
+.page-status{display:flex; gap:9px; margin:26px 0 4px}
+.complete-btn{flex:1; padding:12px 16px; border-radius:12px; cursor:pointer; font-weight:700; font-size:14px;
   font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif;
   background:var(--accent-soft); color:var(--accent); border:1px solid var(--accent)}
 .complete-btn:hover{background:var(--accent); color:#fff}
 .complete-btn.is-done{background:rgba(47,158,111,.14); color:#2f9e6f; border-color:#2f9e6f}
+.pin-btn{flex:0 0 auto; padding:12px 16px; border-radius:12px; cursor:pointer; font-weight:700; font-size:14px;
+  font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif; background:var(--bg); color:var(--muted); border:1px solid var(--border)}
+.pin-btn:hover,.pin-btn.is-pinned{color:#b07800; border-color:#d39a1f; background:rgba(211,154,31,.12)}
+@media(max-width:520px){.page-status{flex-direction:column}.pin-btn{width:100%}}
 
 /* --- flashcard grading --- */
 .quiz-stats{font-size:12.5px; color:var(--muted); margin-left:auto}
@@ -589,6 +612,7 @@ details.qa.missed .cg-missed{background:#e0663f; color:#fff; border-color:#e0663
     <div class="brand">
       <h1>Video Intelligence Prep</h1>
       <div class="sub">AI Data Scientist · CCTV Crowd &amp; Queue Analytics</div>
+      <button class="nav-hide" id="navHide" type="button" aria-label="Collapse navigation" aria-controls="sidebar" aria-expanded="true">← Hide navigation</button>
       <div class="tools">
         <input id="search" type="search" placeholder="Search all pages…" autocomplete="off" autocapitalize="off" spellcheck="false">
         <button class="iconbtn" id="timerBtn" title="Study / exam timer">⏱</button>
@@ -604,6 +628,7 @@ details.qa.missed .cg-missed{background:#e0663f; color:#fff; border-color:#e0663
     <nav id="nav"></nav>
   </aside>
   <main class="main">
+    <div class="nav-collapsed-bar"><button class="iconbtn nav-show" id="navShow" type="button" aria-label="Show navigation" aria-controls="sidebar" aria-expanded="false">☰ <span>Show navigation</span></button></div>
     <div class="topbar">
       <button class="iconbtn" id="menu" aria-label="Open menu">☰</button>
       <span class="tb-title" id="tbTitle">Video Intel Prep</span>
@@ -650,16 +675,69 @@ function hexToRgba(hex, a){
   return "rgba("+((n>>16)&255)+","+((n>>8)&255)+","+(n&255)+","+a+")";
 }
 
-/* --------------------- tiny persistent store (localStorage) ---------------- */
-// All study state (progress, flashcard grades) lives under one namespaced key.
+/* ---------------------- persistent study-state store ---------------------- */
+// localStorage is the instant/offline copy; /api/progress is shared by devices.
 const STORE_KEY = "mlprep-v1";
 function loadStore(){ try{ return JSON.parse(localStorage.getItem(STORE_KEY)) || {}; }catch(_){ return {}; } }
 function saveStore(s){ try{ localStorage.setItem(STORE_KEY, JSON.stringify(s)); }catch(_){} }
 let STATE = loadStore();
-STATE.done   = STATE.done   || {};   // { path: true }         pages marked complete
-STATE.cards  = STATE.cards  || {};   // { "path#cardhash": 1|-1 }  flashcard grades
-STATE.last   = STATE.last   || null; // last visited path (for "resume")
-function persist(){ saveStore(STATE); }
+let remoteReady = location.protocol === "file:";
+let serverHasState = false;
+let saveQueue = Promise.resolve();
+let syncLabel = location.protocol === "file:" ? "local" : "connecting";
+function normalizeState(s){
+  s = s && typeof s === "object" ? s : {};
+  s.done = s.done && typeof s.done === "object" ? s.done : {};
+  s.cards = s.cards && typeof s.cards === "object" ? s.cards : {};
+  s.pins = s.pins && typeof s.pins === "object" ? s.pins : {};
+  s.last = typeof s.last === "string" ? s.last : null;
+  return s;
+}
+STATE = normalizeState(STATE);
+function hasStudyState(){
+  return Object.keys(STATE.done).length || Object.keys(STATE.cards).length || Object.keys(STATE.pins).length;
+}
+function mergeLegacyLocal(remote, local){
+  let changed=false;
+  const deleted=remote._deleted && typeof remote._deleted==="object" ? remote._deleted : {};
+  ["done","cards","pins"].forEach(field=>{
+    const tombstones=deleted[field] && typeof deleted[field]==="object" ? deleted[field] : {};
+    Object.keys(local[field]||{}).forEach(key=>{
+      if(!(key in remote[field]) && !(key in tombstones)){ remote[field][key]=local[field][key]; changed=true; }
+    });
+  });
+  return changed;
+}
+function persist(change){
+  saveStore(STATE);
+  if(!remoteReady || location.protocol === "file:" || (!serverHasState && !hasStudyState())) return;
+  syncLabel = "saving"; refreshProgressUI();
+  const body=JSON.stringify(change || {op:"replace", state:STATE});
+  saveQueue=saveQueue.catch(()=>{}).then(async()=>{
+    try{
+      const r=await fetch("/api/progress", {method:"POST", headers:{"Content-Type":"application/json"}, body});
+      if(!r.ok) throw new Error("HTTP "+r.status);
+      serverHasState=true; syncLabel="synced";
+    }catch(_){ syncLabel="local — sync unavailable"; }
+    refreshProgressUI();
+  });
+}
+async function syncProgress(){
+  if(location.protocol === "file:") return;
+  try{
+    const r=await fetch("/api/progress", {cache:"no-store"});
+    if(!r.ok) throw new Error("HTTP "+r.status);
+    const payload=await r.json();
+    let migrated=false;
+    if(payload.exists){
+      const remote=normalizeState(payload.state);
+      migrated=mergeLegacyLocal(remote, STATE);
+      STATE=remote; saveStore(STATE); serverHasState=true;
+    }
+    remoteReady=true; syncLabel="synced";
+    if((!payload.exists && hasStudyState()) || migrated) persist({op:"replace", state:STATE});
+  }catch(_){ remoteReady=true; syncLabel="local — sync unavailable"; }
+}
 // stable short hash for card ids
 function hashStr(s){ let h=5381; for(let i=0;i<s.length;i++) h=((h<<5)+h+s.charCodeAt(i))|0; return (h>>>0).toString(36); }
 
@@ -695,9 +773,24 @@ function buildNav(){
 }
 
 function setActive(path){
-  document.querySelectorAll("nav a.item").forEach(a=>a.classList.toggle("active", a.dataset.path===path));
+  let active=null;
+  document.querySelectorAll("nav a.item").forEach(a=>{
+    const on=a.dataset.path===path;
+    a.classList.toggle("active",on);
+    if(on) active=a;
+  });
+  revealActiveNav(active);
   const pg=byPath[path];
   document.getElementById("tbTitle").textContent = pg ? pg.title : "Video Intel Prep";
+}
+
+function revealActiveNav(active){
+  const side=document.getElementById("sidebar");
+  if(!side||!active) return;
+  requestAnimationFrame(()=>{
+    const target=active.offsetTop-(side.clientHeight-active.offsetHeight)/2;
+    side.scrollTop=Math.max(0,target);
+  });
 }
 
 function renderPageTools(pg){
@@ -967,7 +1060,7 @@ function initFlashcards(pg){
 function gradeCard(d, g, pg){
   const key=d.dataset.key; if(!key) return;
   if(g===0) delete STATE.cards[key]; else STATE.cards[key]=g;
-  persist();
+  persist({op:"set", field:"cards", key, value:g});
   d.classList.toggle("known", g===1);
   d.classList.toggle("missed", g===-1);
   updateQuizStats(pg);
@@ -1012,12 +1105,16 @@ function shuffleCards(){
 
 /* ============================ progress tracking =========================== */
 function isDone(path){ return !!STATE.done[path]; }
-function setDone(path, v){ if(v) STATE.done[path]=true; else delete STATE.done[path]; persist(); refreshProgressUI(); }
+function setDone(path, v){ if(v) STATE.done[path]=true; else delete STATE.done[path]; persist({op:"set", field:"done", key:path, value:v}); refreshProgressUI(); renderResume(); }
 function markVisited(path){
-  STATE.last=path; persist();
+  if(path!=="README.md"){
+    STATE.last=path;
+    persist({op:"set", field:"last", value:path});
+  } else saveStore(STATE);
   setActiveDone();
   renderPageStatus(path);
   refreshProgressUI();
+  renderResume();
 }
 // count only real content pages (exclude the home overview) toward totals
 function progressPages(){ return PAGES.filter(p=>p.path!=="README.md"); }
@@ -1027,10 +1124,11 @@ function refreshProgressUI(){
   const pct=all.length?Math.round(done/all.length*100):0;
   const bar=document.getElementById("progBar"), lbl=document.getElementById("progLbl");
   if(bar) bar.style.width=pct+"%";
-  if(lbl) lbl.textContent=done+" / "+all.length+" pages · "+pct+"%";
+  if(lbl) lbl.textContent=done+" / "+all.length+" pages · "+pct+"% · "+syncLabel;
   // per-item checks + per-section counts in the nav
   document.querySelectorAll("nav a.item").forEach(a=>{
     a.classList.toggle("done", isDone(a.dataset.path));
+    a.classList.toggle("pinned", !!STATE.pins[a.dataset.path]);
   });
   document.querySelectorAll("nav .sec").forEach(secEl=>{
     const links=[...secEl.querySelectorAll("a.item")].filter(a=>a.dataset.path!=="README.md" || secEl.querySelectorAll("a.item").length===1);
@@ -1052,16 +1150,24 @@ function renderPageStatus(path){
   const host=document.getElementById("pager");
   if(!host) return;
   const done=isDone(path);
+  const pinned=!!STATE.pins[path];
   const strip=document.createElement("div");
   strip.className="page-status";
   strip.innerHTML='<button class="complete-btn'+(done?" is-done":"")+'" id="completeBtn">'+
-    (done?"✓ Completed — click to unmark":"Mark this page complete")+'</button>';
+    (done?"✓ Completed — click to unmark":"Mark this page complete")+'</button>'+
+    '<button class="pin-btn'+(pinned?" is-pinned":"")+'" id="pinBtn" aria-pressed="'+pinned+'">'+
+    (pinned?"★ Pinned":"☆ Pin page")+'</button>';
   host.parentNode.insertBefore(strip, host);
   strip.querySelector("#completeBtn").onclick=()=>{
     setDone(path, !isDone(path));
     renderPager(path);            // re-render pager block…
     const old=document.querySelector(".page-status"); if(old) old.remove();
     renderPageStatus(path);       // …and this strip
+  };
+  strip.querySelector("#pinBtn").onclick=()=>{
+    const value=!STATE.pins[path];
+    if(value) STATE.pins[path]=true; else delete STATE.pins[path];
+    persist({op:"set", field:"pins", key:path, value}); refreshProgressUI(); renderResume(); renderPageStatus(path);
   };
 }
 
@@ -1168,10 +1274,32 @@ document.querySelectorAll(".theme-toggle").forEach(b=>b.addEventListener("click"
 (function(){ let t; try{t=localStorage.getItem("koi-theme");}catch(_){}
   if(!t) t=matchMedia("(prefers-color-scheme: dark)").matches?"dark":"light"; applyTheme(t); })();
 
-/* ----------------------------- mobile drawer ------------------------------- */
+/* ---------------------- navigation visibility + drawer --------------------- */
 const sidebar=document.getElementById("sidebar"), scrim=document.getElementById("scrim");
-function openSidebar(){ sidebar.classList.add("open"); scrim.classList.add("show"); }
-function closeSidebar(){ sidebar.classList.remove("open"); scrim.classList.remove("show"); }
+const appShell=document.querySelector(".app"), navMedia=matchMedia("(max-width:880px)");
+const NAV_HIDDEN_KEY="koi-nav-hidden-v1";
+let navHiddenPreference=false;
+try{navHiddenPreference=localStorage.getItem(NAV_HIDDEN_KEY)==="1";}catch(_){}
+function saveNavPreference(){try{localStorage.setItem(NAV_HIDDEN_KEY,navHiddenPreference?"1":"0");}catch(_){}}
+function applyNavPreference(){
+  const collapsed=!navMedia.matches&&navHiddenPreference;
+  appShell.classList.toggle("nav-hidden",collapsed);
+  const show=document.getElementById("navShow");
+  if(show) show.setAttribute("aria-expanded",collapsed?"false":"true");
+}
+function openSidebar(){sidebar.classList.add("open");scrim.classList.add("show");revealActiveNav(document.querySelector("nav a.item.active"));}
+function closeSidebar(){sidebar.classList.remove("open");scrim.classList.remove("show");}
+document.getElementById("navHide").addEventListener("click",()=>{
+  if(navMedia.matches){closeSidebar();return;}
+  navHiddenPreference=true;saveNavPreference();applyNavPreference();
+});
+document.getElementById("navShow").addEventListener("click",()=>{
+  navHiddenPreference=false;saveNavPreference();applyNavPreference();
+  revealActiveNav(document.querySelector("nav a.item.active"));
+});
+if(navMedia.addEventListener) navMedia.addEventListener("change",applyNavPreference);
+else navMedia.addListener(applyNavPreference);
+applyNavPreference();
 document.getElementById("menu").addEventListener("click", openSidebar);
 document.getElementById("searchBtn").addEventListener("click", ()=>{ openSidebar(); setTimeout(()=>searchBox.focus(),260); });
 scrim.addEventListener("click", closeSidebar);
@@ -1196,13 +1324,28 @@ document.getElementById("content").addEventListener("click", e=>{
   gradeCard(card, +btn.dataset.g, byPath[currentPath]);
 });
 
-/* --------------------------------- resume ---------------------------------- */
+/* ------------------------- resume + pinned shortcuts ---------------------- */
+function resumePage(){
+  const last=STATE.last && byPath[STATE.last];
+  if(last && last.path!=="README.md" && !isDone(last.path)) return last;
+  const pages=progressPages();
+  if(!pages.length) return null;
+  const lastIndex=last ? PAGES.findIndex(p=>p.path===last.path) : -1;
+  return pages.find(p=>PAGES.indexOf(p)>lastIndex && !isDone(p.path)) || pages.find(p=>!isDone(p.path)) || null;
+}
 function renderResume(){
   const slot=document.getElementById("resumeSlot"); if(!slot) return;
-  const p=STATE.last && byPath[STATE.last];
-  if(p && p.path!=="README.md"){
-    slot.innerHTML='<a class="resume-link" href="#'+encodeURI(p.path)+'">↻ Resume: '+p.title+'</a>';
-  } else slot.innerHTML="";
+  const resume=resumePage();
+  const pinned=PAGES.filter(p=>STATE.pins[p.path]);
+  let html="";
+  if(resume && resume.path!==currentPath){
+    html+='<a class="resume-link" href="#'+encodeURI(resume.path)+'">→ Continue: '+resume.title+'</a>';
+  }
+  if(pinned.length){
+    html+='<div class="pinned-block"><div class="pinned-title">Pinned pages</div>'+pinned.map(p=>
+      '<a class="pinned-link" href="#'+encodeURI(p.path)+'"><span>★</span>'+p.title+'</a>').join("")+'</div>';
+  }
+  slot.innerHTML=html;
 }
 
 /* ----------------------------------- init ---------------------------------- */
@@ -1210,8 +1353,8 @@ buildNav();
 initTimer();
 refreshProgressUI();
 renderResume();
-window.addEventListener("hashchange", ()=>{ onHash(); renderResume(); });
-onHash();
+window.addEventListener("hashchange", onHash);
+syncProgress().finally(()=>{ refreshProgressUI(); renderResume(); onHash(); });
 
 </script>
 </body>

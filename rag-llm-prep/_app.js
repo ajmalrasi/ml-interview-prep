@@ -21,16 +21,69 @@ function hexToRgba(hex, a){
   return "rgba("+((n>>16)&255)+","+((n>>8)&255)+","+(n&255)+","+a+")";
 }
 
-/* --------------------- tiny persistent store (localStorage) ---------------- */
-// All study state (progress, flashcard grades) lives under one namespaced key.
+/* ---------------------- persistent study-state store ---------------------- */
+// localStorage is the instant/offline copy; /api/progress is shared by devices.
 const STORE_KEY = "mlprep-v1";
 function loadStore(){ try{ return JSON.parse(localStorage.getItem(STORE_KEY)) || {}; }catch(_){ return {}; } }
 function saveStore(s){ try{ localStorage.setItem(STORE_KEY, JSON.stringify(s)); }catch(_){} }
 let STATE = loadStore();
-STATE.done   = STATE.done   || {};   // { path: true }         pages marked complete
-STATE.cards  = STATE.cards  || {};   // { "path#cardhash": 1|-1 }  flashcard grades
-STATE.last   = STATE.last   || null; // last visited path (for "resume")
-function persist(){ saveStore(STATE); }
+let remoteReady = location.protocol === "file:";
+let serverHasState = false;
+let saveQueue = Promise.resolve();
+let syncLabel = location.protocol === "file:" ? "local" : "connecting";
+function normalizeState(s){
+  s = s && typeof s === "object" ? s : {};
+  s.done = s.done && typeof s.done === "object" ? s.done : {};
+  s.cards = s.cards && typeof s.cards === "object" ? s.cards : {};
+  s.pins = s.pins && typeof s.pins === "object" ? s.pins : {};
+  s.last = typeof s.last === "string" ? s.last : null;
+  return s;
+}
+STATE = normalizeState(STATE);
+function hasStudyState(){
+  return Object.keys(STATE.done).length || Object.keys(STATE.cards).length || Object.keys(STATE.pins).length;
+}
+function mergeLegacyLocal(remote, local){
+  let changed=false;
+  const deleted=remote._deleted && typeof remote._deleted==="object" ? remote._deleted : {};
+  ["done","cards","pins"].forEach(field=>{
+    const tombstones=deleted[field] && typeof deleted[field]==="object" ? deleted[field] : {};
+    Object.keys(local[field]||{}).forEach(key=>{
+      if(!(key in remote[field]) && !(key in tombstones)){ remote[field][key]=local[field][key]; changed=true; }
+    });
+  });
+  return changed;
+}
+function persist(change){
+  saveStore(STATE);
+  if(!remoteReady || location.protocol === "file:" || (!serverHasState && !hasStudyState())) return;
+  syncLabel = "saving"; refreshProgressUI();
+  const body=JSON.stringify(change || {op:"replace", state:STATE});
+  saveQueue=saveQueue.catch(()=>{}).then(async()=>{
+    try{
+      const r=await fetch("/api/progress", {method:"POST", headers:{"Content-Type":"application/json"}, body});
+      if(!r.ok) throw new Error("HTTP "+r.status);
+      serverHasState=true; syncLabel="synced";
+    }catch(_){ syncLabel="local — sync unavailable"; }
+    refreshProgressUI();
+  });
+}
+async function syncProgress(){
+  if(location.protocol === "file:") return;
+  try{
+    const r=await fetch("/api/progress", {cache:"no-store"});
+    if(!r.ok) throw new Error("HTTP "+r.status);
+    const payload=await r.json();
+    let migrated=false;
+    if(payload.exists){
+      const remote=normalizeState(payload.state);
+      migrated=mergeLegacyLocal(remote, STATE);
+      STATE=remote; saveStore(STATE); serverHasState=true;
+    }
+    remoteReady=true; syncLabel="synced";
+    if((!payload.exists && hasStudyState()) || migrated) persist({op:"replace", state:STATE});
+  }catch(_){ remoteReady=true; syncLabel="local — sync unavailable"; }
+}
 // stable short hash for card ids
 function hashStr(s){ let h=5381; for(let i=0;i<s.length;i++) h=((h<<5)+h+s.charCodeAt(i))|0; return (h>>>0).toString(36); }
 
@@ -66,9 +119,24 @@ function buildNav(){
 }
 
 function setActive(path){
-  document.querySelectorAll("nav a.item").forEach(a=>a.classList.toggle("active", a.dataset.path===path));
+  let active=null;
+  document.querySelectorAll("nav a.item").forEach(a=>{
+    const on=a.dataset.path===path;
+    a.classList.toggle("active",on);
+    if(on) active=a;
+  });
+  revealActiveNav(active);
   const pg=byPath[path];
   document.getElementById("tbTitle").textContent = pg ? pg.title : "RAG Prep";
+}
+
+function revealActiveNav(active){
+  const side=document.getElementById("sidebar");
+  if(!side||!active) return;
+  requestAnimationFrame(()=>{
+    const target=active.offsetTop-(side.clientHeight-active.offsetHeight)/2;
+    side.scrollTop=Math.max(0,target);
+  });
 }
 
 function renderPageTools(pg){
@@ -146,6 +214,12 @@ const WIDGETS = {
   "cosine-widget":  initCosineWidget,
   "context-widget": initContextWidget,
   "index-widget":   initIndexWidget,
+  "kv-cache-widget": initKVCacheWidget,
+  "paged-attention-widget": initPagedAttentionWidget,
+  "prefill-scheduler-widget": initPrefillSchedulerWidget,
+  "continuous-batching-widget": initContinuousBatchingWidget,
+  "speculative-widget": initSpeculativeWidget,
+  "vllm-journey-widget": initVLLMJourneyWidget,
 };
 function mountWidgets(){
   for(const id in WIDGETS){
@@ -317,6 +391,349 @@ function initIndexWidget(){
   compute();
 }
 
+/* --------- KV cache: what is reused, what attention still reads --------- */
+function initKVCacheWidget(){
+  const host=document.getElementById("kv-cache-widget"); if(!host) return;
+  const tokens=["The","bank","approved","the","loan","because","risk","was","low","."];
+  host.innerHTML=
+   '<div class="bv-wrap kvw-wrap"><div class="bv-controls">'+
+     '<div class="lm-row"><label>Execution mode</label><span class="kvw-mode">'+
+       '<button class="qz-seg" type="button" data-kvmode="no">No cache</button>'+
+       '<button class="qz-seg sel" type="button" data-kvmode="cache">KV cache</button>'+
+     '</span></div>'+
+     '<div class="bt-sliders"><label for="kvw-step">Generation step <b id="kvw-stepv">5 / 10</b>'+
+       '<input id="kvw-step" type="range" min="1" max="10" step="1" value="5"></label></div>'+
+   '</div>'+
+   '<svg id="kvw-svg" class="kvw-svg" viewBox="0 0 680 240" preserveAspectRatio="xMidYMid meet" role="img" aria-labelledby="kvw-title kvw-desc"></svg>'+
+   '<div class="kvw-legend"><span><i class="kvw-lg-attn"></i>attention read</span><span><i class="kvw-lg-old"></i><b id="kvw-old-label">cached K,V</b></span><span><i class="kvw-lg-new"></i>new K,V</span></div>'+
+   '<div class="bv-metrics">'+
+     '<div class="bv-m"><span class="bv-mlab">K/V projections now</span><b id="kvw-now">—</b></div>'+
+     '<div class="bv-m"><span class="bv-mlab">Cumulative projections</span><b id="kvw-total">—</b></div>'+
+     '<div class="bv-m"><span class="bv-mlab">Keys attention reads</span><b id="kvw-attn">—</b></div>'+
+   '</div>'+
+   '<div class="lm-note kvw-note" id="kvw-note" aria-live="polite"></div></div>';
+  let mode="cache";
+  const el=id=>host.querySelector("#"+id);
+  const esc=s=>s.replace(/&/g,"&amp;").replace(/</g,"&lt;").replace(/>/g,"&gt;");
+  function compute(){
+    const n=+el("kvw-step").value;
+    el("kvw-stepv").textContent=n+" / "+tokens.length;
+    host.querySelectorAll("[data-kvmode]").forEach(b=>{
+      const selected=b.dataset.kvmode===mode;
+      b.classList.toggle("sel",selected);
+      b.setAttribute("aria-pressed",selected?"true":"false");
+    });
+    const compact=host.clientWidth<520;
+    const W=compact?420:680, center=W/2, qy=168;
+    let shown=[];
+    if(compact && n>5){
+      const grouped=n-4;
+      shown.push({idx:grouped-1,label:"tokens 1–"+grouped,kv:"K1…K"+grouped,status:(mode==="cache"?"cached ×":"redo ×")+grouped,group:true});
+      for(let i=grouped;i<n;i++) shown.push({idx:i,label:tokens[i],kv:"K"+(i+1)+" · V"+(i+1),status:null,group:false});
+    }else{
+      for(let i=0;i<n;i++) shown.push({idx:i,label:tokens[i],kv:"K"+(i+1)+" · V"+(i+1),status:null,group:false});
+    }
+    const gap=Math.min(compact?74:68,(compact?330:590)/Math.max(1,shown.length-1));
+    const start=center-((shown.length-1)*gap)/2;
+    const qx=start+(shown.length-1)*gap;
+    let lines="",nodes="";
+    shown.forEach((item,j)=>{
+      const i=item.idx, x=start+j*gap;
+      lines+='<line class="kvw-attn" x1="'+qx.toFixed(1)+'" y1="'+(qy-16)+'" x2="'+x.toFixed(1)+'" y2="91"/>';
+      const current=i===n-1;
+      const cls=current?"kvw-current":(mode==="cache"?"kvw-old-cache":"kvw-old-no");
+      const status=item.status||(current?"compute":(mode==="cache"?"cache read":"recompute"));
+      const boxW=item.group?72:56;
+      nodes+='<g class="kvw-node"><rect class="'+cls+'" x="'+(x-boxW/2).toFixed(1)+'" y="30" width="'+boxW+'" height="58" rx="9"/>'+
+        '<text class="kvw-token" x="'+x.toFixed(1)+'" y="50">'+esc(item.label)+'</text>'+
+        '<text class="kvw-kv" x="'+x.toFixed(1)+'" y="69">'+esc(item.kv)+'</text>'+
+        '<text class="kvw-status" x="'+x.toFixed(1)+'" y="108">'+status+'</text></g>';
+    });
+    const desc=mode==="cache"
+      ?"At generation step "+n+", previous key and value vectors are read from the cache. Only the newest token's key and value are projected again. The current query still attends to all "+n+" keys."
+      :"At generation step "+n+", key and value vectors for the whole prefix are recomputed. The current query attends to all "+n+" keys.";
+    el("kvw-svg").setAttribute("viewBox","0 0 "+W+" 240");
+    const caption=compact?"Q"+n+" still reads every key — only old K,V projections are reused.":"Q"+n+" still compares with K1…K"+n+" — the cache removes repeated K,V projection work, not attention reads.";
+    el("kvw-svg").innerHTML='<title id="kvw-title">KV cache execution at token '+n+'</title><desc id="kvw-desc">'+desc+'</desc>'+lines+nodes+
+      '<g class="kvw-query"><circle cx="'+qx.toFixed(1)+'" cy="'+qy+'" r="21"/><text x="'+qx.toFixed(1)+'" y="'+(qy+5)+'">Q'+n+'</text></g>'+
+      '<text class="kvw-caption" x="'+center+'" y="220">'+caption+'</text>';
+    const now=mode==="cache"?1:n;
+    const total=mode==="cache"?n:n*(n+1)/2;
+    el("kvw-now").textContent=now+" pair"+(now===1?"":"s");
+    el("kvw-total").textContent=total+" pairs";
+    el("kvw-attn").textContent=n+" keys";
+    el("kvw-old-label").textContent=mode==="cache"?"cached K,V":"recomputed K,V";
+    el("kvw-note").textContent=mode==="cache"
+      ?"Token "+n+": read K,V for tokens 1–"+Math.max(0,n-1)+", compute only token "+n+", then compare Q"+n+" with all "+n+" keys. Cache held per layer: "+(2*n)+" vectors (K and V)."
+      :"Token "+n+": rebuild K,V for all "+n+" tokens, then compare Q"+n+" with the same "+n+" keys. The wasted projection work grows every step.";
+  }
+  host.querySelectorAll("[data-kvmode]").forEach(b=>b.addEventListener("click",()=>{mode=b.dataset.kvmode;compute();}));
+  el("kvw-step").addEventListener("input",compute);
+  compute();
+}
+
+/* --------- PagedAttention: pack live KV blocks instead of max reservations --------- */
+function initPagedAttentionWidget(){
+  const host=document.getElementById("paged-attention-widget"); if(!host) return;
+  const shapes={short:[2,1,3,2],mixed:[6,3,8,2],long:[9,8,10,7]};
+  const names=["A","B","C","D"];
+  host.innerHTML=
+   '<div class="bv-wrap vli-wrap"><div class="bv-controls">'+
+     '<div class="lm-row"><label>Memory layout</label><span class="vli-buttons">'+
+       '<button class="qz-seg" type="button" data-pamode="contiguous">Max-size reservations</button>'+
+       '<button class="qz-seg sel" type="button" data-pamode="paged">PagedAttention</button></span></div>'+
+     '<div class="lm-row"><label>Request lengths</label><span class="vli-buttons">'+
+       '<button class="qz-seg" type="button" data-pashape="short">Short</button>'+
+       '<button class="qz-seg sel" type="button" data-pashape="mixed">Mixed</button>'+
+       '<button class="qz-seg" type="button" data-pashape="long">Near max</button></span></div>'+
+   '</div><div id="pa-memory" class="pa-memory" role="img"></div>'+
+   '<div class="pa-legend"><span><i class="pa-used"></i>live KV</span><span><i class="pa-waste"></i>reserved but unused</span><span><i class="pa-free"></i>free</span></div>'+
+   '<div class="bv-metrics">'+
+     '<div class="bv-m"><span class="bv-mlab">Live KV tokens</span><b id="pa-used">—</b></div>'+
+     '<div class="bv-m"><span class="bv-mlab">Slots reserved</span><b id="pa-reserved">—</b></div>'+
+     '<div class="bv-m"><span class="bv-mlab">Memory waste</span><b id="pa-waste">—</b></div>'+
+   '</div><div class="lm-note" id="pa-note" aria-live="polite"></div></div>';
+  let mode="paged",shape="mixed";
+  const el=id=>host.querySelector("#"+id);
+  function makeBlock(owner,usedSlots,kind,index){
+    const label=owner?owner+(index+1):"free";
+    let html='<div class="pa-block '+(owner?"":"is-free")+'" aria-label="'+label+'">';
+    for(let s=0;s<2;s++) html+='<span class="'+(s<usedSlots?"is-used":kind)+'"></span>';
+    return html+'<b>'+(owner?label:"")+'</b></div>';
+  }
+  function compute(){
+    const lengths=shapes[shape], used=lengths.reduce((a,b)=>a+b,0);
+    let blocks=[];
+    if(mode==="contiguous"){
+      lengths.forEach((len,r)=>{
+        for(let b=0;b<5;b++) blocks.push(makeBlock(names[r],Math.max(0,Math.min(2,len-b*2)),"is-waste",b));
+      });
+    }else{
+      const remaining=lengths.map(n=>Math.ceil(n/2)), sequence=[];
+      let left=remaining.reduce((a,b)=>a+b,0);
+      while(left){
+        remaining.forEach((n,r)=>{if(n>0){sequence.push(r);remaining[r]--;left--;}});
+      }
+      const seen=[0,0,0,0];
+      sequence.forEach(r=>{
+        const blockIndex=seen[r]++, filled=Math.min(2,lengths[r]-blockIndex*2);
+        blocks.push(makeBlock(names[r],filled,"is-waste",blockIndex));
+      });
+      while(blocks.length<20) blocks.push(makeBlock("",0,"is-free",0));
+    }
+    el("pa-memory").innerHTML=blocks.join("");
+    const reserved=mode==="contiguous"?40:lengths.reduce((n,x)=>n+Math.ceil(x/2)*2,0);
+    const waste=reserved-used;
+    el("pa-memory").setAttribute("aria-label",(mode==="paged"?"PagedAttention":"Contiguous reservation")+" memory map. "+used+" live token slots, "+reserved+" reserved, "+waste+" wasted.");
+    el("pa-used").textContent=used+" / 40";
+    el("pa-reserved").textContent=reserved+" / 40";
+    el("pa-waste").textContent=waste+" slots";
+    host.querySelectorAll("[data-pamode]").forEach(b=>{const on=b.dataset.pamode===mode;b.classList.toggle("sel",on);b.setAttribute("aria-pressed",on?"true":"false");});
+    host.querySelectorAll("[data-pashape]").forEach(b=>{const on=b.dataset.pashape===shape;b.classList.toggle("sel",on);b.setAttribute("aria-pressed",on?"true":"false");});
+    el("pa-note").textContent=mode==="paged"
+      ?"Requests A–D own small physical blocks that can sit anywhere. Only their current pages are allocated; the only waste is the unused tail of a partly filled page."
+      :"Each request reserves 10 contiguous token slots up front. Short requests leave most of that reservation unusable by another request until they finish.";
+  }
+  host.querySelectorAll("[data-pamode]").forEach(b=>b.addEventListener("click",()=>{mode=b.dataset.pamode;compute();}));
+  host.querySelectorAll("[data-pashape]").forEach(b=>b.addEventListener("click",()=>{shape=b.dataset.pashape;compute();}));
+  compute();
+}
+
+/* --------- Prefill scheduler: one long prompt vs active token streams --------- */
+function initPrefillSchedulerWidget(){
+  const host=document.getElementById("prefill-scheduler-widget"); if(!host) return;
+  host.innerHTML=
+   '<div class="bv-wrap vli-wrap"><div class="bv-controls">'+
+     '<div class="lm-row"><label>Prefill policy</label><span class="vli-buttons">'+
+       '<button class="qz-seg" type="button" data-pfmode="full">Full prefill</button>'+
+       '<button class="qz-seg sel" type="button" data-pfmode="chunked">Chunked prefill</button></span></div>'+
+     '<div class="bt-sliders"><label for="pf-step">Time slice <b id="pf-stepv">5 / 8</b><input id="pf-step" type="range" min="1" max="8" step="1" value="5"></label></div>'+
+   '</div><svg id="pf-svg" class="vli-svg" viewBox="0 0 680 220" preserveAspectRatio="xMidYMid meet" role="img" aria-labelledby="pf-title pf-desc"></svg>'+
+   '<div class="bv-metrics">'+
+     '<div class="bv-m"><span class="bv-mlab">Stream tokens sent</span><b id="pf-decodes">—</b></div>'+
+     '<div class="bv-m"><span class="bv-mlab">Long prompt done</span><b id="pf-progress">—</b></div>'+
+     '<div class="bv-m"><span class="bv-mlab">Longest stream pause</span><b id="pf-pause">—</b></div>'+
+   '</div><div class="lm-note" id="pf-note" aria-live="polite"></div></div>';
+  let mode="chunked";
+  const el=id=>host.querySelector("#"+id);
+  function compute(){
+    const step=+el("pf-step").value, compact=host.clientWidth<520;
+    const W=compact?430:680, left=compact?86:116, right=12, cols=8, gap=(W-left-right)/cols;
+    const decode=mode==="full"?Math.max(0,step-Math.min(3,Math.max(0,step-2))):step;
+    const progress=mode==="full"?Math.max(0,Math.min(100,(step-2)*34)):Math.max(0,Math.min(100,(step-2)*25));
+    let svg='<title id="pf-title">Prefill and decode scheduling through time slice '+step+'</title><desc id="pf-desc">'+
+      (mode==="full"?"A full prefill blocks active decode between slices three and five.":"Four smaller prefill chunks share slices with active decode so streaming continues.")+'</desc>';
+    ["active chats · decode","new long prompt · prefill"].forEach((label,row)=>{
+      svg+='<text class="vli-lane-label" x="'+(left-8)+'" y="'+(row?142:72)+'">'+label+'</text>';
+    });
+    for(let i=1;i<=cols;i++){
+      const x=left+(i-1)*gap;
+      svg+='<text class="vli-axis-label" x="'+(x+gap/2)+'" y="198">'+i+'</text>';
+      if(i===step) svg+='<rect class="vli-cursor" x="'+(x+2)+'" y="27" width="'+(gap-4)+'" height="148" rx="7"/>';
+      const blocked=mode==="full"&&i>=3&&i<=5;
+      svg+='<rect class="vli-cell '+(blocked?"is-wait":"is-decode")+'" x="'+(x+5)+'" y="48" width="'+(gap-10)+'" height="34" rx="6"/>'+
+        '<text class="vli-cell-label" x="'+(x+gap/2)+'" y="69">'+(blocked?"wait":"D"+i)+'</text>';
+      if(mode==="chunked"&&i>=3&&i<=6){
+        svg+='<rect class="vli-cell is-prefill" x="'+(x+5)+'" y="118" width="'+(gap-10)+'" height="34" rx="6"/><text class="vli-cell-label" x="'+(x+gap/2)+'" y="139">P'+(i-2)+'</text>';
+      }
+    }
+    if(mode==="full"){
+      const x=left+2*gap;
+      svg+='<rect class="vli-cell is-prefill" x="'+(x+5)+'" y="118" width="'+(3*gap-10)+'" height="34" rx="6"/><text class="vli-cell-label" x="'+(x+1.5*gap)+'" y="139">one long prefill</text>';
+    }
+    svg+='<text class="vli-axis-title" x="'+((left+W-right)/2)+'" y="216">time slice →</text>';
+    el("pf-svg").setAttribute("viewBox","0 0 "+W+" 220"); el("pf-svg").innerHTML=svg;
+    el("pf-stepv").textContent=step+" / 8";
+    el("pf-decodes").textContent=decode+" tokens";
+    el("pf-progress").textContent=Math.round(progress)+"%";
+    el("pf-pause").textContent=mode==="full"?"3 slices":"0 slices";
+    host.querySelectorAll("[data-pfmode]").forEach(b=>{const on=b.dataset.pfmode===mode;b.classList.toggle("sel",on);b.setAttribute("aria-pressed",on?"true":"false");});
+    el("pf-note").textContent=mode==="full"
+      ?"The new prompt finishes prefill sooner (first token after slice 5), but active streams emit nothing for three slices: a head-of-line ITL spike."
+      :"Decode keeps its place every slice; spare token budget advances one prefill chunk. Existing streams stay smooth, while the long request's first token moves to after slice 6.";
+  }
+  host.querySelectorAll("[data-pfmode]").forEach(b=>b.addEventListener("click",()=>{mode=b.dataset.pfmode;compute();}));
+  el("pf-step").addEventListener("input",compute); compute();
+}
+
+/* --------- Continuous batching: refill a sequence slot as soon as it frees --------- */
+function initContinuousBatchingWidget(){
+  const host=document.getElementById("continuous-batching-widget"); if(!host) return;
+  const schedules={
+    static:[["A","A","A","A","A","A","D","D","D","D"],["B","B","B",null,null,null,"E","E",null,null],["C","C","C","C",null,null,"F","F","F",null]],
+    continuous:[["A","A","A","A","A","A",null,null,null,null],["B","B","B","D","D","D","D",null,null,null],["C","C","C","C","E","E","F","F","F",null]]
+  };
+  const finished={static:{B:3,C:4,A:6,E:8,F:9,D:10},continuous:{B:3,C:4,E:6,A:6,D:7,F:9}};
+  host.innerHTML=
+   '<div class="bv-wrap vli-wrap"><div class="bv-controls">'+
+     '<div class="lm-row"><label>Batch policy</label><span class="vli-buttons">'+
+       '<button class="qz-seg" type="button" data-cbmode="static">Static</button>'+
+       '<button class="qz-seg sel" type="button" data-cbmode="continuous">Continuous</button></span></div>'+
+     '<div class="bt-sliders"><label for="cb-step">Decode iteration <b id="cb-stepv">6 / 10</b><input id="cb-step" type="range" min="1" max="10" step="1" value="6"></label></div>'+
+   '</div><svg id="cb-svg" class="vli-svg" viewBox="0 0 680 230" preserveAspectRatio="xMidYMid meet" role="img" aria-labelledby="cb-title cb-desc"></svg>'+
+   '<div class="bv-metrics">'+
+     '<div class="bv-m"><span class="bv-mlab">Completed requests</span><b id="cb-done">—</b></div>'+
+     '<div class="bv-m"><span class="bv-mlab">Idle slot-steps</span><b id="cb-idle">—</b></div>'+
+     '<div class="bv-m"><span class="bv-mlab">Queue now</span><b id="cb-queue">—</b></div>'+
+   '</div><div class="lm-note" id="cb-note" aria-live="polite"></div></div>';
+  let mode="continuous";
+  const el=id=>host.querySelector("#"+id);
+  function compute(){
+    const step=+el("cb-step").value, compact=host.clientWidth<520, schedule=schedules[mode];
+    const start=compact?Math.max(1,step-5):1, end=compact?Math.max(6,step):10, cols=end-start+1;
+    const W=compact?430:680,left=compact?66:88,right=12,gap=(W-left-right)/cols;
+    let svg='<title id="cb-title">'+(mode==="continuous"?"Continuous":"Static")+' batching through iteration '+step+'</title><desc id="cb-desc">Three GPU sequence slots. '+(mode==="continuous"?"New requests refill slots immediately.":"Finished slots stay idle until the longest request in the batch finishes.")+'</desc>';
+    for(let t=start;t<=end;t++){
+      const x=left+(t-start)*gap;
+      if(t===step) svg+='<rect class="vli-cursor" x="'+(x+2)+'" y="24" width="'+(gap-4)+'" height="154" rx="7"/>';
+      svg+='<text class="vli-axis-label" x="'+(x+gap/2)+'" y="202">'+t+'</text>';
+    }
+    schedule.forEach((lane,r)=>{
+      svg+='<text class="vli-lane-label" x="'+(left-8)+'" y="'+(59+r*47)+'">slot '+(r+1)+'</text>';
+      for(let t=start;t<=end;t++){
+        const x=left+(t-start)*gap, req=lane[t-1], future=t>step;
+        svg+='<rect class="vli-cell '+(future?"is-future":req?"is-decode":"is-wait")+'" x="'+(x+5)+'" y="'+(38+r*47)+'" width="'+(gap-10)+'" height="32" rx="6"/>'+
+          '<text class="vli-cell-label" x="'+(x+gap/2)+'" y="'+(59+r*47)+'">'+(future?"":req||"idle")+'</text>';
+      }
+    });
+    svg+='<text class="vli-axis-title" x="'+((left+W-right)/2)+'" y="222">decode iteration →</text>';
+    el("cb-svg").setAttribute("viewBox","0 0 "+W+" 230"); el("cb-svg").innerHTML=svg;
+    let idle=0; schedule.forEach(lane=>{for(let t=0;t<step;t++) if(!lane[t]) idle++;});
+    const done=Object.values(finished[mode]).filter(t=>t<=step).length;
+    const admitted=new Set(); schedule.forEach(l=>l.slice(0,step).forEach(x=>{if(x)admitted.add(x);}));
+    el("cb-stepv").textContent=step+" / 10";
+    el("cb-done").textContent=done+" / 6";
+    el("cb-idle").textContent=idle;
+    el("cb-queue").textContent=Math.max(0,6-admitted.size)+" requests";
+    host.querySelectorAll("[data-cbmode]").forEach(b=>{const on=b.dataset.cbmode===mode;b.classList.toggle("sel",on);b.setAttribute("aria-pressed",on?"true":"false");});
+    el("cb-note").textContent=mode==="continuous"
+      ?"B finishes after iteration 3, so D starts in that slot at iteration 4. C's slot takes E, then F—admission happens between token steps."
+      :"B and C finish early, but their GPU slots remain idle until A ends the batch at iteration 6. Only then can D, E, and F enter.";
+  }
+  host.querySelectorAll("[data-cbmode]").forEach(b=>b.addEventListener("click",()=>{mode=b.dataset.cbmode;compute();}));
+  el("cb-step").addEventListener("input",compute); compute();
+}
+
+/* --------- Speculative decoding: accepted prefix from one target verification --------- */
+function initSpeculativeWidget(){
+  const host=document.getElementById("speculative-widget"); if(!host) return;
+  const tokens=["the","loan","was","approved","today","."];
+  host.innerHTML=
+   '<div class="bv-wrap vli-wrap"><div class="bv-controls">'+
+     '<div class="lm-row"><label>Draft agreement</label><span class="vli-buttons">'+
+       '<button class="qz-seg" type="button" data-spquality="low">Low</button>'+
+       '<button class="qz-seg sel" type="button" data-spquality="medium">Medium</button>'+
+       '<button class="qz-seg" type="button" data-spquality="high">High</button></span></div>'+
+     '<div class="bt-sliders"><label for="sp-count">Draft tokens proposed <b id="sp-countv">5</b><input id="sp-count" type="range" min="2" max="6" step="1" value="5"></label></div>'+
+   '</div><div class="sp-flow" role="img" id="sp-flow"></div>'+
+   '<div class="bv-metrics">'+
+     '<div class="bv-m"><span class="bv-mlab">Draft prefix accepted</span><b id="sp-accepted">—</b></div>'+
+     '<div class="bv-m"><span class="bv-mlab">Tokens committed</span><b id="sp-committed">—</b></div>'+
+     '<div class="bv-m"><span class="bv-mlab">Large-model passes</span><b id="sp-passes">—</b></div>'+
+   '</div><div class="lm-note" id="sp-note" aria-live="polite"></div></div>';
+  let quality="medium";
+  const el=id=>host.querySelector("#"+id);
+  function compute(){
+    const count=+el("sp-count").value;
+    let accepted=quality==="low"?1:quality==="medium"?Math.min(3,count):count-(count>4?1:0);
+    accepted=Math.min(count,accepted);
+    const all=accepted===count, committed=all?count:accepted+1;
+    let draft='<div class="sp-stage-label">small draft model proposes</div><div class="sp-tokens">';
+    for(let i=0;i<count;i++){
+      const cls=i<accepted?"is-accepted":i===accepted?"is-rejected":"is-discarded";
+      const mark=i<accepted?"✓":i===accepted?"✕":"—";
+      draft+='<span class="sp-token '+cls+'"><b>'+tokens[i]+'</b><small>'+mark+'</small></span>';
+    }
+    draft+='</div><div class="sp-arrow">target model verifies the whole block in one pass ↓</div><div class="sp-result">';
+    for(let i=0;i<accepted;i++) draft+='<span class="sp-token is-accepted"><b>'+tokens[i]+'</b><small>kept</small></span>';
+    if(!all) draft+='<span class="sp-token is-correction"><b>application</b><small>target correction</small></span>';
+    draft+='</div>';
+    el("sp-flow").innerHTML=draft;
+    el("sp-flow").setAttribute("aria-label",count+" draft tokens proposed. "+accepted+" accepted before the first rejection. "+committed+" tokens committed using one target-model verification pass.");
+    el("sp-countv").textContent=count;
+    el("sp-accepted").textContent=accepted+" / "+count;
+    el("sp-committed").textContent=committed;
+    el("sp-passes").textContent="1 vs "+committed;
+    host.querySelectorAll("[data-spquality]").forEach(b=>{const on=b.dataset.spquality===quality;b.classList.toggle("sel",on);b.setAttribute("aria-pressed",on?"true":"false");});
+    el("sp-note").textContent=all
+      ?"Every proposal agrees, so one target pass commits the whole block. Real speedup still subtracts the draft model and verification overhead."
+      :"Verification accepts only the contiguous prefix. The first mismatch is replaced by the target token and everything after it is discarded; low acceptance can cost more than ordinary decoding.";
+  }
+  host.querySelectorAll("[data-spquality]").forEach(b=>b.addEventListener("click",()=>{quality=b.dataset.spquality;compute();}));
+  el("sp-count").addEventListener("input",compute); compute();
+}
+
+/* --------- Beginner map: follow one request through vLLM --------- */
+function initVLLMJourneyWidget(){
+  const host=document.getElementById("vllm-journey-widget"); if(!host) return;
+  const stages=[
+    {name:"Request",sub:"prompt enters",note:"The app sends token IDs and generation settings; vLLM queues the request but does not change the model or prompt."},
+    {name:"Prefill",sub:"process prompt",note:"Like one dense CV forward pass over all image patches: prompt tokens run in parallel and create the first KV state."},
+    {name:"KV pages",sub:"store history",note:"Like cached feature maps stored in small tiles: old K/V tensors stay in VRAM so decode does not rebuild them."},
+    {name:"Decode batch",sub:"one next token",note:"Each iteration advances every active sequence by one token; a finished slot can immediately admit another request."},
+    {name:"Speculate",sub:"optional shortcut",note:"A small draft proposes several future tokens; the target verifies the block and keeps only the accepted prefix."}
+  ];
+  host.innerHTML=
+   '<div class="bv-wrap vj-wrap"><div class="lm-row"><label>Follow one request</label><span class="vli-buttons">'+
+     stages.map((s,i)=>'<button class="qz-seg'+(i===0?' sel':'')+'" type="button" data-vjstep="'+i+'">'+(i+1)+' · '+s.name+'</button>').join('')+
+   '</span></div><div class="vj-track" id="vj-track" role="img"></div><div class="lm-note vj-note" id="vj-note" aria-live="polite"></div></div>';
+  let current=0;
+  const track=host.querySelector("#vj-track"), note=host.querySelector("#vj-note");
+  function compute(){
+    let html='';
+    stages.forEach((s,i)=>{
+      html+='<div class="vj-stage'+(i===current?' is-active':'')+(i<current?' is-done':'')+'"><span>'+(i+1)+'</span><b>'+s.name+'</b><small>'+s.sub+'</small></div>';
+      if(i<stages.length-1) html+='<i class="vj-arrow" aria-hidden="true">→</i>';
+    });
+    track.innerHTML=html;
+    track.setAttribute("aria-label","Request journey, step "+(current+1)+" of "+stages.length+": "+stages[current].name+". "+stages[current].note);
+    note.textContent=stages[current].note;
+    host.querySelectorAll("[data-vjstep]").forEach(b=>{const on=+b.dataset.vjstep===current;b.classList.toggle("sel",on);b.setAttribute("aria-pressed",on?"true":"false");});
+  }
+  host.querySelectorAll("[data-vjstep]").forEach(b=>b.addEventListener("click",()=>{current=+b.dataset.vjstep;compute();}));
+  compute();
+}
+
 /* ============================ flashcards / SRS ============================= */
 // Turn each quiz <details.qa> into a gradeable card (Got it / Missed),
 // persisted in STATE.cards. Adds shuffle + "review misses only" + a counter.
@@ -347,7 +764,7 @@ function initFlashcards(pg){
 function gradeCard(d, g, pg){
   const key=d.dataset.key; if(!key) return;
   if(g===0) delete STATE.cards[key]; else STATE.cards[key]=g;
-  persist();
+  persist({op:"set", field:"cards", key, value:g});
   d.classList.toggle("known", g===1);
   d.classList.toggle("missed", g===-1);
   updateQuizStats(pg);
@@ -392,12 +809,16 @@ function shuffleCards(){
 
 /* ============================ progress tracking =========================== */
 function isDone(path){ return !!STATE.done[path]; }
-function setDone(path, v){ if(v) STATE.done[path]=true; else delete STATE.done[path]; persist(); refreshProgressUI(); }
+function setDone(path, v){ if(v) STATE.done[path]=true; else delete STATE.done[path]; persist({op:"set", field:"done", key:path, value:v}); refreshProgressUI(); renderResume(); }
 function markVisited(path){
-  STATE.last=path; persist();
+  if(path!=="README.md"){
+    STATE.last=path;
+    persist({op:"set", field:"last", value:path});
+  } else saveStore(STATE);
   setActiveDone();
   renderPageStatus(path);
   refreshProgressUI();
+  renderResume();
 }
 // count only real content pages (exclude the home overview) toward totals
 function progressPages(){ return PAGES.filter(p=>p.path!=="README.md"); }
@@ -407,10 +828,11 @@ function refreshProgressUI(){
   const pct=all.length?Math.round(done/all.length*100):0;
   const bar=document.getElementById("progBar"), lbl=document.getElementById("progLbl");
   if(bar) bar.style.width=pct+"%";
-  if(lbl) lbl.textContent=done+" / "+all.length+" pages · "+pct+"%";
+  if(lbl) lbl.textContent=done+" / "+all.length+" pages · "+pct+"% · "+syncLabel;
   // per-item checks + per-section counts in the nav
   document.querySelectorAll("nav a.item").forEach(a=>{
     a.classList.toggle("done", isDone(a.dataset.path));
+    a.classList.toggle("pinned", !!STATE.pins[a.dataset.path]);
   });
   document.querySelectorAll("nav .sec").forEach(secEl=>{
     const links=[...secEl.querySelectorAll("a.item")].filter(a=>a.dataset.path!=="README.md" || secEl.querySelectorAll("a.item").length===1);
@@ -432,16 +854,24 @@ function renderPageStatus(path){
   const host=document.getElementById("pager");
   if(!host) return;
   const done=isDone(path);
+  const pinned=!!STATE.pins[path];
   const strip=document.createElement("div");
   strip.className="page-status";
   strip.innerHTML='<button class="complete-btn'+(done?" is-done":"")+'" id="completeBtn">'+
-    (done?"✓ Completed — click to unmark":"Mark this page complete")+'</button>';
+    (done?"✓ Completed — click to unmark":"Mark this page complete")+'</button>'+
+    '<button class="pin-btn'+(pinned?" is-pinned":"")+'" id="pinBtn" aria-pressed="'+pinned+'">'+
+    (pinned?"★ Pinned":"☆ Pin page")+'</button>';
   host.parentNode.insertBefore(strip, host);
   strip.querySelector("#completeBtn").onclick=()=>{
     setDone(path, !isDone(path));
     renderPager(path);            // re-render pager block…
     const old=document.querySelector(".page-status"); if(old) old.remove();
     renderPageStatus(path);       // …and this strip
+  };
+  strip.querySelector("#pinBtn").onclick=()=>{
+    const value=!STATE.pins[path];
+    if(value) STATE.pins[path]=true; else delete STATE.pins[path];
+    persist({op:"set", field:"pins", key:path, value}); refreshProgressUI(); renderResume(); renderPageStatus(path);
   };
 }
 
@@ -548,10 +978,32 @@ document.querySelectorAll(".theme-toggle").forEach(b=>b.addEventListener("click"
 (function(){ let t; try{t=localStorage.getItem("koi-theme");}catch(_){}
   if(!t) t=matchMedia("(prefers-color-scheme: dark)").matches?"dark":"light"; applyTheme(t); })();
 
-/* ----------------------------- mobile drawer ------------------------------- */
+/* ---------------------- navigation visibility + drawer --------------------- */
 const sidebar=document.getElementById("sidebar"), scrim=document.getElementById("scrim");
-function openSidebar(){ sidebar.classList.add("open"); scrim.classList.add("show"); }
-function closeSidebar(){ sidebar.classList.remove("open"); scrim.classList.remove("show"); }
+const appShell=document.querySelector(".app"), navMedia=matchMedia("(max-width:880px)");
+const NAV_HIDDEN_KEY="koi-nav-hidden-v1";
+let navHiddenPreference=false;
+try{navHiddenPreference=localStorage.getItem(NAV_HIDDEN_KEY)==="1";}catch(_){}
+function saveNavPreference(){try{localStorage.setItem(NAV_HIDDEN_KEY,navHiddenPreference?"1":"0");}catch(_){}}
+function applyNavPreference(){
+  const collapsed=!navMedia.matches&&navHiddenPreference;
+  appShell.classList.toggle("nav-hidden",collapsed);
+  const show=document.getElementById("navShow");
+  if(show) show.setAttribute("aria-expanded",collapsed?"false":"true");
+}
+function openSidebar(){sidebar.classList.add("open");scrim.classList.add("show");revealActiveNav(document.querySelector("nav a.item.active"));}
+function closeSidebar(){sidebar.classList.remove("open");scrim.classList.remove("show");}
+document.getElementById("navHide").addEventListener("click",()=>{
+  if(navMedia.matches){closeSidebar();return;}
+  navHiddenPreference=true;saveNavPreference();applyNavPreference();
+});
+document.getElementById("navShow").addEventListener("click",()=>{
+  navHiddenPreference=false;saveNavPreference();applyNavPreference();
+  revealActiveNav(document.querySelector("nav a.item.active"));
+});
+if(navMedia.addEventListener) navMedia.addEventListener("change",applyNavPreference);
+else navMedia.addListener(applyNavPreference);
+applyNavPreference();
 document.getElementById("menu").addEventListener("click", openSidebar);
 document.getElementById("searchBtn").addEventListener("click", ()=>{ openSidebar(); setTimeout(()=>searchBox.focus(),260); });
 scrim.addEventListener("click", closeSidebar);
@@ -576,13 +1028,28 @@ document.getElementById("content").addEventListener("click", e=>{
   gradeCard(card, +btn.dataset.g, byPath[currentPath]);
 });
 
-/* --------------------------------- resume ---------------------------------- */
+/* ------------------------- resume + pinned shortcuts ---------------------- */
+function resumePage(){
+  const last=STATE.last && byPath[STATE.last];
+  if(last && last.path!=="README.md" && !isDone(last.path)) return last;
+  const pages=progressPages();
+  if(!pages.length) return null;
+  const lastIndex=last ? PAGES.findIndex(p=>p.path===last.path) : -1;
+  return pages.find(p=>PAGES.indexOf(p)>lastIndex && !isDone(p.path)) || pages.find(p=>!isDone(p.path)) || null;
+}
 function renderResume(){
   const slot=document.getElementById("resumeSlot"); if(!slot) return;
-  const p=STATE.last && byPath[STATE.last];
-  if(p && p.path!=="README.md"){
-    slot.innerHTML='<a class="resume-link" href="#'+encodeURI(p.path)+'">↻ Resume: '+p.title+'</a>';
-  } else slot.innerHTML="";
+  const resume=resumePage();
+  const pinned=PAGES.filter(p=>STATE.pins[p.path]);
+  let html="";
+  if(resume && resume.path!==currentPath){
+    html+='<a class="resume-link" href="#'+encodeURI(resume.path)+'">→ Continue: '+resume.title+'</a>';
+  }
+  if(pinned.length){
+    html+='<div class="pinned-block"><div class="pinned-title">Pinned pages</div>'+pinned.map(p=>
+      '<a class="pinned-link" href="#'+encodeURI(p.path)+'"><span>★</span>'+p.title+'</a>').join("")+'</div>';
+  }
+  slot.innerHTML=html;
 }
 
 /* ----------------------------------- init ---------------------------------- */
@@ -590,5 +1057,5 @@ buildNav();
 initTimer();
 refreshProgressUI();
 renderResume();
-window.addEventListener("hashchange", ()=>{ onHash(); renderResume(); });
-onHash();
+window.addEventListener("hashchange", onHash);
+syncProgress().finally(()=>{ refreshProgressUI(); renderResume(); onHash(); });

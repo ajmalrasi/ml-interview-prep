@@ -23,7 +23,7 @@ function hexToRgba(hex, a){
 
 /* ---------------------- persistent study-state store ---------------------- */
 // localStorage is the instant/offline copy; /api/progress is shared by devices.
-const STORE_KEY = "mlprep-v1";
+const STORE_KEY = "python-interview-prep-v1";
 function loadStore(){ try{ return JSON.parse(localStorage.getItem(STORE_KEY)) || {}; }catch(_){ return {}; } }
 function saveStore(s){ try{ localStorage.setItem(STORE_KEY, JSON.stringify(s)); }catch(_){} }
 let STATE = loadStore();
@@ -127,7 +127,7 @@ function setActive(path){
   });
   revealActiveNav(active);
   const pg=byPath[path];
-  document.getElementById("tbTitle").textContent = pg ? pg.title : "ML Eng Prep";
+  document.getElementById("tbTitle").textContent = pg ? pg.title : "Python Interview Prep";
 }
 
 function revealActiveNav(active){

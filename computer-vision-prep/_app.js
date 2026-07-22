@@ -21,16 +21,69 @@ function hexToRgba(hex, a){
   return "rgba("+((n>>16)&255)+","+((n>>8)&255)+","+(n&255)+","+a+")";
 }
 
-/* --------------------- tiny persistent store (localStorage) ---------------- */
-// All study state (progress, flashcard grades) lives under one namespaced key.
+/* ---------------------- persistent study-state store ---------------------- */
+// localStorage is the instant/offline copy; /api/progress is shared by devices.
 const STORE_KEY = "mlprep-v1";
 function loadStore(){ try{ return JSON.parse(localStorage.getItem(STORE_KEY)) || {}; }catch(_){ return {}; } }
 function saveStore(s){ try{ localStorage.setItem(STORE_KEY, JSON.stringify(s)); }catch(_){} }
 let STATE = loadStore();
-STATE.done   = STATE.done   || {};   // { path: true }         pages marked complete
-STATE.cards  = STATE.cards  || {};   // { "path#cardhash": 1|-1 }  flashcard grades
-STATE.last   = STATE.last   || null; // last visited path (for "resume")
-function persist(){ saveStore(STATE); }
+let remoteReady = location.protocol === "file:";
+let serverHasState = false;
+let saveQueue = Promise.resolve();
+let syncLabel = location.protocol === "file:" ? "local" : "connecting";
+function normalizeState(s){
+  s = s && typeof s === "object" ? s : {};
+  s.done = s.done && typeof s.done === "object" ? s.done : {};
+  s.cards = s.cards && typeof s.cards === "object" ? s.cards : {};
+  s.pins = s.pins && typeof s.pins === "object" ? s.pins : {};
+  s.last = typeof s.last === "string" ? s.last : null;
+  return s;
+}
+STATE = normalizeState(STATE);
+function hasStudyState(){
+  return Object.keys(STATE.done).length || Object.keys(STATE.cards).length || Object.keys(STATE.pins).length;
+}
+function mergeLegacyLocal(remote, local){
+  let changed=false;
+  const deleted=remote._deleted && typeof remote._deleted==="object" ? remote._deleted : {};
+  ["done","cards","pins"].forEach(field=>{
+    const tombstones=deleted[field] && typeof deleted[field]==="object" ? deleted[field] : {};
+    Object.keys(local[field]||{}).forEach(key=>{
+      if(!(key in remote[field]) && !(key in tombstones)){ remote[field][key]=local[field][key]; changed=true; }
+    });
+  });
+  return changed;
+}
+function persist(change){
+  saveStore(STATE);
+  if(!remoteReady || location.protocol === "file:" || (!serverHasState && !hasStudyState())) return;
+  syncLabel = "saving"; refreshProgressUI();
+  const body=JSON.stringify(change || {op:"replace", state:STATE});
+  saveQueue=saveQueue.catch(()=>{}).then(async()=>{
+    try{
+      const r=await fetch("/api/progress", {method:"POST", headers:{"Content-Type":"application/json"}, body});
+      if(!r.ok) throw new Error("HTTP "+r.status);
+      serverHasState=true; syncLabel="synced";
+    }catch(_){ syncLabel="local — sync unavailable"; }
+    refreshProgressUI();
+  });
+}
+async function syncProgress(){
+  if(location.protocol === "file:") return;
+  try{
+    const r=await fetch("/api/progress", {cache:"no-store"});
+    if(!r.ok) throw new Error("HTTP "+r.status);
+    const payload=await r.json();
+    let migrated=false;
+    if(payload.exists){
+      const remote=normalizeState(payload.state);
+      migrated=mergeLegacyLocal(remote, STATE);
+      STATE=remote; saveStore(STATE); serverHasState=true;
+    }
+    remoteReady=true; syncLabel="synced";
+    if((!payload.exists && hasStudyState()) || migrated) persist({op:"replace", state:STATE});
+  }catch(_){ remoteReady=true; syncLabel="local — sync unavailable"; }
+}
 // stable short hash for card ids
 function hashStr(s){ let h=5381; for(let i=0;i<s.length;i++) h=((h<<5)+h+s.charCodeAt(i))|0; return (h>>>0).toString(36); }
 
@@ -66,9 +119,24 @@ function buildNav(){
 }
 
 function setActive(path){
-  document.querySelectorAll("nav a.item").forEach(a=>a.classList.toggle("active", a.dataset.path===path));
+  let active=null;
+  document.querySelectorAll("nav a.item").forEach(a=>{
+    const on=a.dataset.path===path;
+    a.classList.toggle("active",on);
+    if(on) active=a;
+  });
+  revealActiveNav(active);
   const pg=byPath[path];
   document.getElementById("tbTitle").textContent = pg ? pg.title : "Video Intel Prep";
+}
+
+function revealActiveNav(active){
+  const side=document.getElementById("sidebar");
+  if(!side||!active) return;
+  requestAnimationFrame(()=>{
+    const target=active.offsetTop-(side.clientHeight-active.offsetHeight)/2;
+    side.scrollTop=Math.max(0,target);
+  });
 }
 
 function renderPageTools(pg){
@@ -338,7 +406,7 @@ function initFlashcards(pg){
 function gradeCard(d, g, pg){
   const key=d.dataset.key; if(!key) return;
   if(g===0) delete STATE.cards[key]; else STATE.cards[key]=g;
-  persist();
+  persist({op:"set", field:"cards", key, value:g});
   d.classList.toggle("known", g===1);
   d.classList.toggle("missed", g===-1);
   updateQuizStats(pg);
@@ -383,12 +451,16 @@ function shuffleCards(){
 
 /* ============================ progress tracking =========================== */
 function isDone(path){ return !!STATE.done[path]; }
-function setDone(path, v){ if(v) STATE.done[path]=true; else delete STATE.done[path]; persist(); refreshProgressUI(); }
+function setDone(path, v){ if(v) STATE.done[path]=true; else delete STATE.done[path]; persist({op:"set", field:"done", key:path, value:v}); refreshProgressUI(); renderResume(); }
 function markVisited(path){
-  STATE.last=path; persist();
+  if(path!=="README.md"){
+    STATE.last=path;
+    persist({op:"set", field:"last", value:path});
+  } else saveStore(STATE);
   setActiveDone();
   renderPageStatus(path);
   refreshProgressUI();
+  renderResume();
 }
 // count only real content pages (exclude the home overview) toward totals
 function progressPages(){ return PAGES.filter(p=>p.path!=="README.md"); }
@@ -398,10 +470,11 @@ function refreshProgressUI(){
   const pct=all.length?Math.round(done/all.length*100):0;
   const bar=document.getElementById("progBar"), lbl=document.getElementById("progLbl");
   if(bar) bar.style.width=pct+"%";
-  if(lbl) lbl.textContent=done+" / "+all.length+" pages · "+pct+"%";
+  if(lbl) lbl.textContent=done+" / "+all.length+" pages · "+pct+"% · "+syncLabel;
   // per-item checks + per-section counts in the nav
   document.querySelectorAll("nav a.item").forEach(a=>{
     a.classList.toggle("done", isDone(a.dataset.path));
+    a.classList.toggle("pinned", !!STATE.pins[a.dataset.path]);
   });
   document.querySelectorAll("nav .sec").forEach(secEl=>{
     const links=[...secEl.querySelectorAll("a.item")].filter(a=>a.dataset.path!=="README.md" || secEl.querySelectorAll("a.item").length===1);
@@ -423,16 +496,24 @@ function renderPageStatus(path){
   const host=document.getElementById("pager");
   if(!host) return;
   const done=isDone(path);
+  const pinned=!!STATE.pins[path];
   const strip=document.createElement("div");
   strip.className="page-status";
   strip.innerHTML='<button class="complete-btn'+(done?" is-done":"")+'" id="completeBtn">'+
-    (done?"✓ Completed — click to unmark":"Mark this page complete")+'</button>';
+    (done?"✓ Completed — click to unmark":"Mark this page complete")+'</button>'+
+    '<button class="pin-btn'+(pinned?" is-pinned":"")+'" id="pinBtn" aria-pressed="'+pinned+'">'+
+    (pinned?"★ Pinned":"☆ Pin page")+'</button>';
   host.parentNode.insertBefore(strip, host);
   strip.querySelector("#completeBtn").onclick=()=>{
     setDone(path, !isDone(path));
     renderPager(path);            // re-render pager block…
     const old=document.querySelector(".page-status"); if(old) old.remove();
     renderPageStatus(path);       // …and this strip
+  };
+  strip.querySelector("#pinBtn").onclick=()=>{
+    const value=!STATE.pins[path];
+    if(value) STATE.pins[path]=true; else delete STATE.pins[path];
+    persist({op:"set", field:"pins", key:path, value}); refreshProgressUI(); renderResume(); renderPageStatus(path);
   };
 }
 
@@ -539,10 +620,32 @@ document.querySelectorAll(".theme-toggle").forEach(b=>b.addEventListener("click"
 (function(){ let t; try{t=localStorage.getItem("koi-theme");}catch(_){}
   if(!t) t=matchMedia("(prefers-color-scheme: dark)").matches?"dark":"light"; applyTheme(t); })();
 
-/* ----------------------------- mobile drawer ------------------------------- */
+/* ---------------------- navigation visibility + drawer --------------------- */
 const sidebar=document.getElementById("sidebar"), scrim=document.getElementById("scrim");
-function openSidebar(){ sidebar.classList.add("open"); scrim.classList.add("show"); }
-function closeSidebar(){ sidebar.classList.remove("open"); scrim.classList.remove("show"); }
+const appShell=document.querySelector(".app"), navMedia=matchMedia("(max-width:880px)");
+const NAV_HIDDEN_KEY="koi-nav-hidden-v1";
+let navHiddenPreference=false;
+try{navHiddenPreference=localStorage.getItem(NAV_HIDDEN_KEY)==="1";}catch(_){}
+function saveNavPreference(){try{localStorage.setItem(NAV_HIDDEN_KEY,navHiddenPreference?"1":"0");}catch(_){}}
+function applyNavPreference(){
+  const collapsed=!navMedia.matches&&navHiddenPreference;
+  appShell.classList.toggle("nav-hidden",collapsed);
+  const show=document.getElementById("navShow");
+  if(show) show.setAttribute("aria-expanded",collapsed?"false":"true");
+}
+function openSidebar(){sidebar.classList.add("open");scrim.classList.add("show");revealActiveNav(document.querySelector("nav a.item.active"));}
+function closeSidebar(){sidebar.classList.remove("open");scrim.classList.remove("show");}
+document.getElementById("navHide").addEventListener("click",()=>{
+  if(navMedia.matches){closeSidebar();return;}
+  navHiddenPreference=true;saveNavPreference();applyNavPreference();
+});
+document.getElementById("navShow").addEventListener("click",()=>{
+  navHiddenPreference=false;saveNavPreference();applyNavPreference();
+  revealActiveNav(document.querySelector("nav a.item.active"));
+});
+if(navMedia.addEventListener) navMedia.addEventListener("change",applyNavPreference);
+else navMedia.addListener(applyNavPreference);
+applyNavPreference();
 document.getElementById("menu").addEventListener("click", openSidebar);
 document.getElementById("searchBtn").addEventListener("click", ()=>{ openSidebar(); setTimeout(()=>searchBox.focus(),260); });
 scrim.addEventListener("click", closeSidebar);
@@ -567,13 +670,28 @@ document.getElementById("content").addEventListener("click", e=>{
   gradeCard(card, +btn.dataset.g, byPath[currentPath]);
 });
 
-/* --------------------------------- resume ---------------------------------- */
+/* ------------------------- resume + pinned shortcuts ---------------------- */
+function resumePage(){
+  const last=STATE.last && byPath[STATE.last];
+  if(last && last.path!=="README.md" && !isDone(last.path)) return last;
+  const pages=progressPages();
+  if(!pages.length) return null;
+  const lastIndex=last ? PAGES.findIndex(p=>p.path===last.path) : -1;
+  return pages.find(p=>PAGES.indexOf(p)>lastIndex && !isDone(p.path)) || pages.find(p=>!isDone(p.path)) || null;
+}
 function renderResume(){
   const slot=document.getElementById("resumeSlot"); if(!slot) return;
-  const p=STATE.last && byPath[STATE.last];
-  if(p && p.path!=="README.md"){
-    slot.innerHTML='<a class="resume-link" href="#'+encodeURI(p.path)+'">↻ Resume: '+p.title+'</a>';
-  } else slot.innerHTML="";
+  const resume=resumePage();
+  const pinned=PAGES.filter(p=>STATE.pins[p.path]);
+  let html="";
+  if(resume && resume.path!==currentPath){
+    html+='<a class="resume-link" href="#'+encodeURI(resume.path)+'">→ Continue: '+resume.title+'</a>';
+  }
+  if(pinned.length){
+    html+='<div class="pinned-block"><div class="pinned-title">Pinned pages</div>'+pinned.map(p=>
+      '<a class="pinned-link" href="#'+encodeURI(p.path)+'"><span>★</span>'+p.title+'</a>').join("")+'</div>';
+  }
+  slot.innerHTML=html;
 }
 
 /* ----------------------------------- init ---------------------------------- */
@@ -581,5 +699,5 @@ buildNav();
 initTimer();
 refreshProgressUI();
 renderResume();
-window.addEventListener("hashchange", ()=>{ onHash(); renderResume(); });
-onHash();
+window.addEventListener("hashchange", onHash);
+syncProgress().finally(()=>{ refreshProgressUI(); renderResume(); onHash(); });

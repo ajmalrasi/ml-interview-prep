@@ -40,6 +40,18 @@
     position:sticky; top:0; height:100vh; height:100dvh; overflow-y:auto; padding-bottom:env(safe-area-inset-bottom)}
   .brand{padding:20px 20px 14px; border-bottom:1px solid var(--border);
     position:sticky; top:0; background:var(--bg-side); z-index:2}
+  .nav-hide{position:static;display:inline-flex;align-items:center;gap:6px;margin-top:10px;border:0;background:transparent;color:var(--muted);
+    border-radius:7px;padding:5px 0;font-size:11.5px;font-weight:600;cursor:pointer}
+  .nav-hide:hover{color:var(--accent)}
+  .nav-collapsed-bar{display:none}
+  .nav-show{display:none;position:static;width:auto;height:36px;padding:0 12px;gap:7px;font-size:12.5px;box-shadow:var(--shadow)}
+  .app.nav-hidden{grid-template-columns:minmax(0,1fr)}
+  .app.nav-hidden .sidebar{display:none}
+  .app.nav-hidden .nav-collapsed-bar{display:flex;position:sticky;z-index:45;top:0;height:53px;align-items:center;
+    padding:8px max(16px,env(safe-area-inset-left));border-bottom:1px solid var(--border);background:var(--header-bg);
+    backdrop-filter:saturate(140%) blur(10px);-webkit-backdrop-filter:saturate(140%) blur(10px)}
+  .app.nav-hidden .nav-show{display:flex}
+  .app.nav-hidden .content-wrap{padding-top:32px}
   .brand h1{font-size:15px; margin:0 0 3px; letter-spacing:.2px; font-weight:700}
   .brand .sub{font-size:12px; color:var(--muted)}
   .tools{display:flex; gap:8px; margin-top:14px}
@@ -236,6 +248,7 @@
     nav a.item{padding:11px 14px; font-size:15px}
     nav a.item.sub{padding-left:18px}
     .searchpanel{top:60px}
+    .nav-collapsed-bar,.nav-show{display:none!important}
   }
   @media (max-width:380px){ .topbar .tb-title{font-size:14px} }
 
@@ -285,7 +298,7 @@
 
 /* ======================= interactive-study additions ====================== */
 
-/* --- sidebar progress bar + resume --- */
+/* --- sidebar progress bar + study shortcuts --- */
 .progwrap{margin-top:12px}
 .progtrack{height:6px; border-radius:4px; background:var(--border); overflow:hidden}
 .progbar{height:100%; width:0; border-radius:4px; background:linear-gradient(90deg,var(--accent),var(--accent-2)); transition:width .35s ease}
@@ -294,23 +307,33 @@
 .resume-link{display:block; font-size:12.5px; color:var(--accent); font-weight:600; padding:6px 10px;
   border:1px solid var(--border); border-radius:9px; background:var(--bg)}
 .resume-link:hover{border-color:var(--accent); text-decoration:none}
+.pinned-block{margin-top:9px; padding:8px 9px; border:1px solid var(--border); border-radius:9px; background:var(--bg)}
+.pinned-title{font-size:10px; font-weight:800; color:var(--muted); letter-spacing:.08em; text-transform:uppercase; margin-bottom:3px}
+.pinned-link{display:flex; align-items:flex-start; gap:6px; padding:4px 0; color:var(--text); font-size:12px; line-height:1.3}
+.pinned-link span{color:#d39a1f}
+.pinned-link:hover{color:var(--accent); text-decoration:none}
 
 /* --- nav done markers + section counts --- */
 .sec-h{position:relative}
+.item.pinned::before{content:"★"; position:absolute; right:27px; top:50%; transform:translateY(-50%); color:#d39a1f; font-size:11px}
 .sec-count{float:right; font-size:10.5px; font-weight:700; color:var(--muted);
   background:var(--bg); border:1px solid var(--border); border-radius:999px; padding:1px 7px; letter-spacing:.02em}
 .sec-count.all-done{color:#2f9e6f; border-color:#2f9e6f}
-nav a.item{position:relative; padding-right:26px}
+nav a.item{position:relative; padding-right:44px}
 nav a.item.done::after{content:"✓"; position:absolute; right:9px; top:50%; transform:translateY(-50%);
   color:#2f9e6f; font-weight:800; font-size:12px}
 
 /* --- page complete strip --- */
-.page-status{margin:26px 0 4px}
-.complete-btn{width:100%; padding:12px 16px; border-radius:12px; cursor:pointer; font-weight:700; font-size:14px;
+.page-status{display:flex; gap:9px; margin:26px 0 4px}
+.complete-btn{flex:1; padding:12px 16px; border-radius:12px; cursor:pointer; font-weight:700; font-size:14px;
   font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif;
   background:var(--accent-soft); color:var(--accent); border:1px solid var(--accent)}
 .complete-btn:hover{background:var(--accent); color:#fff}
 .complete-btn.is-done{background:rgba(47,158,111,.14); color:#2f9e6f; border-color:#2f9e6f}
+.pin-btn{flex:0 0 auto; padding:12px 16px; border-radius:12px; cursor:pointer; font-weight:700; font-size:14px;
+  font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif; background:var(--bg); color:var(--muted); border:1px solid var(--border)}
+.pin-btn:hover,.pin-btn.is-pinned{color:#b07800; border-color:#d39a1f; background:rgba(211,154,31,.12)}
+@media(max-width:520px){.page-status{flex-direction:column}.pin-btn{width:100%}}
 
 /* --- flashcard grading --- */
 .quiz-stats{font-size:12.5px; color:var(--muted); margin-left:auto}
@@ -415,6 +438,105 @@ details.qa.missed .cg-missed{background:#e0663f; color:#fff; border-color:#e0663
 .lm-seg-w{background:var(--accent)} .lm-seg-kv{background:#3b82f6}
 .lm-note{font-size:12.5px; color:var(--quote); font-family:-apple-system,sans-serif; line-height:1.5}
 @media (max-width:640px){ .bt-wrap{flex-direction:column} }
+
+/* KV-cache recomputation explorer */
+.kvw-wrap{overflow:hidden}
+.kvw-mode{display:flex;gap:6px;flex-wrap:wrap}
+.kvw-svg{display:block;width:100%;height:auto;margin:8px 0 2px;overflow:visible}
+.kvw-attn{stroke:var(--muted);stroke-width:1.4;opacity:.55}
+.kvw-old-cache{fill:var(--bg);stroke:var(--muted);stroke-width:1.5}
+.kvw-old-no{fill:var(--accent-soft);stroke:var(--accent);stroke-width:1.8;stroke-dasharray:5 3}
+.kvw-current{fill:var(--sec-accent-soft,var(--accent-soft));stroke:var(--sec-accent,var(--accent));stroke-width:2.2}
+.kvw-token,.kvw-kv,.kvw-status,.kvw-caption,.kvw-query text{font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif;text-anchor:middle;fill:var(--text)}
+.kvw-token{font-size:11px;font-weight:700}
+.kvw-kv{font-size:10px;fill:var(--muted)}
+.kvw-status{font-size:9.5px;fill:var(--muted)}
+.kvw-caption{font-size:11px;fill:var(--quote)}
+.kvw-query circle{fill:var(--sec-accent,var(--accent));stroke:var(--bg);stroke-width:3}
+.kvw-query text{font-size:12px;font-weight:800;fill:#fff}
+.kvw-legend{display:flex;justify-content:center;gap:14px;flex-wrap:wrap;margin:2px 0 8px;font-size:11.5px;color:var(--muted)}
+.kvw-legend span{display:flex;align-items:center;gap:5px}
+.kvw-legend b{font-weight:600}
+.kvw-legend i{display:inline-block;width:16px;height:8px;border-radius:3px}
+.kvw-lg-attn{height:2px!important;background:var(--muted)}
+.kvw-lg-old{background:var(--bg);border:1px solid var(--muted)}
+.kvw-lg-new{background:var(--sec-accent-soft,var(--accent-soft));border:2px solid var(--sec-accent,var(--accent))}
+.kvw-note{margin-top:12px}
+@media (max-width:520px){
+  .kvw-legend{gap:9px}
+}
+@media (prefers-reduced-motion:no-preference){
+  .kvw-current{transition:fill .2s ease,stroke .2s ease}
+}
+
+/* vLLM serving-internals learning labs */
+.vli-wrap{overflow:hidden}
+.vli-buttons{display:flex;gap:6px;flex-wrap:wrap}
+.vli-svg{display:block;width:100%;height:auto;margin:10px 0 2px;overflow:visible}
+.vli-lane-label,.vli-axis-label,.vli-axis-title,.vli-cell-label{
+  font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif;fill:var(--text)
+}
+.vli-lane-label{font-size:11px;text-anchor:end;fill:var(--muted)}
+.vli-axis-label{font-size:10px;text-anchor:middle;fill:var(--muted)}
+.vli-axis-title{font-size:10px;text-anchor:middle;fill:var(--muted)}
+.vli-cell{stroke-width:1.2}
+.vli-cell.is-decode{fill:var(--sec-accent-soft,var(--accent-soft));stroke:var(--sec-accent,var(--accent))}
+.vli-cell.is-prefill{fill:var(--accent-soft);stroke:var(--accent)}
+.vli-cell.is-wait{fill:var(--bg);stroke:var(--border);stroke-dasharray:4 3}
+.vli-cell.is-future{fill:var(--bg);stroke:var(--border);opacity:.42}
+.vli-cell-label{font-size:10.5px;text-anchor:middle;font-weight:700}
+.vli-cursor{fill:var(--accent-soft);opacity:.55}
+
+.pa-memory{display:grid;grid-template-columns:repeat(10,minmax(34px,1fr));gap:6px;margin:16px 0 8px}
+.pa-block{position:relative;display:grid;grid-template-columns:1fr 1fr;height:34px;border:1px solid var(--border);border-radius:7px;overflow:hidden;background:var(--bg)}
+.pa-block span{display:block;border-right:1px solid var(--border)}
+.pa-block span:last-of-type{border-right:0}
+.pa-block .is-used{background:var(--sec-accent,var(--accent))}
+.pa-block .is-waste{background:var(--accent-soft)}
+.pa-block .is-free{background:var(--bg)}
+.pa-block b{position:absolute;inset:0;display:flex;align-items:center;justify-content:center;font-size:10px;color:var(--text);font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif;text-shadow:0 1px 2px var(--bg)}
+.pa-block.is-free{opacity:.55}
+.pa-legend{display:flex;justify-content:center;gap:14px;flex-wrap:wrap;margin:4px 0 8px;font-size:11.5px;color:var(--muted)}
+.pa-legend span{display:flex;align-items:center;gap:5px}
+.pa-legend i{display:inline-block;width:15px;height:8px;border:1px solid var(--border);border-radius:3px}
+.pa-legend .pa-used{background:var(--sec-accent,var(--accent))}
+.pa-legend .pa-waste{background:var(--accent-soft)}
+.pa-legend .pa-free{background:var(--bg)}
+
+.sp-flow{margin:16px 0 8px;text-align:center;font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif}
+.sp-stage-label{font-size:11px;color:var(--muted);text-transform:uppercase;letter-spacing:.03em;margin-bottom:7px}
+.sp-tokens,.sp-result{display:flex;align-items:stretch;justify-content:center;gap:6px;flex-wrap:wrap}
+.sp-token{display:flex;flex-direction:column;justify-content:center;min-width:58px;min-height:48px;padding:5px 7px;border-radius:8px;border:1px solid var(--border);background:var(--bg)}
+.sp-token b{font-size:12px;font-weight:700;color:var(--text)}
+.sp-token small{font-size:10px;color:var(--muted);margin-top:3px}
+.sp-token.is-accepted{background:var(--sec-accent-soft,var(--accent-soft));border-color:var(--sec-accent,var(--accent))}
+.sp-token.is-rejected{background:var(--accent-soft);border-color:var(--accent);border-style:dashed}
+.sp-token.is-discarded{opacity:.42;border-style:dashed}
+.sp-token.is-correction{background:var(--sec-accent-soft,var(--accent-soft));border-color:var(--sec-accent,var(--accent));border-width:2px}
+.sp-arrow{font-size:11.5px;color:var(--quote);margin:12px 0 9px}
+
+.vj-track{display:grid;grid-template-columns:1fr auto 1fr auto 1fr auto 1fr auto 1fr;align-items:center;gap:7px;margin:18px 0 12px}
+.vj-stage{min-width:0;padding:10px 6px;text-align:center;border-bottom:3px solid var(--border);font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif;color:var(--muted)}
+.vj-stage>span{display:flex;width:23px;height:23px;margin:0 auto 6px;align-items:center;justify-content:center;border-radius:50%;background:var(--bg);border:1px solid var(--border);font-size:11px;font-weight:500}
+.vj-stage b,.vj-stage small{display:block}
+.vj-stage b{font-size:11.5px;font-weight:500;color:var(--text)}
+.vj-stage small{font-size:10px;margin-top:2px;color:var(--muted)}
+.vj-stage.is-active{border-bottom-color:var(--sec-accent,var(--accent));background:var(--sec-accent-soft,var(--accent-soft))}
+.vj-stage.is-active>span,.vj-stage.is-done>span{background:var(--sec-accent,var(--accent));border-color:var(--sec-accent,var(--accent));color:var(--bg)}
+.vj-arrow{font-style:normal;color:var(--muted)}
+.vj-note{min-height:38px;padding-top:2px}
+
+@media (max-width:520px){
+  .pa-memory{grid-template-columns:repeat(5,minmax(34px,1fr));gap:5px}
+  .vli-lane-label{font-size:9.5px}
+  .sp-token{min-width:49px;padding:5px}
+  .vj-track{grid-template-columns:1fr;gap:3px;margin-top:14px}
+  .vj-stage{display:grid;grid-template-columns:30px 1fr;grid-template-rows:auto auto;text-align:left;padding:7px 9px;border-bottom:1px solid var(--border);border-left:3px solid var(--border)}
+  .vj-stage>span{grid-row:1/3;margin:0;align-self:center}
+  .vj-stage b,.vj-stage small{padding-left:6px}
+  .vj-stage.is-active{border-left-color:var(--sec-accent,var(--accent));border-bottom-color:var(--border)}
+  .vj-arrow{text-align:center;transform:rotate(90deg);height:14px}
+}
 
 /* number-format explorer */
 .fmt-wrap{background:var(--bg-soft); border:1px solid var(--border); border-radius:16px; padding:16px; margin:1.4em 0}

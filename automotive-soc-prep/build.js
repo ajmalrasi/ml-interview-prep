@@ -294,6 +294,7 @@ const HTML =
 '    <div class="brand">\n' +
 '      <h1>Automotive SoC AI Prep</h1>\n' +
 '      <div class="sub">NPU · DSP · ONNX · Quantization · BEV · QNX</div>\n' +
+'      <button class="nav-hide" id="navHide" type="button" aria-label="Collapse navigation" aria-controls="sidebar" aria-expanded="true">← Hide navigation</button>\n' +
 '      <div class="tools">\n' +
 '        <input id="search" type="search" placeholder="Search all pages…" autocomplete="off" autocapitalize="off" spellcheck="false">\n' +
 '        <button class="iconbtn" id="timerBtn" title="Study / exam timer">⏱</button>\n' +
@@ -308,6 +309,7 @@ const HTML =
 '    <nav id="nav"></nav>\n' +
 '  </aside>\n' +
 '  <main class="main">\n' +
+'    <div class="nav-collapsed-bar"><button class="iconbtn nav-show" id="navShow" type="button" aria-label="Show navigation" aria-controls="sidebar" aria-expanded="false">☰ <span>Show navigation</span></button></div>\n' +
 '    <div class="topbar">\n' +
 '      <button class="iconbtn" id="menu" aria-label="Open menu">☰</button>\n' +
 '      <span class="tb-title" id="tbTitle">Automotive SoC AI Prep</span>\n' +
