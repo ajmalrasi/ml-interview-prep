@@ -5,6 +5,35 @@ distributions for queue time, **TTFT**, **ITL/TPOT**, end-to-end latency, and th
 measured under a declared prompt/output/concurrency workload. A benchmark without workload,
 warmup, percentiles, quality parity, and hardware/config metadata is not reproducible evidence.
 
+## Beginner mental model: four stopwatches
+
+Use the GPU-kitchen story:
+
+| Stopwatch | Kitchen analogy | User/system question |
+|---|---|---|
+| **TTFT** | Time until the first plate reaches the table | “How quickly did the response start?” |
+| **ITL / TPOT** | Gap between later plates | “Did streaming feel smooth?” |
+| **End-to-end latency** | Time until the whole order is complete | “When was the request finished?” |
+| **Throughput** | All plates served by the kitchen per minute | “How much total load can the GPU handle?” |
+| **Goodput** | Plates served within the promised time | “How much useful load met the SLO?” |
+
+This is the same distinction you know from ML inference: **single-sample latency is not
+batch throughput**. A server can produce more total tokens while making one chat less smooth.
+
+## Connect each mechanism to the metric it should move
+
+| Mechanism | Expected primary effect | Trade-off or counter-metric |
+|---|---|---|
+| Prefix caching | Lower TTFT for repeated exact prefixes | Hit rate and cache memory |
+| Chunked prefill | Protect ITL of active streams | Long prompt's own TTFT may rise |
+| KV cache | Avoid repeated prefix compute during decode | VRAM grows with active context |
+| PagedAttention | More useful KV capacity, fewer preemptions | Block-table/kernel overhead |
+| Continuous batching | Higher throughput and lower queue time under load | Per-user ITL if batches become too aggressive |
+| Speculative decoding | Fewer sequential target passes, often lower ITL | Draft cost and acceptance rate |
+
+If an optimization claims success but its expected metric did not move, inspect the workload
+and bottleneck before believing the claim.
+
 ## The latency vocabulary
 
 For a streaming request received at time `t0`, with first token at `t1` and final token at

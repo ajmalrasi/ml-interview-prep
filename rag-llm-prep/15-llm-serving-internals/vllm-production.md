@@ -4,6 +4,30 @@
 Put it behind an application/gateway layer, size it from workload and KV memory, tune with
 measured SLOs, expose engine metrics, and roll model/runtime changes as carefully as code.
 
+## Beginner mental model: engine, not product
+
+If you know CV deployment, use this mapping:
+
+| CV/ML serving layer | LLM service equivalent | Owns |
+|---|---|---|
+| Product API / FastAPI service | Gateway or application layer | Auth, quotas, validation, policy, stable API |
+| TensorRT/Triton-style inference runtime | vLLM | Tokenization, scheduling, KV blocks, model execution, streaming |
+| CUDA GPU | CUDA GPU | Kernels, memory bandwidth, VRAM capacity |
+
+vLLM is the **high-performance engine inside the car**, not the steering wheel, seat belts,
+traffic rules, or customer account system. Exposing it directly can work for a private lab;
+a banking product keeps policy and identity in a separate gateway so the serving engine can
+be upgraded or replaced without rewriting business controls.
+
+## Why a gateway over calling vLLM directly?
+
+| Direct engine exposure | Gateway in front |
+|---|---|
+| Fewer components for a local experiment | Stable external contract and centralized auth |
+| Engine-specific options leak to clients | Model aliases hide runtime/model migrations |
+| Every client must implement limits and retries | One place for quotas, deadlines, audit, safety and routing |
+| Engine replacement becomes an API migration | vLLM, SGLang or TensorRT-LLM can sit behind the same product API |
+
 ## Draw the boundary correctly
 
 ```rawhtml

@@ -5,6 +5,19 @@ the next one, so one long answer stalls everyone. Continuous batching swaps
 requests in and out *mid-batch*, at the token level. It's the core trick
 behind vLLM and TGI.
 
+## Beginner mental model
+
+> **ML bridge:** ordinary static batching resembles padding variable-length sequences to
+> the longest item. Once a short sequence finishes, its lane does no useful work. Continuous
+> batching replaces that finished sequence with a queued one between decode iterations.
+
+The bus analogy: a static bus waits until every passenger reaches the final stop before
+accepting anyone new. A continuous bus drops off and picks up passengers at every stop.
+The **GPU batch membership changes**, while each request's token order remains autoregressive.
+
+What it improves is **system throughput and queue time under concurrency**. It does not make
+the transformer mathematically faster, and it may do nothing for a single request.
+
 ## The problem with static batches
 
 Naive batching groups N requests and waits for **all of them** to finish
@@ -25,6 +38,28 @@ The GPU sits idle waiting for the straggler.
   </div>
 </div>
 ```
+
+## Try it: watch freed GPU slots
+
+Move through decode iterations and switch the batch policy. Requests A–C enter first;
+D–F wait in the queue. In a static batch, an early finisher leaves a hole. With continuous
+batching, the scheduler admits a waiting request into that slot at the next token boundary.
+
+```rawhtml
+<div id="continuous-batching-widget"></div>
+```
+
+## Why continuous over static batching?
+
+| Workload | Better choice | Why |
+|---|---|---|
+| Offline jobs with similar fixed lengths | Static can be sufficient | Simple, predictable batches have little straggler waste |
+| Online chat with mixed answer lengths | Continuous | Finished slots are useful immediately instead of waiting for the longest answer |
+| One request at a time | Neither has a throughput advantage | There is no second request to fill a slot |
+
+This is a scheduler optimization, not free capacity. Very aggressive batching can improve
+total tokens/second while worsening one user's ITL, so the scheduler still needs latency
+budgets and admission control.
 
 ## How continuous batching works
 

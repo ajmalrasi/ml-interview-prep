@@ -5,6 +5,23 @@ all prompt tokens with large parallel matrix operations; **decode** emits one to
 time while repeatedly reading weights and KV cache. A production scheduler must prevent
 large prefills from blocking active decodes while still keeping the GPU full.
 
+## Beginner mental model
+
+> **CV bridge:** prefill is closest to a dense ViT/CNN forward pass—many prompt-token
+> positions can use large parallel matrix operations. Decode is closer to an autoregressive
+> tracker: the next state cannot exist until the current state is known.
+
+Use the kitchen story: **prefill prepares the order; decode plates one course at a time**.
+The first plate cannot leave until preparation is done, so prefill affects **time to first
+token (TTFT)**. The delay between later plates is **inter-token latency (ITL)**.
+
+Three details prevent most confusion:
+
+1. Prefill does **not** generate the prompt token by token; the prompt is already known.
+2. One decode iteration generates one next token **per active sequence**, not one token for
+   the entire server.
+3. Chunking changes when prompt work runs. It does not change the transformer or its answer.
+
 ## One request, two performance regimes
 
 | Phase | Work | Typical pressure | User-visible metric |
@@ -52,6 +69,27 @@ with decode work:
   </div>
 </div>
 ```
+
+## Try it: protect active streams or finish the new prompt first?
+
+Scrub through the schedule and switch policies. **Full prefill** lets one long prompt own
+the GPU for a large block of work. **Chunked prefill** spends part of each token budget on
+the prompt while preserving a decode step for chats that are already streaming.
+
+```rawhtml
+<div id="prefill-scheduler-widget"></div>
+```
+
+## Why one policy over another?
+
+| Policy | Choose it when | What you pay |
+|---|---|---|
+| Full prefill | Low concurrency, short prompts, or the new request's TTFT matters most | Existing streams can pause behind a long prompt |
+| Chunked prefill | Interactive multi-user traffic with mixed prompt lengths | The long request may need more scheduler iterations before its first token |
+| Strict decode priority | You must protect active-stream ITL for a short burst | New prefills can starve under sustained load |
+
+The production answer is usually a **token budget plus fairness/aging**, not one policy
+forever. Measure prompt-length distribution and separate TTFT and ITL SLOs.
 
 It gives the scheduler a token budget per iteration. Decode tokens normally get priority;
 remaining budget is filled with prefill chunks. This improves fairness and protects active

@@ -5,6 +5,25 @@ token N+1 before token N. Speculative decoding cheats with two models: a
 small one guesses several tokens ahead, the big one verifies them all in a
 single pass. Right guesses are accepted almost for free.
 
+## Beginner mental model
+
+Think of autocomplete reviewed by an expert. A fast assistant writes several likely words;
+the expert checks the entire proposal, keeps the correct prefix, and replaces the first
+mistake. If the assistant is often right, one expensive review commits several tokens.
+
+> **ML bridge:** this resembles a student/teacher setup, but it is **not distillation**.
+
+| Student/teacher distillation | Speculative decoding |
+|---|---|
+| Train a small student to imitate a teacher | No training step is required by the mechanism |
+| Usually deploy the student alone | Draft and target both run during inference |
+| Output quality/distribution may differ from teacher | Correct verification preserves the target distribution |
+| Goal is a cheaper deployed model | Goal is fewer sequential target-model passes |
+
+The sequence is: **draft K tokens → target scores the block once → accept the contiguous
+prefix → use a target correction at the first rejection**. Later draft tokens are discarded
+because they were conditioned on a token the target rejected.
+
 ## Breaking the one-token-per-pass constraint
 
 Generation is one token per forward pass because you don't know token N+1
@@ -30,14 +49,36 @@ instead.
 </div></div>
 ```
 
+## Try it: proposal length × acceptance
+
+Change how many tokens the draft proposes and how often it agrees with the target. The
+target verifies the whole proposal in one pass, but it can commit only the accepted prefix
+plus its correction at the first mismatch. Tokens after that mismatch are discarded.
+
+```rawhtml
+<div id="speculative-widget"></div>
+```
+
+## Why speculation over ordinary decode—and when not?
+
+| Situation | Choice | Reason |
+|---|---|---|
+| Code, JSON, boilerplate | Try speculation | Predictable continuations can produce a long accepted prefix |
+| Creative or high-entropy text | Benchmark carefully | Early rejection wastes draft work and later proposals |
+| Large draft almost as costly as target | Ordinary decode may win | Draft overhead can erase avoided target passes |
+| Target already runs large efficient batches | Benchmark at real concurrency | Speculation can interact differently with batching than at load 1 |
+
+**The decision metric is not acceptance rate alone.** Measure end-to-end tokens/second and
+latency with draft cost included, then report acceptance rate to explain the result.
+
 Plain version: instead of writing word by word, pausing to think after each
 word, you let a fast intern sketch the whole sentence. The expert checks it
 all at once — keeps what's right, redoes only what's wrong.
 
-A key correctness point worth saying in an interview: the output is
-**identical** to what the big model would have produced alone. Verification
-accepts exactly the tokens the big model agrees with. It's a latency trick,
-not a quality trade.
+A key correctness point worth saying in an interview: with greedy decoding, accepted tokens
+match what the target would choose. With sampling, a correct acceptance/rejection algorithm
+preserves the target model's output distribution. It is a latency mechanism, not permission
+to silently accept a lower-quality draft answer.
 
 ## Lives or dies on the draft model's hit rate
 

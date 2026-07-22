@@ -1,5 +1,22 @@
 # LLM Serving Internals — Interview Questions
 
+## Beginner answer recipe
+
+Do not start with flags or acronyms. Build every answer in four sentences:
+
+1. **Problem:** name the wasted compute, memory, GPU slot, or user-visible delay.
+2. **Mechanism:** say exactly what vLLM reuses, allocates, or schedules differently.
+3. **Trade-off:** explain when it helps and what resource or latency it can worsen.
+4. **Evidence:** name the metric and workload you would measure.
+
+Example: “Static batches leave slots idle when short answers finish. Continuous batching
+admits queued requests into those slots between decode iterations. It helps mixed-length
+concurrent traffic, not a single request, and aggressive batching can hurt ITL. I would sweep
+concurrency and report throughput plus p95/p99 TTFT and ITL.”
+
+That structure sounds senior because it connects **why → how → when → proof**, even when
+the underlying explanation stays simple.
+
 ## Q: How do you optimize LLM latency and reduce inference cost?
 
 Separate the two levers first, because they have different answers:
@@ -15,9 +32,9 @@ Separate the two levers first, because they have different answers:
   **continuous batching** keeps the GPU saturated under concurrency, and
   **speculative decoding** cuts per-token latency for structured output.
 
-The senior framing: LLM serving is **memory-bound, not compute-bound**. The KV
-cache, not the FLOPs, is what caps context length and concurrent requests on a
-given card — so most cost/latency decisions are really memory decisions.
+The senior framing is phase-specific: **prefill is often compute-heavy; decode is often
+memory-bandwidth and KV-capacity bound**. KV memory commonly caps context length and
+concurrent requests, while long-prompt prefill can still saturate compute.
 
 ---
 
@@ -69,9 +86,10 @@ dependency — "would I have written these?" can be checked in parallel. Correct
 guesses are accepted almost for free; the first wrong guess is discarded and the
 big model's own token is used.
 
-The correctness point worth stating explicitly: the output is **identical** to
-what the big model would have produced alone. It's a latency trick, not a
-quality trade. But it lives or dies on the draft model's hit rate — structured
+The correctness point worth stating explicitly: greedy verification follows the target's
+choices, and a correctly implemented sampling algorithm preserves the target distribution.
+It's a latency trick, not permission to return the draft unchecked. But it lives or dies on
+the draft model's hit rate — structured
 output (code, JSON, tool calls) has predictable next tokens and sees large
 speedups; creative high-entropy text has a low hit rate and speculation can be
 net negative.
