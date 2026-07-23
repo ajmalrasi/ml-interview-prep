@@ -1,4 +1,4 @@
-# What DocsMind's Server Actually Does — and the Async Footgun
+# What DocsMind's Server Actually Does: and the Async Footgun
 
 **TL;DR:** FastAPI runs plain `def` endpoints in a thread pool
 automatically. That's why DocsMind's blocking Anthropic call is handled

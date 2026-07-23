@@ -53,13 +53,13 @@ itself across a cluster with **Spark** (or Dask/Ray) — mapping the work over m
 This is the "scalable data pipeline" muscle: the same job that's a pandas one-liner on a
 laptop becomes a distributed job on terabytes.
 
-## Mixed precision — cheap speedup
+## Mixed precision: cheap speedup
 
 Training in **FP16/BF16** instead of FP32 roughly doubles throughput and halves memory
 with negligible accuracy loss, so it's standard for large-model training. Worth naming
 as the first optimization you'd reach for before adding more hardware.
 
-## 🔗 Connecting the dots — the real stack
+## 🔗 Connecting the dots: the real stack
 
 Multi-GPU data parallelism is **PyTorch DDP** or **Horovod**; very large models use **DeepSpeed**, **PyTorch FSDP**, or **Megatron-LM**. **Ray Train** and **Spark** distribute across a cluster; **HuggingFace Accelerate** wraps the boilerplate. Mixed precision is native **AMP** (`torch.cuda.amp`). It all runs on managed GPU clusters (**SageMaker / Vertex / Databricks**), often on **spot** instances with checkpointing.
 

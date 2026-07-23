@@ -1,4 +1,4 @@
-# Cheat Sheet — One Page, Morning Of
+# Cheat Sheet: One Page, Morning Of
 
 Read this and nothing else the morning of. Depth is in the numbered sections.
 
@@ -33,7 +33,7 @@ and crash-proof. Not training models — making them *run*.
 - DeepStream = inference + tracking + analytics inside the pipeline, GPU-resident.
 - Detect dead camera: **bus EOS/ERROR + freshness watchdog**.
 
-## Inference (your strength — lead here)
+## Inference (your strength: lead here)
 - **TensorRT**: ONNX → engine, layer fusion + kernel tuning + precision. Build **on
   the target GPU**.
 - **FP16** ≈ 2×, near-lossless (try first). **INT8** ≈ 3–4×, ¼ mem, needs

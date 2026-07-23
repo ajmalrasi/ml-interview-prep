@@ -42,7 +42,7 @@ spiking, drift crossing a threshold, error rate rising), and dashboard the rest.
 ML-specific tools like **Evidently** or the monitoring built into SageMaker/Vertex add
 drift and quality dashboards on top. You don't need to memorize configs — know the roles.
 
-## 🔗 Connecting the dots — the real stack
+## 🔗 Connecting the dots: the real stack
 
 Ops metrics are the standard SRE stack: **Prometheus** collects, **Grafana** dashboards, **Alertmanager** pages (or **DataDog** for all three). Model-quality signals come from **Evidently / Arize** or **SageMaker Model Monitor**, plotted on the same boards so ops and model health sit side by side.
 

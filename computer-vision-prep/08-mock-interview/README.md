@@ -1,4 +1,4 @@
-# 08 — Mock Interview
+# 08: Mock Interview
 
 **TL;DR:** A staged mock for a technical/system-design round at KoiReader. Two ways
 to use it:

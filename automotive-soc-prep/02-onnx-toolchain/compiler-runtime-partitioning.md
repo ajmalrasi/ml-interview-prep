@@ -36,7 +36,7 @@ builder + runtime" you already know — same concepts, vendor-neutral, ONNX-firs
 6. **Engine generation** — serialize a target-specific artifact. Like a TensorRT plan, it's
    **hardware/version specific** — build for the exact SoC + toolchain version.
 
-## Execution providers — the ONNX Runtime abstraction
+## Execution providers: the ONNX Runtime abstraction
 
 If the toolchain is ONNX Runtime-based, backends plug in as **Execution Providers (EPs)**.
 ORT partitions the graph and assigns each subgraph to the **highest-priority EP that can run

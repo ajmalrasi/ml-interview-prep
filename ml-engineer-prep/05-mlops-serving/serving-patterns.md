@@ -62,7 +62,7 @@ In all cases the model is loaded inside a small service — often a REST/gRPC se
 FastAPI, or a dedicated server like TensorFlow Serving / TorchServe / Triton /
 KServe) — packaged in a container so it runs identically everywhere (next page).
 
-## 🔗 Connecting the dots — the real stack
+## 🔗 Connecting the dots: the real stack
 
 **Online:** wrap the model in **FastAPI** or **BentoML**, or use a dedicated server — **Triton**, **TorchServe**, **TF Serving**, or **KServe / Seldon** on Kubernetes, or a managed **SageMaker / Vertex** endpoint. **Batch:** a **Spark** / **Airflow** job writing predictions to a table. **Streaming:** a **Kafka** consumer that scores each event.
 

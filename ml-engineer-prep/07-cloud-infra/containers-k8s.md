@@ -59,7 +59,7 @@ Judgment point: K8s is powerful but heavy. For a small deployment, a managed end
 need fine control, multi-service orchestration, portability across clouds, or you're
 already running it. "Right-size the infrastructure" is a mature thing to say.
 
-## 🔗 Connecting the dots — the real stack
+## 🔗 Connecting the dots: the real stack
 
 The stack is **Docker** images on **Kubernetes**, with **Kubeflow** for ML pipelines and **KServe** or **Seldon** for model serving (autoscaling, canary, scale-to-zero); **Ray** also runs on K8s for distributed train/serve. Managed K8s is **EKS / GKE / AKS**.
 

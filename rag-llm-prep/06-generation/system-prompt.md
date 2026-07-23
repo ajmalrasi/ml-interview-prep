@@ -20,7 +20,7 @@ SYSTEM_PROMPT = (
 )
 ```
 
-## Breaking it down — every sentence matters
+## Breaking it down: every sentence matters
 
 **"Answer ONLY from the numbered context passages provided."**
 This is the anti-hallucination instruction. Claude has vast training knowledge

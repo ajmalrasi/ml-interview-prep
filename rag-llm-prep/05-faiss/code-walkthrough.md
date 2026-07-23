@@ -1,4 +1,4 @@
-# FAISS Code Walkthrough — Phase 1
+# FAISS Code Walkthrough: Phase 1
 
 **TL;DR:** The `FaissVectorStore` class wraps FAISS and keeps a parallel list
 of chunks. FAISS handles the math; the class handles the mapping back to

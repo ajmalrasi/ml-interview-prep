@@ -40,7 +40,7 @@ sensible default for most teams is *"use the managed platform to move fast, drop
 custom infra only where you have a specific need it can't meet."* Being able to reason
 about this trade-off is more valuable than knowing every service name.
 
-## 🔗 Connecting the dots — the real stack
+## 🔗 Connecting the dots: the real stack
 
 Beyond the three clouds, **Databricks** is the cross-cloud **lakehouse** ML platform (Delta + Unity Catalog + **MLflow**, which it created). The recurring build-vs-buy choice is managed platform (SageMaker / Vertex / Databricks) versus assembling open source (**MLflow + Feast + Kubeflow + KServe + Evidently**) on raw compute.
 

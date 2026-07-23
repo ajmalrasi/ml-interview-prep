@@ -1,4 +1,4 @@
-# LoRA, QLoRA, PEFT, RLHF — Four Different Things, Often Conflated
+# LoRA, QLoRA, PEFT, RLHF: Four Different Things, Often Conflated
 
 **TL;DR:** PEFT is the umbrella (train few parameters). LoRA is one PEFT
 method (small adapter matrices on a frozen base). QLoRA is LoRA on a

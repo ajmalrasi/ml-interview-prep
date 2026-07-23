@@ -32,7 +32,7 @@ lowering per-frame latency (it may even rise slightly from buffering).
 </div>
 ```
 
-## Multi-core scaling — why it's sublinear
+## Multi-core scaling: why it's sublinear
 
 Adding cores/blocks rarely gives linear speedup:
 

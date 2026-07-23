@@ -1,4 +1,4 @@
-# 03 — Low-Latency Inference
+# 03: Low-Latency Inference
 
 **TL;DR:** This is your home turf (TensorRT, ONNX, INT8/FP16, Jetson). The job is
 to turn a trained model into the fastest possible stable inference, and to *know

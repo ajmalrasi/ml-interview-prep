@@ -1,4 +1,4 @@
-# Retrieval — Interview Questions
+# Retrieval: Interview Questions
 
 ## Q: FAISS vs Pinecone / Weaviate / Qdrant?
 
@@ -29,7 +29,7 @@ optimization.
 
 ---
 
-## Q: Exact vs approximate search — when does the tradeoff matter?
+## Q: Exact vs approximate search: when does the tradeoff matter?
 
 At ~100k+ vectors, exact search starts to feel slow for interactive use
 (>50ms). ANN (approximate nearest neighbor) indexes like HNSW return results

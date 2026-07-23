@@ -41,7 +41,7 @@ Tuning produces dozens or hundreds of runs, so you log each config and its score
 an experiment tracker (section 4) — otherwise you can't reproduce the winner or know
 why it won.
 
-## 🔗 Connecting the dots — the real stack
+## 🔗 Connecting the dots: the real stack
 
 **Optuna** is the popular Bayesian/pruning library; **Ray Tune** parallelizes big searches; **W&B Sweeps** and the **SageMaker / Vertex** built-in tuners do it as a managed service. Every trial's config and score is logged to the experiment tracker so the winner is reproducible.
 

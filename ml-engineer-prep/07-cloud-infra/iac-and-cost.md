@@ -47,7 +47,7 @@ latency — a number to design against. I default to batch and autoscaling, use 
 training with checkpointing, and only run always-on GPU endpoints when the product truly
 needs real-time."* Cost-awareness signals someone who's run real systems, not just demos.
 
-## 🔗 Connecting the dots — the real stack
+## 🔗 Connecting the dots: the real stack
 
 Infra-as-code is **Terraform** (or Pulumi / CloudFormation); node autoscaling uses **Karpenter** or the cluster-autoscaler; cost visibility is **Kubecost** or native cloud cost tools. Training runs on **spot / preemptible** instances with checkpointing to object storage.
 

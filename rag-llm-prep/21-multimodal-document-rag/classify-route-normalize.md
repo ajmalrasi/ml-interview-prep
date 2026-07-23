@@ -1,4 +1,4 @@
-# The Design — Classify, Route, Normalize
+# The Design: Classify, Route, Normalize
 
 **TL;DR:** classify each document cheaply, route it to the right extractor,
 normalize everything into the same `Document` shape — and the rest of the

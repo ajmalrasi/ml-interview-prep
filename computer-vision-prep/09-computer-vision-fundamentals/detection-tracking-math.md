@@ -6,7 +6,7 @@ detectors propose boxes), **mAP** (how accuracy is scored), and **trackers** (Ka
 for motion, IoU/Hungarian for association, DeepSORT for appearance). This is the
 math you put *on top of* the ML team's models.
 
-## IoU — Intersection over Union
+## IoU: Intersection over Union
 
 The fundamental box-overlap metric:
 
@@ -27,7 +27,7 @@ cliff around 0.5 — that single threshold decides whether a detection counts as
 Used everywhere: NMS, matching detections to ground truth (mAP), and associating
 detections to tracks frame-to-frame.
 
-## NMS — Non-Maximum Suppression
+## NMS: Non-Maximum Suppression
 
 Detectors output many overlapping boxes for one object. NMS keeps the best:
 1. Sort boxes by confidence.
@@ -47,7 +47,7 @@ Result: one box per object. **Soft-NMS** decays scores instead of hard-removing
 - **YOLO:** single-shot, grid-based, real-time — the standard for live video. Know
   it's one forward pass → fast, which is why it dominates streaming inference.
 
-## mAP — mean Average Precision (how detection is scored)
+## mAP: mean Average Precision (how detection is scored)
 
 - **Precision** = TP / (TP+FP) — of what I flagged, how much was right.
 - **Recall** = TP / (TP+FN) — of what existed, how much I caught.

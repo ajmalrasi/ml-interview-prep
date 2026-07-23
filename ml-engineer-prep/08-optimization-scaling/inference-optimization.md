@@ -53,7 +53,7 @@ bottleneck** (is it the model, the preprocessing, the network, the batching wait
 attack the biggest number — rather than optimizing what you assume is slow. "I profile
 first" is always the right thing to say.
 
-## 🔗 Connecting the dots — the real stack
+## 🔗 Connecting the dots: the real stack
 
 Serving optimizers: **Triton** (dynamic batching, multi-framework) and **TensorRT / ONNX Runtime** for classic models; **vLLM** and **TGI** for LLMs (paged KV-cache, continuous batching); **Redis** for caching hot inputs/embeddings; autoscaling via **KServe**.
 

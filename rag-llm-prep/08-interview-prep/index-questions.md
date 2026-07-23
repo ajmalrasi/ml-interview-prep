@@ -1,11 +1,11 @@
-# Index Types & Vector DBs — Interview Questions
+# Index Types & Vector DBs: Interview Questions
 
 These are the Phase 2 / 2b depth questions. The pattern interviewers probe:
 not "did you use FAISS?" but "why *this* index, and how did you know?"
 
 ---
 
-## Q: Flat vs IVF vs HNSW vs PQ — when do you use each?
+## Q: Flat vs IVF vs HNSW vs PQ: when do you use each?
 
 All four live at the same pipeline stage — the **Index** box — and answer the
 same question ("nearest vectors to this one"), differently:
@@ -55,7 +55,7 @@ number you can defend and a number that evaporates in production.
 
 ---
 
-## Q: So which index does your real pipeline use — and why?
+## Q: So which index does your real pipeline use: and why?
 
 **Flat.** The corpus is a few dozen chunks; exact search returns in well under
 a millisecond. Choosing HNSW there would be premature optimization — extra
@@ -81,7 +81,7 @@ is turnable without re-ingesting.
 
 ---
 
-## Q: Why does IVF/IVFPQ "train on add" — and what can go wrong?
+## Q: Why does IVF/IVFPQ "train on add": and what can go wrong?
 
 IVF must first learn where the clusters *are* (k-means over your vectors)
 before it can assign anything to them. So the store trains on the first
@@ -91,7 +91,7 @@ later, the old centroids quietly degrade recall — you re-train to fix it.
 
 ---
 
-## Q: FAISS vs Qdrant — why did you add a second backend?
+## Q: FAISS vs Qdrant: why did you add a second backend?
 
 Not for speed — for **operations**. FAISS is a library inside one process:
 each API replica needs its own copy of the index in memory, and a flat index

@@ -1,4 +1,4 @@
-# The Code Seams — Where Each Defense Slots In
+# The Code Seams: Where Each Defense Slots In
 
 **TL;DR:** none of the five defenses exist in `docsmind/` yet, but each has
 a precise insertion point — and `config.py` already established the pattern

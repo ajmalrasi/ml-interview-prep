@@ -1,4 +1,4 @@
-# The Problem and the Fix — Searching With the Wrong Shape of Text
+# The Problem and the Fix: Searching With the Wrong Shape of Text
 
 **TL;DR:** we currently embed the *question* and hunt for nearby chunks. But
 the index is full of *answer-shaped* text. HyDE bridges the gap by embedding a

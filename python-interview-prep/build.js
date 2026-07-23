@@ -266,7 +266,7 @@ function homeCards(){
 }
 const HOME_HERO =
   '<div class="hero"><span class="hero-badge">Python · Learn first, then practise</span>'+
-  '<div class="hero-title">Python Interview Prep — From “What Is map?” to Senior-Level Answers</div>'+
+  '<div class="hero-title">Python Interview Prep: From “What Is map?” to Senior-Level Answers</div>'+
   '<p class="hero-sub">A chapter-by-chapter course in the Python ideas interviewers probe: map / filter / reduce, '+
   'names and objects, mutability, closures, iterators, generators, the object model, concurrency, '+
   'resource safety and production habits. Lessons first; worked examples, recall cards, coding practice '+
@@ -306,7 +306,7 @@ const HTML =
 '<meta charset="utf-8">\n' +
 '<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">\n' +
 '<meta name="theme-color" content="#3b82f6">\n' +
-'<title>Python Interview Prep — Learn, Practise, Interview</title>\n' +
+'<title>Python Interview Prep: Learn, Practise, Interview</title>\n' +
 '<style>\n' + CSS + '\n</style>\n</head>\n<body>\n' +
 '<div class="app">\n' +
 '  <aside class="sidebar" id="sidebar">\n' +

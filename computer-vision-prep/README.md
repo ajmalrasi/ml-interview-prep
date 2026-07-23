@@ -1,4 +1,4 @@
-# AI Data Scientist (Video Intelligence) — Learning Path
+# AI Data Scientist (Video Intelligence): Learning Path
 
 Everything you need for the **AI Data Scientist** interview — CCTV-based video
 intelligence in Abu Dhabi — in the order to study it. Read **top to bottom the

@@ -16,7 +16,7 @@ const { D, DIAGRAMS, SECTIONS, fig } = require("./_diagrams.js");
 const SITE = [
   { label:"Start here", items:[
     { dir:"", file:"README.md", title:"Overview & How to Use" },
-    { dir:"", file:"idfc-ml-engineer-path.md", title:"IDFC ML Engineer — 2-Day Path" },
+    { dir:"", file:"idfc-ml-engineer-path.md", title:"IDFC ML Engineer: 2-Day Path" },
   ]},
   { label:"1 · ML Foundations", dir:"01-ml-foundations", items:[
     { file:"README.md", title:"Overview" },
@@ -91,7 +91,7 @@ const SITE = [
   { label:"11 · Drill Bank", dir:"11-drill-bank", items:[
     { file:"README.md", title:"Overview" },
     { file:"drill-bank.md", title:"Rapid Q&A", quiz:true },
-    { file:"decision-tradeoffs.md", title:"Decision Tradeoffs — Why X over Y" },
+    { file:"decision-tradeoffs.md", title:"Decision Tradeoffs: Why X over Y" },
     { file:"cheat-sheet.md", title:"One-Page Cheat Sheet" },
   ]},
   { label:"12 · NVIDIA Model Optimization", dir:"12-nvidia-model-optimization", items:[
@@ -104,7 +104,7 @@ const SITE = [
     { file:"sparsity-pruning-distillation.md", title:"Sparsity, Pruning & Distillation" },
     { file:"llm-inference.md", title:"LLM Inference Optimization" },
     { file:"experiment-walkthrough.md", title:"Experiment Walkthrough (Your Project)" },
-    { file:"interview-qa.md", title:"Interview Q&A — Rapid Fire", quiz:true },
+    { file:"interview-qa.md", title:"Interview Q&A: Rapid Fire", quiz:true },
   ]},
   { label:"13 · LLM & VLM Optimization", dir:"13-llm-vlm-optimization", items:[
     { file:"README.md", title:"Overview" },
@@ -114,7 +114,7 @@ const SITE = [
     { file:"serving-architecture.md", title:"Serving Architecture (Internal Deployment)" },
     { file:"vlm-optimization.md", title:"VLM Optimization" },
     { file:"experiment-redo.md", title:"Experiment Redo (Your Project as LLM/VLM)" },
-    { file:"interview-qa.md", title:"Interview Q&A — LLM & VLM", quiz:true },
+    { file:"interview-qa.md", title:"Interview Q&A: LLM & VLM", quiz:true },
   ]},
 ];
 
@@ -309,7 +309,7 @@ function homeCards(){
 }
 const HOME_HERO =
   '<div class="hero"><span class="hero-badge">AI / ML Engineer</span>'+
-  '<div class="hero-title">ML on the Cloud — Interview Prep</div>'+
+  '<div class="hero-title">ML on the Cloud: Interview Prep</div>'+
   '<p class="hero-sub">The whole ML lifecycle: data pipelines, model development, experimentation, '+
   'and deploying &amp; monitoring models in production with MLOps — plus cloud infra, optimization, '+
   'and generative AI. Eleven chapters and a drill bank.</p></div>';
@@ -348,7 +348,7 @@ const HTML =
 '<meta charset="utf-8">\n' +
 '<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">\n' +
 '<meta name="theme-color" content="#3b82f6">\n' +
-'<title>AI / ML Engineer — Interview Prep</title>\n' +
+'<title>AI / ML Engineer: Interview Prep</title>\n' +
 '<style>\n' + CSS + '\n</style>\n</head>\n<body>\n' +
 '<div class="app">\n' +
 '  <aside class="sidebar" id="sidebar">\n' +

@@ -1,4 +1,4 @@
-# 17 — FastAPI & HTTP Semantics: GET vs POST (real code)
+# 17: FastAPI & HTTP Semantics: GET vs POST (real code)
 
 **The big idea:** HTTP methods aren't interchangeable labels — each one is a
 promise that browsers, caches, proxies, and load balancers rely on. `/health`

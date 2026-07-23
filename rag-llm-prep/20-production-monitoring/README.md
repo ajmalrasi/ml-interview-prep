@@ -1,4 +1,4 @@
-# 20 — Production Monitoring: Cost, Latency, Quality, Drift (concept, Phase 7)
+# 20: Production Monitoring: Cost, Latency, Quality, Drift (concept, Phase 7)
 
 **The big idea:** monitoring wraps the **entire** pipeline as a
 cross-cutting concern — instrumentation *on* every stage, not a stage
@@ -28,6 +28,7 @@ normal backend.
 | File | What it covers |
 |------|----------------|
 | [four-signals.md](four-signals.md) | Cost, latency, quality, drift — why each is a different axis with different tooling |
+| [inference-observability.md](inference-observability.md) | Gateway-to-GPU metrics, Prometheus label discipline, Grafana dashboards, and SLO alerts |
 | [wiring-it-in.md](wiring-it-in.md) | What DocsMind measures today, the exact seams for Langfuse/RAGAS, and fire-testing the monitoring itself |
 
 ## 🎯 Interview Q&A

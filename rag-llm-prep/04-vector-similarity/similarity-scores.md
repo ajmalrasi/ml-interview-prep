@@ -1,4 +1,4 @@
-# Similarity Scores — How to Read Them
+# Similarity Scores: How to Read Them
 
 **TL;DR:** Cosine similarity returns a number between -1.0 and 1.0.
 For normalized text embeddings you'll typically see 0.0 to 1.0 in practice.

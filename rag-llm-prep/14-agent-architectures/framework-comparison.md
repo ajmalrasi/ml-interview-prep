@@ -1,4 +1,4 @@
-# Framework Comparison — Four Tools, Four Different Layers
+# Framework Comparison: Four Tools, Four Different Layers
 
 **TL;DR:** LlamaIndex, LangChain, LangGraph, and CrewAI solve different
 layers of the stack. Comparing them head-to-head is a category error — and

@@ -1,4 +1,4 @@
-# Map, Filter and Reduce — One Data Flow, Three Jobs
+# Map, Filter and Reduce: One Data Flow, Three Jobs
 
 These functions come from functional programming, but you do not need functional-programming theory to understand them. Imagine values moving through a pipeline.
 

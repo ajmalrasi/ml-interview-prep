@@ -207,7 +207,7 @@ NVDEC + DeepStream territory. Know which side of that line a given problem is on
 
 ---
 
-## How they fit together — the KoiReader path
+## How they fit together: the KoiReader path
 
 ```fig:koiPath
 RTSP in from cameras, GStreamer + DeepStream in the middle, WebRTC out to people

@@ -1,4 +1,4 @@
-# GET vs POST — Semantics, Not Convention
+# GET vs POST: Semantics, Not Convention
 
 **TL;DR:** GET promises "reading this changes nothing," which makes it safe
 to cache, prefetch, and retry. POST promises nothing of the sort. `/health`

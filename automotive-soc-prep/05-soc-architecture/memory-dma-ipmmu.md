@@ -34,7 +34,7 @@ consequences:
   against total DRAM bandwidth. A model can be "compute-cheap" and still not fit the
   bandwidth budget.
 
-## DMA — moving data without the CPU
+## DMA: moving data without the CPU
 
 A **DMA (Direct Memory Access)** engine copies memory block-to-block (DRAM↔SRAM,
 block↔block) **without the CPU doing the copy**. Two things to know:
@@ -64,7 +64,7 @@ round-trips at partition boundaries (see
 [operator mapping](../01-embedded-accelerators/operator-mapping-offload.md)), synchronous
 (non-overlapped) DMA, or **layout conversions** copying data just to reshape it.
 
-## IPMMU — the accelerator's MMU
+## IPMMU: the accelerator's MMU
 
 The **IPMMU (IP Memory Management Unit)**, a.k.a. **SMMU/System MMU**, is an MMU **for the
 non-CPU masters** (NPU, DSP, DMA engines). It:

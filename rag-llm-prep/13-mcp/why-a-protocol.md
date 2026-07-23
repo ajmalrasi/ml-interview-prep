@@ -1,4 +1,4 @@
-# Why a Protocol — The Duplication Problem MCP Solves
+# Why a Protocol: The Duplication Problem MCP Solves
 
 **TL;DR:** without a standard, every tool integration is bespoke glue,
 rewritten per project and unusable by anyone else's agent. MCP separates

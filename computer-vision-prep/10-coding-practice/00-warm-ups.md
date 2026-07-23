@@ -1,4 +1,4 @@
-# Warm-ups — start here
+# Warm-ups: start here
 
 **TL;DR:** Tiny, friendly exercises to build muscle memory *before* the real
 problems. Each one has a **worked example** you run to see what happens, then a
@@ -11,7 +11,7 @@ hidden solution.
 
 ---
 
-## Warm-up 1 — Read an image and look at it
+## Warm-up 1: Read an image and look at it
 
 An image in OpenCV is just a NumPy array of pixels. `cv2.imread` loads it; the
 `show()` helper (from the setup cell) displays it inline.
@@ -33,7 +33,7 @@ show(my_image, "my first read")
 
 ---
 
-## Warm-up 2 — Dimensions and a single pixel
+## Warm-up 2: Dimensions and a single pixel
 
 `image.shape` is `(height, width, channels)`. To read one pixel you index
 `image[row, column]` — that's `[y, x]`, **not** `[x, y]`. Each pixel is `[B, G, R]`.
@@ -58,7 +58,7 @@ print("width:", image.shape[1])
 
 ---
 
-## Warm-up 3 — Convert to grayscale
+## Warm-up 3: Convert to grayscale
 
 Most processing starts by dropping color. A grayscale image has **one** channel, so
 its shape loses the last number.
@@ -81,7 +81,7 @@ show(gray, "grayscale")
 
 ---
 
-## Warm-up 4 — Crop a region (array slicing)
+## Warm-up 4: Crop a region (array slicing)
 
 Cropping is just slicing the array: `image[y1:y2, x1:x2]` — **rows first, then
 columns**. This trips everyone up at least once.
@@ -105,7 +105,7 @@ show(center_crop, "center 200x200")
 
 ---
 
-## Warm-up 5 — Resize
+## Warm-up 5: Resize
 
 `cv2.resize` either scales by a factor (`fx`, `fy`) or to an exact `(width, height)`.
 
@@ -127,7 +127,7 @@ show(square, "200x200")
 
 ---
 
-## Warm-up 6 — Draw a box and a label
+## Warm-up 6: Draw a box and a label
 
 Drawing happens **in place**, so copy first if you want to keep the original.
 Coordinates are `(x, y)` and colors are `(B, G, R)`.
@@ -152,7 +152,7 @@ show(canvas, "top half boxed")
 
 ---
 
-## Warm-up 7 — Split the color channels
+## Warm-up 7: Split the color channels
 
 `cv2.split` separates the image into its Blue, Green, and Red channels, each a
 single-channel (gray) image.
@@ -175,7 +175,7 @@ show(image, "red removed")
 
 ---
 
-## Warm-up 8 — Your first mask (threshold)
+## Warm-up 8: Your first mask (threshold)
 
 Thresholding turns a gray image into pure black/white: every pixel becomes 0 or 255
 depending on whether it's above a cutoff. This is the foundation of Problem 1.
@@ -197,7 +197,7 @@ show(mask, "threshold at 100")
 
 ---
 
-## Warm-up 9 — Blur
+## Warm-up 9: Blur
 
 Blurring averages each pixel with its neighbours. Bigger kernel = blurrier. You'll
 blur before thresholding and edge detection to kill noise.
@@ -218,7 +218,7 @@ show(cv2.GaussianBlur(image, (31, 31), 0), "blurred (31x31 kernel)")
 
 ---
 
-## Warm-up 10 — NumPy basics (no OpenCV)
+## Warm-up 10: NumPy basics (no OpenCV)
 
 Since every image *is* a NumPy array, the array tricks below — shape, `.mean()`,
 boolean masks — are exactly what powers the "vectorize it" problems later.

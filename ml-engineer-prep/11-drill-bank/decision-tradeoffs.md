@@ -1,4 +1,4 @@
-# Decision Tradeoffs — "Why X over Y"
+# Decision Tradeoffs: "Why X over Y"
 
 **TL;DR:** Interviewers rarely ask "what is X" — they ask *"X or Y, and why?"* The strong
 answer always names the **one axis the decision turns on**, picks the **simpler/cheaper

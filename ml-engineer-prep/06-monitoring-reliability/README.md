@@ -1,4 +1,4 @@
-# 6 — Monitoring & Reliability
+# 6: Monitoring & Reliability
 
 **TL;DR:** A deployed model isn't done — it's a liability you have to watch. Unlike
 regular software, a model can **silently get worse** while every server stays green,

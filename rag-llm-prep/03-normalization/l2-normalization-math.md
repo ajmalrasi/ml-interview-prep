@@ -1,4 +1,4 @@
-# L2 Normalization — Step by Step
+# L2 Normalization: Step by Step
 
 **TL;DR:** Divide each number in the vector by the vector's total length, so
 the new length becomes exactly 1.0.

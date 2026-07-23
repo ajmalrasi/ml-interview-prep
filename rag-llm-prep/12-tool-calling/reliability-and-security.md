@@ -1,4 +1,4 @@
-# Reliability and Security — Where the Real Work Is
+# Reliability and Security: Where the Real Work Is
 
 **TL;DR:** the API plumbing is easy. The hard part is the model emitting
 well-formed arguments that match your schema, every single time — and not

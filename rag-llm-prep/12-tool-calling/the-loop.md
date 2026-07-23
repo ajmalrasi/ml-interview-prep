@@ -1,4 +1,4 @@
-# The Loop — From One-Shot Retrieval to Model-Driven Requests
+# The Loop: From One-Shot Retrieval to Model-Driven Requests
 
 **TL;DR:** today your code decides *once* what context the model gets, before
 the LLM ever runs. Tool calling hands the model a menu of functions it may

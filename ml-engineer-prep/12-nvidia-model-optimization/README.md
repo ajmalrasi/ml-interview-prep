@@ -1,4 +1,4 @@
-# 12 — NVIDIA Model Optimization
+# 12: NVIDIA Model Optimization
 
 **TL;DR:** A focused deep-dive for an **NVIDIA model-optimization interview**. Section 8
 covers optimization at ML-engineer altitude; this section goes to the level NVIDIA

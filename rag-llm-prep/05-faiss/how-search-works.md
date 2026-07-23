@@ -1,4 +1,4 @@
-# How FAISS Search Works — Step by Step
+# How FAISS Search Works: Step by Step
 
 **TL;DR:** You hand FAISS a query vector and k. It returns the k most similar
 vectors (by inner product) and their positions. You use positions to look up

@@ -59,7 +59,7 @@ weekly cycles, ignoring **novelty effects** (users react to *any* change at firs
 forgetting **guardrail metrics** (a model that lifts clicks but tanks latency or revenue
 is not a win).
 
-## 🔗 Connecting the dots — the real stack
+## 🔗 Connecting the dots: the real stack
 
 Live experiments run through a feature-flag / experimentation platform — **Optimizely**, **Statsig**, **LaunchDarkly**, or **GrowthBook** — which handles the traffic split and significance math; ad-hoc stats use **scipy** / **statsmodels**. The model itself is served behind a flag so you can ramp or roll back instantly (ties to canary in §5).
 

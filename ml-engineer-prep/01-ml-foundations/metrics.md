@@ -59,7 +59,7 @@ counts is a **business** one — click-through, revenue, retention — measured 
 test (section 4). A model can improve F1 and still lose money; always tie the offline
 metric back to a business outcome.
 
-## 🔗 Connecting the dots — the real stack
+## 🔗 Connecting the dots: the real stack
 
 Compute these with **scikit-learn** (`sklearn.metrics`), **torchmetrics**, or HuggingFace **evaluate**, and log them per run in **MLflow / W&B**. The *business* metric that ultimately decides shipping is measured by an experimentation platform (**Optimizely / Statsig**) via an A/B test, not offline.
 

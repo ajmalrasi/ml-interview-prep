@@ -1,4 +1,4 @@
-# 07 — Q&A Drill Bank
+# 07: Q&A Drill Bank
 
 Every "why X over Y" and rapid-fire question for this role, in docs_mind cheat-sheet
 style. Two files:

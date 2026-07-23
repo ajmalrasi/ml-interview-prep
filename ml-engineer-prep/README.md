@@ -1,4 +1,4 @@
-# AI / ML Engineer — Interview Prep
+# AI / ML Engineer: Interview Prep
 
 **TL;DR:** This pack covers the whole job: taking a machine-learning idea from raw
 data all the way to a model running, and being *watched*, in production on the

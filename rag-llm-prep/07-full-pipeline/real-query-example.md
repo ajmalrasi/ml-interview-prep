@@ -1,4 +1,4 @@
-# Real Query Example — End to End
+# Real Query Example: End to End
 
 **TL;DR:** One question traced through every single step, with the *actual*
 values measured from the running system (space corpus, local model).

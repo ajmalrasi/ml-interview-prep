@@ -1,4 +1,4 @@
-# Python Interview Cheat Sheet — Morning Of
+# Python Interview Cheat Sheet: Morning Of
 
 ## The answer you need immediately
 

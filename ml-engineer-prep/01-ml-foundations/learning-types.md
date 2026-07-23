@@ -50,7 +50,7 @@ strongest default. I only reach for deep learning when I have unstructured data
 (images, text) or very large datasets where learned features beat hand-crafted ones."*
 That single sentence signals real-world judgment over hype.
 
-## 🔗 Connecting the dots — the real stack
+## 🔗 Connecting the dots: the real stack
 
 Each family has a go-to library: **scikit-learn** for classical models, **XGBoost / LightGBM** for boosting, **PyTorch** and **TensorFlow/Keras** for deep learning, and **HuggingFace** for pretrained text/vision models. Reinforcement learning uses **RLlib** or **Stable-Baselines3**; RLHF for LLMs uses **TRL**.
 

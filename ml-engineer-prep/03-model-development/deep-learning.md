@@ -56,7 +56,7 @@ The headline: **Transformers** replaced RNNs for most sequence work and underpin
 LLMs (section 9), because **attention** lets the model relate any two positions directly
 and trains in parallel rather than step by step.
 
-## 🔗 Connecting the dots — the real stack
+## 🔗 Connecting the dots: the real stack
 
 **PyTorch** is the research/industry default (often via **PyTorch Lightning** to remove boilerplate); **TensorFlow / Keras** is still common in production; **HuggingFace Transformers** is where you get pretrained models to fine-tune. Data loading uses framework `DataLoader`s, and training runs on GPU instances in the cloud.
 

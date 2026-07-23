@@ -1,4 +1,4 @@
-# 01 — Video Streaming Fundamentals
+# 01: Video Streaming Fundamentals
 
 The JD's #1 requirement: *"Deep expertise in video streaming protocols (RTSP,
 WebRTC, FastRTC) and processing tools (FFmpeg, GStreamer). You know how to handle

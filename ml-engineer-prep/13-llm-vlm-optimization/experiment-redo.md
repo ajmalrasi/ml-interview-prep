@@ -1,4 +1,4 @@
-# Experiment Redo — Your Project as an LLM/VLM
+# Experiment Redo: Your Project as an LLM/VLM
 
 **TL;DR:** Take the exact structure of your FashionMNIST notebook and re-cast it for an LLM,
 then a VLM. Same skeleton — baseline, quantized variants, one compare table, everything
@@ -12,7 +12,7 @@ your project to *our* models" answer.
 > TensorRT-LLM, and top-1 for perplexity and tokens/sec — and a VLM is just my CNN skills on
 > the vision tower plus that LLM loop on the decoder."
 
-## LLM redo — the compare table
+## LLM redo: the compare table
 
 Keep your six-row idea; change the axes. Baseline FP16, then walk method × engine:
 
@@ -51,7 +51,7 @@ Keep your six-row idea; change the axes. Baseline FP16, then walk method × engi
 - **No training:** start from a checkpoint; QLoRA is the only "training," and it's tiny.
 - **New axis:** KV-cache precision — a lever your CNN never had.
 
-## VLM redo — add two rows
+## VLM redo: add two rows
 
 A VLM table = the LLM table **plus** the vision side (your home turf):
 

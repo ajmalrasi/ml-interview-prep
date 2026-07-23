@@ -1,4 +1,4 @@
-# Hybrid Retrieval — dense + BM25 + reranking (Phase 3)
+# Hybrid Retrieval: dense + BM25 + reranking (Phase 3)
 
 **TL;DR:** Phase 1 searched one way (by meaning). Phase 3 searches two ways
 (meaning + exact words), combines them fairly, then double-checks the top few
@@ -28,7 +28,7 @@ Phase 3 only touches the **Search** stage. Nothing before or after changes.
 
 ## The three pieces, in plain words
 
-### 1. BM25 — search by exact words
+### 1. BM25: search by exact words
 
 Dense search (Phase 1) finds chunks that *mean* the same thing, even with no
 shared words. Its weakness: **rare exact terms get blurred.** An embedding
@@ -46,7 +46,7 @@ filled in.
 
 Code: [`bm25.py`](../../docsmind/retrieval/bm25.py)
 
-### 2. Reciprocal Rank Fusion (RRF) — combine the two lists fairly
+### 2. Reciprocal Rank Fusion (RRF): combine the two lists fairly
 
 Now you have two ranked lists, but their scores live on **different scales**:
 dense cosine is ~0–1, BM25 is an unbounded sum. You **cannot just add them** —
@@ -69,7 +69,7 @@ list can't dominate. No per-corpus tuning needed — that's the appeal.
 
 Code: [`fusion.py`](../../docsmind/retrieval/fusion.py)
 
-### 3. Cross-encoder reranker — double-check the top few
+### 3. Cross-encoder reranker: double-check the top few
 
 The embedder is a **bi-encoder**: it encodes the question and each chunk
 *separately*, then compares vectors. Fast (chunks pre-computed once), but the

@@ -95,7 +95,7 @@ the actual bottleneck, prefill and KV, harder than quantizing the decoder."*
 - **Two calibration domains** — the vision encoder wants image calibration data; the decoder
   wants text/multimodal calibration.
 
-## 🔗 Connecting the dots — the real stack
+## 🔗 Connecting the dots: the real stack
 
 Vision tower: **TensorRT** INT8/FP8 (your CV toolchain). Decoder: **TensorRT-LLM / vLLM** with
 AWQ/FP8 + KV-quant. Multimodal serving increasingly handled by **vLLM** and **TensorRT-LLM**'s

@@ -1,4 +1,4 @@
-# 07 — Full Pipeline
+# 07: Full Pipeline
 
 **The big idea:** Every piece we've studied connects into one flow. A document
 goes in at ingest time and a grounded answer with citations comes out at query
@@ -55,7 +55,7 @@ e.g. 0.60 before passing to the LLM.
 
 RAG is the right default for "chat with your docs" use cases.
 
-## Code — key files
+## Code: key files
 
 | File | Role |
 |------|------|

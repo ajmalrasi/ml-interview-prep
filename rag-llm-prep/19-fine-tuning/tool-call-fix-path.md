@@ -1,4 +1,4 @@
-# The Roadmap Case — Fixing Tool Calls, in Cost Order
+# The Roadmap Case: Fixing Tool Calls, in Cost Order
 
 **TL;DR:** DocsMind's planned open-model swap will break tool-call
 reliability. The fix path is a strict cost ladder: prompting → constrained

@@ -12,7 +12,7 @@ Copy that one file anywhere and it works offline. The other files (`_site.css`,
 `_app.js`, `_diagrams.js`, `build.js`, and the `.md` sources) are only needed if
 you want to **edit the content and rebuild**.
 
-## Option 1 — Python (already on every Pi), 30 seconds
+## Option 1: Python (already on every Pi), 30 seconds
 
 ```bash
 cd /path/to/docs_mind/docs
@@ -22,7 +22,7 @@ python3 -m http.server 9001
 Then open **http://localhost:9001** on the Pi, or **http://<pi-ip>:9001** from your
 laptop or phone on the same network (find the IP with `hostname -I`).
 
-## Option 2 — Always-on with systemd (survives reboot)
+## Option 2: Always-on with systemd (survives reboot)
 
 ```bash
 sudo tee /etc/systemd/system/docsmind-site.service >/dev/null <<'EOF'

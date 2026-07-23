@@ -1,4 +1,4 @@
-# Benchmark Results — Flat vs IVF vs HNSW vs IVFPQ (real numbers)
+# Benchmark Results: Flat vs IVF vs HNSW vs IVFPQ (real numbers)
 
 **Where in the pipeline:** this is the **Index** stage (build time) and the
 **Search** stage (query latency + recall). Nothing else in the pipeline moves.
@@ -39,7 +39,7 @@ vectors, which behave like the embeddings your pipeline actually produces.
 `flat` is the ground truth: its exact top-k *is* the correct answer. Every other
 index is graded on how much of flat's top-k it recovers.
 
-## The headline run — 50,000 vectors, dim 384, top_k=10
+## The headline run: 50,000 vectors, dim 384, top_k=10
 
 ```
 index     recall@k    p50 ms    p95 ms   build ms   mem MB   mem x
@@ -64,7 +64,7 @@ Read it as **what you pay and what you get**:
   short code. The price is recall: 33%. It's a memory play, not an accuracy play
   — you'd use it at billion-scale and re-rank survivors with exact vectors.
 
-## The whole point — flat scales O(N), approximate doesn't
+## The whole point: flat scales O(N), approximate doesn't
 
 Same benchmark at **500,000 vectors** (10× the data):
 
@@ -78,7 +78,7 @@ grows with the corpus; IVF's barely moves. At 50k, flat's 0.78 ms is fine —
 **you would not bother switching.** At millions, flat's tens of milliseconds per
 query is the bottleneck, and IVF/HNSW earn their complexity.
 
-## The gotcha — parameters must scale with N
+## The gotcha: parameters must scale with N
 
 At 500k, IVF's recall *dropped* to ~0.23 with the same settings. Why? `nlist`
 auto-scaled to ~1000 cells, but `nprobe` stayed at 8 — so we searched only

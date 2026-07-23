@@ -26,7 +26,7 @@ Source: https://github.com/ajmalrasi/ml-interview-prep
 
 ---
 
-## Option 1 — Python (already on every Pi), 30 seconds
+## Option 1: Python (already on every Pi), 30 seconds
 
 ```bash
 cd /home/ajmalrasi/ml-interview-prep/computer-vision-prep
@@ -36,7 +36,7 @@ python3 -m http.server 9000
 Then open **http://localhost:9000** on the Pi, or **http://<pi-ip>:9000** from your
 laptop/phone on the same network (find the IP with `hostname -I`).
 
-## Option 2 — Always-on with systemd (survives reboot)
+## Option 2: Always-on with systemd (survives reboot)
 
 Create the service:
 
@@ -65,7 +65,7 @@ koi-prep`. Logs: `journalctl -u koi-prep -f`.
 
 > Adjust `WorkingDirectory` and `User` to where you copied the folder.
 
-## Option 3 — nginx (if you already run it)
+## Option 3: nginx (if you already run it)
 
 ```nginx
 server {

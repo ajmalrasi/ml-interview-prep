@@ -1,4 +1,4 @@
-# LLM Serving Internals — Interview Questions
+# LLM Serving Internals: Interview Questions
 
 ## Beginner answer recipe
 

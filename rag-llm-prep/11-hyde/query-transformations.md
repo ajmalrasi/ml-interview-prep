@@ -1,4 +1,4 @@
-# Query Transformations — HyDE's Siblings (Phase 5 preview)
+# Query Transformations: HyDE's Siblings (Phase 5 preview)
 
 **TL;DR:** HyDE is one member of a family called **query transformations** —
 techniques that rewrite the query *before* search. All of them live at the

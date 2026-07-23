@@ -1,4 +1,4 @@
-# Speculative Decoding — Guess Ahead, Verify in Bulk
+# Speculative Decoding: Guess Ahead, Verify in Bulk
 
 **TL;DR:** generation is one token per forward pass because you can't know
 token N+1 before token N. Speculative decoding cheats with two models: a
@@ -59,7 +59,7 @@ plus its correction at the first mismatch. Tokens after that mismatch are discar
 <div id="speculative-widget"></div>
 ```
 
-## Why speculation over ordinary decode—and when not?
+## Why speculation over ordinary decode: and when not?
 
 | Situation | Choice | Reason |
 |---|---|---|

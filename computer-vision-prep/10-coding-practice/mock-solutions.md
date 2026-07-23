@@ -1,4 +1,4 @@
-# Mock — Solutions (don't peek until you've tried!)
+# Mock: Solutions (don't peek until you've tried!)
 
 **TL;DR:** Reference solutions for the [90-minute mock](mock-test.md). Yours
 doesn't need to match line-for-line — check that outputs are correct, files are
@@ -6,7 +6,7 @@ saved with the right names, and inputs are guarded. All four are tested and runn
 
 ---
 
-## Problem 1 — Label scanner
+## Problem 1: Label scanner
 
 ```python
 import cv2
@@ -59,7 +59,7 @@ solve_p1()
 
 ---
 
-## Problem 2 — Detection post-processing + zone count
+## Problem 2: Detection post-processing + zone count
 
 ```python
 import cv2
@@ -112,7 +112,7 @@ saved with the right colours.
 
 ---
 
-## Problem 3 — Video motion summary
+## Problem 3: Video motion summary
 
 ```python
 import cv2
@@ -167,7 +167,7 @@ solve_p3()
 
 ---
 
-## Problem 4 — Robust batch report
+## Problem 4: Robust batch report
 
 ```python
 import cv2

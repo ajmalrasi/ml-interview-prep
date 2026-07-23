@@ -1,4 +1,4 @@
-# KV Cache — Stop Recomputing What You Already Computed
+# KV Cache: Stop Recomputing What You Already Computed
 
 **TL;DR:** inside attention, each new token looks back at every previous
 token through that token's key and value vectors. Those don't change between
@@ -93,7 +93,7 @@ the card — *before* counting the model weights. Quantize the weights and the
 cache becomes the dominant tenant. This single number explains most serving
 behavior on consumer GPUs.
 
-## PagedAttention — the memory layout fix
+## PagedAttention: the memory layout fix
 
 Naive serving allocates each request's cache as one contiguous block sized
 for the *maximum* possible context — mostly wasted on short requests.

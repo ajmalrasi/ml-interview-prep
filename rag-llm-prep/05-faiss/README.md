@@ -1,4 +1,4 @@
-# 05 — FAISS
+# 05: FAISS
 
 **The big idea:** FAISS is a library that stores vectors and lets you find the
 most similar ones to a query vector — fast. Think of it as a database

@@ -1,4 +1,4 @@
-# 04 — Vector Similarity
+# 04: Vector Similarity
 
 **The big idea:** Once chunks and the query are both vectors, we need a formula
 to say how "close" they are. That formula is cosine similarity. The closer two

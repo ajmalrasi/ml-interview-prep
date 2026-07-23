@@ -1,4 +1,4 @@
-# Real Examples — Chunking Your Docs
+# Real Examples: Chunking Your Docs
 
 **TL;DR:** Here's what the chunker actually does to
 [black_holes.md](../../data/sample_docs/black_holes.md) with

@@ -75,7 +75,7 @@ environment forced a fallback):
 - So you folded QAT weights into a plain model and re-calibrated — a hybrid: weights got QAT's
   benefit, scales came from TRT's calibrator.
 
-## BN folding — why your issue #7b existed
+## BN folding: why your issue #7b existed
 
 TensorRT (and QAT) **fold BatchNorm into the preceding conv**. Since BN is an affine
 `γ·(x−μ)/σ + β` and conv is linear, the two compose into one conv with adjusted weights and bias.
@@ -118,7 +118,7 @@ An engine alone isn't a service. **Triton** wraps it with:
 The production shape: *"TensorRT engine served by Triton with dynamic batching and a couple of
 concurrent instances."* A natural "how would you deploy it" follow-up to your project.
 
-## 🔗 Connecting the dots — the real stack
+## 🔗 Connecting the dots: the real stack
 
 **torch-tensorrt** / `torch.compile` backend and **`trtexec`** (CLI to build+profile
 engines) for classic models; **ONNX Runtime** as the portable alternative; **TensorRT-LLM**

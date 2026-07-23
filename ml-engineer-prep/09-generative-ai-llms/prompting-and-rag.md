@@ -64,7 +64,7 @@ problem is "the model lacks our facts," reach for RAG. If it's "the model won't 
 exact format/tone no matter how I prompt," consider fine-tuning (next page). A common
 mistake is fine-tuning to add facts — RAG is usually the right, cheaper tool for that.
 
-## 🔗 Connecting the dots — the real stack
+## 🔗 Connecting the dots: the real stack
 
 This is the core LLM-app stack. **Orchestration:** **LangChain** or **LlamaIndex** glue the steps. **Embeddings:** OpenAI / Cohere / **sentence-transformers** / **BGE**. **Vector database:** **Pinecone**, **Weaviate**, **Qdrant**, **Chroma**, **pgvector**, or **FAISS** — this is where the retrieval happens. **Chunking + re-ranking** (Cohere Rerank) improve retrieval quality.
 

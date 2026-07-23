@@ -24,7 +24,7 @@ click-through and purchase rate via A/B test.
 - **Interaction data** — the clicks/purchases that are your labels (implicit feedback).
 - Serve these via a **feature store** so training and real-time serving agree (section 2).
 
-## 4. Model — the two-stage design
+## 4. Model: the two-stage design
 
 You can't score millions of items per request in 100ms, so split it:
 
@@ -67,7 +67,7 @@ Precompute item embeddings offline; do candidate retrieval with a **vector/ANN i
 A/B test the online metric, watch drift and engagement over time, and retrain regularly as
 tastes shift.
 
-## 🔗 Connecting the dots — the real stack
+## 🔗 Connecting the dots: the real stack
 
 Concrete pieces: candidate generation is a **two-tower** embedding model with an **ANN index** (**FAISS**, **ScaNN**, or **Vespa** / a vector DB); features come from a **feature store** (Feast); ranking is **XGBoost** or a neural ranker (**DLRM**); serving is **Triton / KServe**; freshness flows through **Kafka**. Everything is tracked in **MLflow** and A/B tested via **Statsig**.
 

@@ -1,4 +1,4 @@
-# Concurrency — Choose by What Is Waiting
+# Concurrency: Choose by What Is Waiting
 
 Do not choose threads, processes, or async by fashion. Classify the work.
 

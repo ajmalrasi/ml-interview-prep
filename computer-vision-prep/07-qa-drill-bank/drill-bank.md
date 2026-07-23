@@ -1,4 +1,4 @@
-# Drill Bank — Rehearse Out Loud
+# Drill Bank: Rehearse Out Loud
 
 Cover the answer, say yours, compare. Grouped by topic. Depth lives in the
 numbered sections; this is for reps.
@@ -296,7 +296,7 @@ streams → process isolation.
 
 ---
 
-## OpenCV / math (your strength — be ready)
+## OpenCV / math (your strength: be ready)
 
 **Q: Color spaces — why does it matter?**
 Decoders output YUV/NV12; models want BGR/RGB. Convert on GPU (nvvidconv) to avoid

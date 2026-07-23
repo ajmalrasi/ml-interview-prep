@@ -1,4 +1,4 @@
-# Interview Q&A — Rapid Fire
+# Interview Q&A: Rapid Fire
 
 **TL;DR:** Last-mile drill for the NVIDIA model-optimization loop. Each answer is the
 30-second spoken version. Questions are grouped the way an interviewer escalates: numerics →

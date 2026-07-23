@@ -10,9 +10,9 @@ one end-to-end system-design story that connects the layers.
 - At the end of each block, write a five-line design or debugging answer from memory.
 - Links marked **RAG site** reuse the deeper LLM-serving lessons instead of duplicating them.
 
-## Day 1 — Models, frameworks, and distributed training
+## Day 1: Models, frameworks, and distributed training
 
-### Block 1: ML judgment — 90 minutes
+### Block 1: ML judgment: 90 minutes
 
 1. [ML Foundations](01-ml-foundations/README.md)
 2. [Evaluation Metrics](01-ml-foundations/metrics.md)
@@ -22,7 +22,7 @@ one end-to-end system-design story that connects the layers.
 **Exit test:** select a model, split strategy, and metric for imbalanced fraud detection
 with time-dependent labels. Name the leakage risks.
 
-### Block 2: Deep learning and framework fluency — 90 minutes
+### Block 2: Deep learning and framework fluency: 90 minutes
 
 1. [Deep Learning Essentials](03-model-development/deep-learning.md)
 2. [PyTorch, TensorFlow & Keras in Practice](03-model-development/frameworks-in-practice.md)
@@ -32,7 +32,7 @@ with time-dependent labels. Name the leakage risks.
 **Exit test:** sketch a safe fine-tuning loop with mixed precision, gradient accumulation,
 checkpointing, validation, experiment tracking, and recovery from OOM.
 
-### Block 3: Scale training across GPUs — 2 hours
+### Block 3: Scale training across GPUs: 2 hours
 
 1. [Training at Scale](03-model-development/training-at-scale.md)
 2. [Distributed Training](08-optimization-scaling/distributed-training.md)
@@ -42,15 +42,15 @@ checkpointing, validation, experiment tracking, and recovery from OOM.
 **Exit test:** compare DDP, FSDP/ZeRO, tensor parallelism, and pipeline parallelism. Diagnose
 a job whose step time doubles when scaling from four to eight GPUs.
 
-### Block 4: LLM inference bridge — 75 minutes
+### Block 4: LLM inference bridge: 75 minutes
 
 1. [Prefill, Decode & Chunked Scheduling — RAG site](http://192.168.3.20:9001/#15-llm-serving-internals/prefill-decode-scheduling.md)
 2. [KV Cache — RAG site](http://192.168.3.20:9001/#15-llm-serving-internals/kv-cache.md)
 3. [vLLM in Production — RAG site](http://192.168.3.20:9001/#15-llm-serving-internals/vllm-production.md)
 
-## Day 2 — Data, MLOps, cloud, and system design
+## Day 2: Data, MLOps, cloud, and system design
 
-### Block 5: Large-scale data pipelines — 90 minutes
+### Block 5: Large-scale data pipelines: 90 minutes
 
 1. [Data Pipelines overview](02-data-pipelines/README.md)
 2. [Spark & Hadoop at Scale](02-data-pipelines/spark-hadoop-at-scale.md)
@@ -60,7 +60,7 @@ a job whose step time doubles when scaling from four to eight GPUs.
 **Exit test:** debug a Spark feature job with skewed joins, executor OOMs, too many small
 files, and train/serve skew.
 
-### Block 6: Production MLOps — 2 hours
+### Block 6: Production MLOps: 2 hours
 
 1. [Experiment Tracking](04-experimentation/experiment-tracking.md)
 2. [Packaging, Registry & Versioning](05-mlops-serving/packaging-and-registry.md)
@@ -71,14 +71,14 @@ files, and train/serve skew.
 **Exit test:** describe the path from a Git commit and data snapshot to a canary model,
 automatic rollback, lineage in MLflow, and a controlled retraining trigger.
 
-### Block 7: Cloud and Kubernetes — 90 minutes
+### Block 7: Cloud and Kubernetes: 90 minutes
 
 1. [AWS / GCP / Azure ML Stacks](07-cloud-infra/cloud-ml-stacks.md)
 2. [Containers, Kubernetes & Kubeflow](07-cloud-infra/containers-k8s.md)
 3. [GPU Kubernetes Operations](07-cloud-infra/gpu-kubernetes-operations.md)
 4. [IaC, GPUs & Cost Control](07-cloud-infra/iac-and-cost.md)
 
-### Block 8: System design and rapid fire — 2 hours
+### Block 8: System design and rapid fire: 2 hours
 
 1. [ML System Design Framework](10-system-design/framework.md)
 2. [Worked ML Platform](10-system-design/worked-ml-platform.md)

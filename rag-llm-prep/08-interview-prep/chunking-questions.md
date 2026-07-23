@@ -1,4 +1,4 @@
-# Chunking — Interview Questions
+# Chunking: Interview Questions
 
 ## Q: Why chunk at all? Why not embed the whole document?
 
@@ -9,7 +9,7 @@ represent multiple unrelated ideas simultaneously.
 
 ---
 
-## Q: Big chunks vs small chunks — what's the tradeoff?
+## Q: Big chunks vs small chunks: what's the tradeoff?
 
 | | Small (e.g. 128 tokens) | Large (e.g. 1024 tokens) |
 |---|---|---|

@@ -1,4 +1,4 @@
-# 19 — Fine-Tuning: When RAG Isn't the Right Tool (concept, roadmap)
+# 19: Fine-Tuning: When RAG Isn't the Right Tool (concept, roadmap)
 
 **The big idea:** RAG — everything else in this repo — changes what the
 model *sees at query time*. Fine-tuning changes what's *baked into its

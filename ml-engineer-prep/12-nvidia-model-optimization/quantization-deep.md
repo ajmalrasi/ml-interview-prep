@@ -81,7 +81,7 @@ The insight worth stating: **calibration is a clipping decision.**
 So swapping to `IInt8MinMaxCalibrator` (a "next step" in your notes) is a real experiment, not
 a cosmetic one.
 
-## PTQ vs QAT — the numeric picture
+## PTQ vs QAT: the numeric picture
 
 Your notes nail the intuition; here's the mechanism under it:
 
@@ -98,7 +98,7 @@ almost everywhere."* Answer: the **straight-through estimator** — pass the gra
 through inside the clipping range, zero it outside, so the network still learns despite the
 non-differentiable rounding.
 
-## Advanced PTQ (name-drop these — they're NVIDIA-adjacent)
+## Advanced PTQ (name-drop these: they're NVIDIA-adjacent)
 
 For LLMs, plain PTQ breaks because of **activation outliers**. Modern methods fix that
 without full retraining, and NVIDIA's `TensorRT-Model-Optimizer` implements them:
@@ -111,7 +111,7 @@ without full retraining, and NVIDIA's `TensorRT-Model-Optimizer` implements them
 - **Weight-only (INT4) vs weight+activation (INT8/FP8):** weight-only shrinks memory and
   helps the memory-bound decode phase of LLMs; W8A8/FP8 also speeds compute-bound matmuls.
 
-## 🔗 Connecting the dots — the real stack
+## 🔗 Connecting the dots: the real stack
 
 Native **PyTorch** quantization (`torch.ao.quantization`, fbgemm/qnnpack — **CPU** kernels,
 as your project found). On GPU: **TensorRT** calibrators for implicit PTQ, and

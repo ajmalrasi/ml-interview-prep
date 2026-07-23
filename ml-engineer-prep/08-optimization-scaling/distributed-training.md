@@ -39,7 +39,7 @@ squeeze one GPU (mixed precision, bigger batch, a smaller model), then scale to 
 parallelism across GPUs, and only reach for model/pipeline parallelism when the model
 genuinely doesn't fit. "Scale when you must, not because you can."
 
-## 🔗 Connecting the dots — the real stack
+## 🔗 Connecting the dots: the real stack
 
 The libraries: **PyTorch DDP / FSDP**, **DeepSpeed** (ZeRO), **Megatron-LM** (tensor/pipeline parallel), **Horovod**, **Ray Train**, and **HuggingFace Accelerate** to wrap it. Mixed precision is native **AMP**. It runs on multi-GPU clusters via **SageMaker / Vertex / Databricks** or K8s.
 

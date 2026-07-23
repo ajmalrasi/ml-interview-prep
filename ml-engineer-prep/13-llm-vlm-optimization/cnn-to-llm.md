@@ -1,4 +1,4 @@
-# CNN → LLM/VLM — What Transfers, What Breaks
+# CNN → LLM/VLM: What Transfers, What Breaks
 
 **TL;DR:** Everything conceptual from your CNN project transfers — quantization math, the
 three axes, TensorRT-style compilation, profiling. What *breaks* is the assumptions: LLMs are
@@ -17,7 +17,7 @@ three axes, TensorRT-style compilation, profiling. What *breaks* is the assumpti
   TensorRT-LLM); roofline, Nsight, proper timing. All carry over.
 - **Distillation** — still a core lever, arguably *more* central for LLMs.
 
-## What breaks — the four flips
+## What breaks: the four flips
 
 ### 1. Compute-bound → memory-bound (the big one)
 - Your CNN did lots of math per byte, so INT8 sped up the **compute**.
@@ -69,7 +69,7 @@ three axes, TensorRT-style compilation, profiling. What *breaks* is the assumpti
 | Quality metric | top-1 acc | perplexity + MMLU… | VQA/caption benchmarks |
 | New cost | — | KV cache | KV cache + many image tokens |
 
-## 🔗 Connecting the dots — the real stack
+## 🔗 Connecting the dots: the real stack
 
 Same spirit as your project, different tools: **HuggingFace** baseline → **AutoAWQ / AutoGPTQ /
 bitsandbytes** (weight-only) or **TensorRT-Model-Optimizer** (FP8/SmoothQuant) → served by

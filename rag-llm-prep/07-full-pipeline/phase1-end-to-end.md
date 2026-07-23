@@ -1,4 +1,4 @@
-# Phase 1 — How the Code Wires Together
+# Phase 1: How the Code Wires Together
 
 **TL;DR:** Three Python entry points (ingest, demo, serve) and four key files
 (config, factory, pipeline, app). Everything flows through `factory.py`.
@@ -13,7 +13,7 @@ docsmind/
   serving/app.py  ← FastAPI: /health and /query endpoints
 ```
 
-## config.py — single source of truth
+## config.py: single source of truth
 
 ```python
 class Settings(BaseSettings):
@@ -30,7 +30,7 @@ class Settings(BaseSettings):
 All components read from this. To change the model or chunk size, set an
 env var — no code changes needed.
 
-## factory.py — the composition root
+## factory.py: the composition root
 
 ```python
 def build_pipeline(settings: Settings) -> RAGPipeline:
@@ -44,7 +44,7 @@ def build_pipeline(settings: Settings) -> RAGPipeline:
 One function. Reads settings, builds every component, wires them together,
 returns a ready `RAGPipeline`. This is called once at server startup.
 
-## pipeline.py — the core logic
+## pipeline.py: the core logic
 
 ```python
 class RAGPipeline:
@@ -64,7 +64,7 @@ class RAGPipeline:
         return QueryResponse(answer=answer, citations=citations, grounded=grounded, ...)
 ```
 
-## serving/app.py — the API
+## serving/app.py: the API
 
 ```python
 @app.post("/query", response_model=QueryResponse)

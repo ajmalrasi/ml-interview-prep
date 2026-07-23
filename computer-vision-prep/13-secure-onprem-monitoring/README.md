@@ -1,4 +1,4 @@
-# 13 — Secure On-Prem & Monitoring
+# 13: Secure On-Prem & Monitoring
 
 **TL;DR:** Gov/enterprise CCTV rule: **no cloud, data never leaves site, everything auditable.** Same skills as your cloud work — constraint **inverted**.
 

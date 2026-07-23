@@ -1,4 +1,4 @@
-# 14 — Deep Learning for Video
+# 14: Deep Learning for Video
 
 **TL;DR:** "Data **Scientist**" = reason about **models**, not just pipeline. The chain: **backbone CNN** → features → **detection head** → boxes → **tracker** → IDs → (§11/§12).
 

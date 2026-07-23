@@ -1,4 +1,4 @@
-# RAG vs Fine-Tuning — Knowledge Problems vs Behavior Problems
+# RAG vs Fine-Tuning: Knowledge Problems vs Behavior Problems
 
 **TL;DR:** RAG fixes "the model doesn't know this." Fine-tuning fixes "the
 model doesn't *behave* this way, no matter what I tell it." Choosing between

@@ -26,14 +26,14 @@ recipe.
 You don't train — you take a released checkpoint and **optimize** it. That's the norm for LLMs
 and a fine thing to say.
 
-## Step 1 — baseline
+## Step 1: baseline
 
 Load the FP16 model, run your eval harness, record **perplexity**, a task benchmark or two,
 **TTFT** (time to first token = prefill latency), **TPOT** (time per output token = decode
 latency), **throughput** (tokens/sec at your batch size), and **peak VRAM**. This is your
 reference row — the equivalent of your FP32 baseline.
 
-## Step 2 — quantize (produce the variants)
+## Step 2: quantize (produce the variants)
 
 | Variant | Tool | One line |
 |---|---|---|
@@ -46,7 +46,7 @@ reference row — the equivalent of your FP32 baseline.
 Each needs a small **calibration set** (representative prompts) — the LLM analog of your PTQ
 calibration batches.
 
-## Step 3 — serve (the engine axis)
+## Step 3: serve (the engine axis)
 
 - **TensorRT-LLM** — NVIDIA's LLM runtime: build an engine (fused kernels, FP8, in-flight
   batching), serve via Triton. Best latency/throughput on NVIDIA GPUs. The direct heir to your
@@ -58,7 +58,7 @@ calibration batches.
   [§12 LLM Inference](../12-nvidia-model-optimization/llm-inference.md) — cross-reference, don't
   re-derive.
 
-## Step 4 — the compare table (what to actually measure)
+## Step 4: the compare table (what to actually measure)
 
 LLM latency is **two numbers**, so your table grows columns:
 
@@ -80,7 +80,7 @@ Same async-GPU discipline as your CNN, plus LLM specifics: **warm up**, separate
 meaningless without them), and report **p50/p99**. `trtllm-bench` / `genai-perf` (NVIDIA) or
 vLLM's benchmark scripts do this properly — the analog of your `benchmark_latency`.
 
-## 🔗 Connecting the dots — the real stack
+## 🔗 Connecting the dots: the real stack
 
 Quantize: **AutoAWQ / AutoGPTQ / bitsandbytes / llama.cpp / TensorRT-Model-Optimizer**. Serve:
 **TensorRT-LLM (+Triton) / vLLM / TGI / llama.cpp**. Evaluate: **lm-evaluation-harness**,

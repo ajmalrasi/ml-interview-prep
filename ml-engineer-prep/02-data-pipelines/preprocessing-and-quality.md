@@ -39,7 +39,7 @@ validation in feature/pipeline platforms automate this. The principle: **fail fa
 loudly** on bad data rather than let it silently degrade the model — a bad-data alert
 is cheap, a mysteriously worse model in production is expensive.
 
-## 🔗 Connecting the dots — the real stack
+## 🔗 Connecting the dots: the real stack
 
 Transforms run in **pandas / Polars** (small) or **Spark** (big); wrap them in a **scikit-learn Pipeline** so preprocessing is fit on the train split only (no leakage). Data-quality gates use **Great Expectations**, **Pandera**, or **Evidently**, run as an Airflow step that fails the pipeline loudly on bad data.
 

@@ -1,4 +1,4 @@
-# 3 — Model Development
+# 3: Model Development
 
 **TL;DR:** This is the "designing and developing ML/DL systems" bullet. Two worlds:
 **classical ML** (still the winner on tabular data, mostly boosted trees) and **deep

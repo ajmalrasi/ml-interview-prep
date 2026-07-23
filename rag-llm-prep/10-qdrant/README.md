@@ -1,4 +1,4 @@
-# Qdrant — a vector store you talk to, not one you embed (Phase 2b)
+# Qdrant: a vector store you talk to, not one you embed (Phase 2b)
 
 **TL;DR:** FAISS lives *inside* your program (a notebook on your desk). Qdrant is
 a *separate service* you talk to over the network (a librarian in another room).

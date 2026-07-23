@@ -1,4 +1,4 @@
-# Generation — Interview Questions
+# Generation: Interview Questions
 
 ## Q: Why format chunks as numbered passages [1][2][3]?
 

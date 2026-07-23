@@ -1,11 +1,11 @@
-# Mock Interview — Model Answers
+# Mock Interview: Model Answers
 
 These are *strong reference* answers, not scripts. Say it in your words. Numbers in
 **bold** are the points an interviewer actually rewards.
 
 ---
 
-## Stage 1 — Warm-up
+## Stage 1: Warm-up
 
 **1. Background + why this role.**
 "7 years as an engineer; I started in **edge computer vision and video analytics** —
@@ -32,7 +32,7 @@ at scale. I want to point that at Vision AI again."
 
 ---
 
-## Stage 2 — Rapid-fire (keep these tight)
+## Stage 2: Rapid-fire (keep these tight)
 
 **4.** RTSP to ingest from cameras (pull, ~0.5–3s); WebRTC to deliver to browsers/
 peers (<500ms). Real systems use both.
@@ -67,7 +67,7 @@ accuracy — so I always re-measure mAP, and use QAT if PTQ drops too much.
 
 ---
 
-## Stage 3 — Deep dive
+## Stage 3: Deep dive
 
 **12. PyTorch detector → fastest stable Jetson inference.**
 "Export to **ONNX**; build a **TensorRT** engine **on the Jetson itself** so kernels
@@ -105,7 +105,7 @@ retry in lockstep after a network blip. Log at decreasing frequency or aggregate
 
 ---
 
-## Stage 4 — System design
+## Stage 4: System design
 
 **16.** See [../06-system-design/worked-example-multicam.md](../06-system-design/worked-example-multicam.md)
 for the full answer. Skeleton: clarify (scale/SLA/edge-cloud) → estimate (one GPU
@@ -121,7 +121,7 @@ you give up.
 
 ---
 
-## Stage 5 — Your questions (have 3+ ready)
+## Stage 5: Your questions (have 3+ ready)
 
 Strong ones (signal seniority + genuine fit):
 - "What's the proprietary vision framework built on — GStreamer/DeepStream, or

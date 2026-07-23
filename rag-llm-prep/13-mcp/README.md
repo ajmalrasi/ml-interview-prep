@@ -1,4 +1,4 @@
-# 13 — MCP: A USB Port for Tools (concept, Phase 5)
+# 13: MCP: A USB Port for Tools (concept, Phase 5)
 
 **The big idea:** MCP doesn't give models a new capability — tool calling
 already lets them request functions. MCP standardizes the *packaging*: a

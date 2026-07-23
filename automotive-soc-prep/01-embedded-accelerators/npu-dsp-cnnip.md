@@ -1,4 +1,4 @@
-# NPU, DSP & CNNIP — What They Are
+# NPU, DSP & CNNIP: What They Are
 
 **TL;DR:** Three kinds of accelerator show up in automotive SoCs. **CNNIP** is a
 fixed-function convolution engine (fastest, least flexible). **NPU** is a programmable
@@ -19,7 +19,7 @@ else. Know what each is good at and you can predict how the toolchain will parti
 the other way. The compiler tries to keep as much of the graph as possible on the CNNIP/NPU
 and spills the rest to DSP/CPU.
 
-## How an NPU actually computes — the systolic array
+## How an NPU actually computes: the systolic array
 
 The NPU's core is usually a **2-D array of multiply-accumulate (MAC) units** (a *systolic
 array*, the same idea as a GPU tensor core or the TPU's MXU):

@@ -1,4 +1,4 @@
-# Retrieval Eval — does hybrid + rerank actually beat dense?
+# Retrieval Eval: does hybrid + rerank actually beat dense?
 
 **Where in the pipeline:** this measures the **Search** stage directly. It runs
 dense, hybrid, and hybrid+rerank over the *same* corpus and the *same* labeled

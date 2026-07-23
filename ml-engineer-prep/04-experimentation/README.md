@@ -1,4 +1,4 @@
-# 4 — Experimentation
+# 4: Experimentation
 
 **TL;DR:** ML is empirical — you don't know what works until you test it. This section
 is how you test *honestly*: splitting data so your metrics mean something, tracking

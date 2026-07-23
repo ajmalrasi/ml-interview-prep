@@ -1,4 +1,4 @@
-# Search Evaluation — the complete picture
+# Search Evaluation: the complete picture
 
 **Scope:** this doc is about evaluating the **Search** box *only* — did the right
 chunks come back, and were they ranked well? It stops before the LLM. Nothing
@@ -18,7 +18,7 @@ answer/LLM evaluation, a different box — Phase 6).
 The real numbers these metrics produce on DocsMind live in
 [eval-results.md](eval-results.md); this doc is the *concepts* behind them.
 
-## Step 0 — you need labels (ground truth)
+## Step 0: you need labels (ground truth)
 
 You can't grade search without knowing what "right" is. Every eval query needs a
 **relevance label**: which chunks (or docs) *should* come back. Two choices:
@@ -51,7 +51,7 @@ Family 2 — DID WE RANK IT WELL?  order-aware  (reorder the top-k, score change
 
 ---
 
-## Family 1 — Set metrics (order doesn't matter)
+## Family 1: Set metrics (order doesn't matter)
 
 These treat the top-k results as a *bag* and ask what's in it.
 
@@ -84,7 +84,7 @@ The loosest, most forgiving set metric. DocsMind reports Hit@1 and Hit@3.
 
 ---
 
-## Family 2 — Rank-aware metrics (order matters)
+## Family 2: Rank-aware metrics (order matters)
 
 These reward putting relevant chunks **high** — what you actually want in RAG,
 since you feed the LLM only the top few.
@@ -117,7 +117,7 @@ The only metric that handles **graded** relevance naturally.
 
 ---
 
-## The cheat-sheet — pick by what you care about
+## The cheat-sheet: pick by what you care about
 
 | You care about… | Metric | Family |
 |---|---|---|

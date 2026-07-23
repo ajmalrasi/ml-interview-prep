@@ -6,7 +6,7 @@ hardware can actually accelerate; **distillation** trains a small student to cop
 teacher. Quantization (previous pages) is usually the first reach; these are how you get a
 *fundamentally* smaller or sparser model.
 
-## Pruning — unstructured vs structured
+## Pruning: unstructured vs structured
 
 - **Unstructured pruning** — zero out individual low-magnitude weights anywhere. You can
   reach very high sparsity with little accuracy loss, **but a random scatter of zeros doesn't
@@ -93,7 +93,7 @@ The instinct to voice: *"Quantization first — cheapest big win. Distillation w
 genuinely smaller model, not just cheaper ops. Structured/2:4 pruning when I want hardware
 speedup and can fine-tune. Always re-measure accuracy after each step, and compile last."*
 
-## 🔗 Connecting the dots — the real stack
+## 🔗 Connecting the dots: the real stack
 
 **PyTorch** `torch.nn.utils.prune`, NVIDIA **ASP / apex** for 2:4, **TensorRT** to run
 sparse+INT8 engines; **HuggingFace** for distillation (DistilBERT). NVIDIA

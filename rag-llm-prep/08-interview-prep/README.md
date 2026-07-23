@@ -1,4 +1,4 @@
-# 08 — Interview Prep
+# 08: Interview Prep
 
 **The big idea:** Interviewers don't just ask "what is FAISS?" — they ask
 "why FAISS over Pinecone?" and "when would you NOT use it?" These are the

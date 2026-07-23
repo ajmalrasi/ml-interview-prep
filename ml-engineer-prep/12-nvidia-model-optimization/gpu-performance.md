@@ -133,7 +133,7 @@ A **stream** is an ordered queue of GPU work; independent streams run concurrent
 
 Triton uses multiple streams/instances to raise utilization the same way.
 
-## 🔗 Connecting the dots — the real stack
+## 🔗 Connecting the dots: the real stack
 
 **Nsight Systems / Nsight Compute** for profiling, **`trtexec`** for engine latency, **CUDA
 Graphs** for launch-bound models, **DCGM** for fleet monitoring. The concepts (roofline,

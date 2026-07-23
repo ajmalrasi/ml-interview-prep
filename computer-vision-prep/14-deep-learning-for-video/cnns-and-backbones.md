@@ -2,7 +2,7 @@
 
 **TL;DR:** CNN = ladder of features (edges→objects). **Backbone** = feature extractor under detector/tracker. Know: convolution, receptive field, FPN (scale).
 
-## Convolution — why it fits images
+## Convolution: why it fits images
 - **Weight sharing** — same kernel everywhere → few params, edge-anywhere (translation equivariance).
 - **Locality** — each output sees a local patch.
 - **Depth stacks abstraction** — edges → textures → parts → objects.

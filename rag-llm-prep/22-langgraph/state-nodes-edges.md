@@ -1,9 +1,9 @@
-# State, Nodes, Edges — The Whole Mental Model
+# State, Nodes, Edges: The Whole Mental Model
 
 LangGraph has exactly three moving parts. Learn these and everything else is
 detail.
 
-## 1. State — the shared notebook
+## 1. State: the shared notebook
 
 The state is one dictionary that travels through the graph. Every node reads it
 and writes back into it. You declare its shape with a `TypedDict` so you (and the
@@ -22,7 +22,7 @@ Think of it as a form that starts mostly blank. Each node fills in its section
 and passes the form along. There is no other global memory — if a node needs a
 value, it must be in the state.
 
-## 2. Node — a function that fills in part of the form
+## 2. Node: a function that fills in part of the form
 
 A node is **just a function**. It takes the whole state and returns a **dict of
 only the keys it wants to change**. LangGraph merges that dict back into the
@@ -54,7 +54,7 @@ def generate(state: RAGState) -> dict:
     return {"answer": answer}
 ```
 
-## 3. Edge — the arrow that says "go here next"
+## 3. Edge: the arrow that says "go here next"
 
 Edges define the order nodes run in. Two special markers, `START` and `END`, are
 the entry and exit.

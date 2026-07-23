@@ -54,7 +54,7 @@ Trees are more explainable than neural nets — you can see which features matte
 regulated settings (finance, healthcare) this interpretability is often a requirement,
 not a nicety, and it's a point worth raising.
 
-## 🔗 Connecting the dots — the real stack
+## 🔗 Connecting the dots: the real stack
 
 The workhorses are **XGBoost**, **LightGBM**, and **CatBoost**, usually driven through **scikit-learn** Pipelines; explainability comes from **SHAP** (per-prediction) and built-in feature importances. Training and tuning run on a single big VM or a managed job (**SageMaker / Vertex / Databricks**).
 

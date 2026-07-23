@@ -1,4 +1,4 @@
-# 5 — MLOps & Serving
+# 5: MLOps & Serving
 
 **TL;DR:** MLOps is "DevOps for machine learning" — the practices and tooling to get
 models into production reliably and keep them there. This section covers how you

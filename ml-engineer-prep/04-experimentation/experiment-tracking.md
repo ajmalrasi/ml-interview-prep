@@ -43,7 +43,7 @@ models and an engineer who runs a *process*. Being able to say "I log every run'
 params, metrics, artifacts, and data version so any result is reproducible and
 comparable" signals you've worked on real teams.
 
-## 🔗 Connecting the dots — the real stack
+## 🔗 Connecting the dots: the real stack
 
 The tools are **MLflow** (tracking + model registry, the open-source default), **Weights & Biases** and **Neptune** (richer dashboards), with **DVC** versioning the data. On a lakehouse, MLflow ties runs to the exact **Delta / Unity Catalog** data version, and the registered model promotes straight to serving.
 

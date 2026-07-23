@@ -1,62 +1,95 @@
-# Seismic RAG — The Production Project
+# Seismic RAG: From Prototype to Production
 
-**TL;DR:** You built a multi-cloud RAG system over a seismic platform holding roughly **40 PB across about 10,000 SEG-Y files**. The design does not treat 40 PB of trace samples as an LLM corpus. It range-reads compact headers, combines them with ingestion/QC/operational metadata, and returns authorized, grounded answers with source references.
+**TL;DR:** This module teaches one story: how a working seismic RAG prototype becomes a production AWS service by applying cloud patterns you have genuinely used—S3, SQS, EKS, API Gateway, Okta/JWT, MWAA/Airflow, OpenTelemetry, Grafana, Loki, and Mimir.
 
-> **In simple words — what this page teaches:** See the whole project at a glance: what the system does, what it deliberately does not do, and the best order for learning the design.
+> **The interview goal:** answer “Walk me through the RAG and ML system you built on the cloud” as a decision story: the problem, the prototype, the production gaps, the target architecture, the failure handling, and the evidence that it works.
 
-This module teaches you to explain that system as a Principal ML/MLOps Architect. Every choice is tied to the real constraints: multi-terabyte objects, inconsistent EBCDIC headers, hybrid retrieval, cloud throttling, partial failure, confidential data, and LLM cost.
+## The truth contract
 
-## The one-sentence system boundary
+The most important improvement in this rewrite is accuracy. It separates three kinds of statements:
 
-> Raw seismic processing produces trusted metadata and QC outputs. The RAG knowledge pipeline indexes that compact knowledge layer. It does **not** send seismic trace samples to an LLM.
+| Label | Meaning |
+|---|---|
+| **Built in the RAG prototype** | Python ingestion, chunking, embeddings, FAISS, hybrid retrieval, optional reranking, FastAPI, hosted generation, citations, and offline retrieval evaluation |
+| **Used in production systems** | AWS S3, SQS/DLQ, EKS, API Gateway, Okta/JWT claims, MWAA/Airflow, asynchronous workers, throttling, idempotent processing, OpenTelemetry, Grafana, Loki, and Mimir |
+| **Production RAG adaptation** | The proposed way those proven patterns would be connected around the RAG pipeline, including a dedicated RAG event queue, production search service, permission-aware retrieval, and automated quality gates |
 
-That sentence prevents the most damaging interview misunderstanding: “40 PB” is the platform scale, not the embedding or training volume.
+Do not say that a proposed RAG component was already deployed. A strong and honest line is:
 
-## What you built
+> “I built the RAG pipeline and worked with the production AWS patterns separately. This is how I would combine them into a production deployment, and these are the parts I would validate before claiming production readiness.”
 
-- Python-based processing across AWS S3 and GCP Cloud Storage
-- Airflow orchestration on MWAA/Cloud Composer
-- Range-based SEG-Y/EBCDIC and technical metadata extraction
-- Vendor-field normalization and versioned validation
-- Searchable ingestion, QC, lineage, delivery, and operational knowledge
-- OpenSearch BM25 + vector hybrid retrieval with optional reranking
-- A stateless FastAPI query service on container infrastructure
-- Grounded hosted-LLM answers with source references and abstention
-- Retrieval/generation evaluation, production telemetry, and cost monitoring
+## One system, two paths
 
-The choices are cloud-portable: EKS/GKE and managed container serving are deployment options, not a claim that every workload must run on Kubernetes.
+This is still one RAG system. It has two paths because indexing and answering have different workloads.
+
+### Offline knowledge path
+
+```text
+S3 source or trusted seismic output
+    → dedicated SQS queue + DLQ
+    → lightweight EKS event consumer
+    → MWAA/Airflow workflow
+    → extract and normalize useful knowledge
+    → chunk and embed
+    → validate a versioned search index
+    → promote it safely
+```
+
+### Online answer path
+
+```text
+User question
+    → API Gateway + Okta/JWT
+    → RAG API on EKS
+    → project authorization
+    → structured and/or hybrid retrieval
+    → context assembly
+    → hosted LLM
+    → grounded answer with citations or abstention
+```
+
+Both paths share security, observability, deployment, and versioning. They are not separate products.
+
+## The system boundary
+
+The seismic platform may hold tens of petabytes, but raw seismic trace samples are not a text corpus. The RAG knowledge layer indexes compact, explainable evidence:
+
+- textual/EBCDIC headers;
+- normalized product and geometry metadata;
+- QC summaries and warnings;
+- lineage and delivery information;
+- operational reports and troubleshooting knowledge;
+- derived summaries produced by domain processing.
+
+Questions that require computation over trace amplitudes remain in seismic-domain analytics. RAG retrieves and explains existing knowledge; it does not replace numerical seismic processing.
 
 ## Learn it in this order
 
-| Step | Lesson | The question it answers |
+| Step | Lesson | What you should be able to explain |
 |---|---|---|
-| 1 | [Problem, scale, requirements](01-problem-and-requirements.md) | What problem did you solve, for whom, and how well? |
-| 2 | [Offline ingestion](02-offline-ingestion.md) | How did you safely process multi-TB files? |
-| 3 | [Data, embeddings, OpenSearch](03-data-embeddings-indexing.md) | What exactly became searchable, and how? |
-| 4 | [Online retrieval and generation](04-online-retrieval-generation.md) | How does one question become one cited answer? |
-| 5 | [Evaluation and experiments](05-evaluation-experiments.md) | How do you prove it works? |
-| 6 | [Production operations](06-production-operations.md) | How do you deploy, monitor, secure, and recover it? |
-| 7 | [Trade-offs, capacity, cost](07-tradeoffs-capacity.md) | How do you defend design and sizing decisions? |
-| 8 | [Interview answers](08-interview-answer.md) | How do you deliver the story in 2 or 10 minutes? |
-| 9 | [Principal-level drills](09-interview-questions.md) | Can you handle the follow-up pressure? |
+| 1 | [System story](01-system-story.md) | The business problem, prototype, production gap, and success criteria |
+| 2 | [Prototype to production](02-prototype-to-production.md) | How your real AWS experience maps to one production RAG architecture |
+| 3 | [Offline ingestion and indexing](03-offline-ingestion-indexing.md) | How new knowledge reaches a safe, versioned index |
+| 4 | [Online retrieval and generation](04-online-rag.md) | How one authorized question becomes a cited answer |
+| 5 | [Evaluation and ML lifecycle](05-evaluation-ml-lifecycle.md) | How extraction, retrieval, and generation changes are tested and promoted |
+| 6 | [Reliability, security, and observability](06-reliability-security-observability.md) | How the system survives failures and protects confidential projects |
+| 7 | [Scaling, performance, and cost](07-scaling-performance-cost.md) | How to size the system without inventing numbers |
+| 8 | [Failure scenarios and debugging](08-failure-debugging.md) | How to diagnose incidents using traces, queues, and stage metrics |
+| 9 | [Two-minute interview answer](09-two-minute-answer.md) | A concise, natural first-person answer |
+| 10 | [Ten-minute walkthrough](10-ten-minute-walkthrough.md) | A whiteboard-ready architecture explanation |
+| 11 | [Senior interview drills](11-interview-questions.md) | Follow-up questions about trade-offs, failures, security, and ML quality |
 
-## The mental model
+## What “production-ready” means here
 
-There are three related paths:
+Production readiness is not “put FastAPI in a Docker container.” It means:
 
-1. **Source-file ingestion:** an authenticated request creates one request and one task per file → a throttler admits work → short-lived workers convert and validate the file → statuses roll up.
-2. **Offline RAG indexing:** consume trusted metadata/QC changes → extract compact evidence → normalize/validate → chunk/embed → publish a versioned search index.
-3. **Online answering:** authorize and understand the question → apply structured filters → hybrid retrieve → rerank/assemble evidence → generate a cited answer or abstain.
+- ingestion is asynchronous, replayable, and idempotent;
+- fresh work cannot be starved by a large backfill;
+- indexes, embeddings, prompts, and models are versioned and reversible;
+- authorization is enforced before retrieval;
+- failures degrade explicitly instead of producing invented answers;
+- one trace connects API, queue, workflow, worker, retrieval, and generation;
+- quality, latency, cost, and freshness have measurable gates;
+- canary deployment and rollback are tested.
 
-An object-created event can update the metadata catalog quickly, but it does not by itself complete the heavy source-file ingestion. Object storage and operational databases remain authoritative. OpenSearch is a rebuildable, eventually consistent projection. FastAPI remains stateless. This separation lets each layer scale, fail, deploy, and roll back independently.
-
-## The honest future-work line
-
-The system is built. The following are still best described as optional improvements rather than existing production dependencies:
-
-- MLflow as a unified experiment registry
-- self-hosted vLLM when security or stable GPU economics justify it
-- domain embedding fine-tuning when a measured retrieval cohort needs it
-- more automated citation verification and active-learning feedback
-
-Start with the problem, not the tools: **[Problem, Scale & Requirements →](01-problem-and-requirements.md)**
+Start with the story: **[System Overview & Interview Story →](01-system-story.md)**

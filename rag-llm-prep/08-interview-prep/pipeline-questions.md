@@ -1,4 +1,4 @@
-# Pipeline — Interview Questions
+# Pipeline: Interview Questions
 
 ## Q: Walk me through your RAG pipeline.
 

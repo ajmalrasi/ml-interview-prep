@@ -1,4 +1,4 @@
-# 10 — Coding Practice (Proctored Round)
+# 10: Coding Practice (Proctored Round)
 
 **TL;DR:** Your KoiReader round on **4 July** is a *proctored, hands-on coding
 test* — camera on, screen shared, **no AI, no copying full solutions** (syntax

@@ -1,4 +1,4 @@
-# AI Application Engineer (Automotive SoC) — Learning Path
+# AI Application Engineer (Automotive SoC): Learning Path
 
 Everything for the **AI Application Engineer** interview — enabling, optimizing, and
 deploying AI models (BEV, detection, segmentation, classification) on **automotive-grade

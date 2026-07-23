@@ -1,4 +1,4 @@
-# 05 — Production Python for Video
+# 05: Production Python for Video
 
 **TL;DR:** The JD wants *"fault-tolerant, multi-threaded/async code… manage
 resources in long-running processes."* The crux is Python's **GIL**: it stops two

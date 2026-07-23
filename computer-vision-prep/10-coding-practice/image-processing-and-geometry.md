@@ -9,7 +9,7 @@ Every solution is complete and runnable. Practice typing each from a blank file.
 
 ---
 
-## Problem 1 — Preprocess for OCR (gray → blur → Otsu → save)
+## Problem 1: Preprocess for OCR (gray → blur → Otsu → save)
 
 **Tests:** the fundamental chain, color conversion, thresholding, saving output.
 
@@ -61,7 +61,7 @@ threshold gets speckly.
 
 ---
 
-## Problem 2 — Clean a noisy scanned document (adaptive threshold + morphology)
+## Problem 2: Clean a noisy scanned document (adaptive threshold + morphology)
 
 **Tests:** adaptive thresholding (uneven lighting) and morphology to remove specks.
 
@@ -108,7 +108,7 @@ holes — pick by whether your noise is dots (open) or gaps (close).
 
 ---
 
-## Problem 3 — Deskew a rotated document
+## Problem 3: Deskew a rotated document
 
 **Tests:** geometry from foreground pixels, rotation matrix, warpAffine.
 
@@ -158,7 +158,7 @@ know the `< -45` correction and be ready to explain it.
 
 ---
 
-## Problem 4 — 4-point perspective transform ("scan this label") ⭐
+## Problem 4: 4-point perspective transform ("scan this label") ⭐
 
 **Tests:** the single most likely task. Detect the document's 4 corners and warp
 it to a flat top-down view. Memorize the `order_points` + `four_point_transform`
@@ -246,7 +246,7 @@ a resized copy.
 
 ---
 
-## Problem 5 — Find and crop the largest rectangle (document boundary)
+## Problem 5: Find and crop the largest rectangle (document boundary)
 
 **Tests:** Canny + contours + `approxPolyDP` + bounding-box crop.
 
@@ -294,7 +294,7 @@ def crop_largest_rect(path, out="p5_out.png"):
 
 ---
 
-## Problem 6 — Resize keeping aspect ratio, pad to square (letterbox)
+## Problem 6: Resize keeping aspect ratio, pad to square (letterbox)
 
 **Tests:** the standard model-input preprocessing; aspect-ratio math, padding.
 
@@ -342,7 +342,7 @@ Keep the scale + padding offsets if you later need to map detections back.
 
 ---
 
-## Problem 7 — Boost contrast on a dark image (CLAHE)
+## Problem 7: Boost contrast on a dark image (CLAHE)
 
 **Tests:** histogram equalization done right (local, on luminance only).
 
@@ -388,7 +388,7 @@ lighting.
 
 ---
 
-# More practice — classic CV interview problems
+# More practice: classic CV interview problems
 
 Eight more exercises in the same style: short functions, one idea each.
 The setup assets include `color.jpg`, `barcode.jpg`, and `lines.jpg` for these.
@@ -406,7 +406,7 @@ The setup assets include `color.jpg`, `barcode.jpg`, and `lines.jpg` for these.
 
 ---
 
-## Problem E1 — Find an object by color (HSV + inRange)
+## Problem E1: Find an object by color (HSV + inRange)
 
 **Tests:** color spaces. HSV separates *what color* (H) from *how bright* (V),
 so a single hue range survives lighting changes that would break BGR thresholds.
@@ -453,7 +453,7 @@ needs **two** ranges (`0-10` and `170-179`) OR-ed together with `cv2.bitwise_or`
 
 ---
 
-## Problem E2 — Template matching (find a logo / stamp)
+## Problem E2: Template matching (find a logo / stamp)
 
 **Tests:** `matchTemplate` slides the template over the image and scores every
 position; `minMaxLoc` finds the best one.
@@ -501,7 +501,7 @@ in the interview. For *all* matches above the threshold use
 
 ---
 
-## Problem E3 — Rotate by any angle *without* cropping corners
+## Problem E3: Rotate by any angle *without* cropping corners
 
 **Tests:** the classic gotcha — `warpAffine` to the original size clips the
 corners. Grow the canvas and shift the rotation center.
@@ -554,7 +554,7 @@ need 90/180/270, use `cv2.rotate(img, cv2.ROTATE_90_CLOCKWISE)` — it's exact a
 
 ---
 
-## Problem E4 — Blur a region + apply a mask (privacy blur)
+## Problem E4: Blur a region + apply a mask (privacy blur)
 
 **Tests:** ROI slicing (views write back in place!) and `bitwise_and` masking —
 the two building blocks of every "redact this part" task.
@@ -599,7 +599,7 @@ mutates `img`; call `.copy()` when you *don't* want that.
 
 ---
 
-## Problem E5 — Locate a barcode (gradient + morphology) ⭐
+## Problem E5: Locate a barcode (gradient + morphology) ⭐
 
 **Tests:** a logistics classic. Barcodes have strong **horizontal** gradient and
 weak vertical gradient; morphological closing glues the bars into one blob.
@@ -660,7 +660,7 @@ or `pyzbar`. If the barcode may be rotated, run on both `grad_x - grad_y` and
 
 ---
 
-## Problem E6 — Detect table / document lines (Hough transform)
+## Problem E6: Detect table / document lines (Hough transform)
 
 **Tests:** `HoughLinesP` — the go-to for finding straight structure (table grids,
 form fields, document edges).
@@ -708,7 +708,7 @@ with a long thin kernel like `(40, 1)` keeps only horizontal strokes.
 
 ---
 
-## Problem E7 — 2D convolution from scratch (NumPy only)
+## Problem E7: 2D convolution from scratch (NumPy only)
 
 **Tests:** do you understand what `filter2D` actually does? Loop over the small
 **kernel**, never over pixels — that keeps it vectorized *and* short.
@@ -755,7 +755,7 @@ uint8 silently wraps (-1 → 255): always `np.clip` first.
 
 ---
 
-## Problem E8 — Filter contours by shape (find label-like rectangles)
+## Problem E8: Filter contours by shape (find label-like rectangles)
 
 **Tests:** turning raw contours into decisions with cheap shape stats:
 area, aspect ratio, and *extent* (how much of its bounding box the shape fills).

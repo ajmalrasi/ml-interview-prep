@@ -1,4 +1,4 @@
-# Numerical Precision — FP32 → FP8 → INT8
+# Numerical Precision: FP32 → FP8 → INT8
 
 **TL;DR:** Every number format is a bet on **range vs precision** in a fixed bit budget.
 Floating point spends bits on an **exponent** (range) and a **mantissa** (precision);
@@ -61,7 +61,7 @@ A favorite question. The whole answer is about **exponent range**, not precision
 </div>
 ```
 
-## TF32 — the "free" one people forget
+## TF32: the "free" one people forget
 
 On Ampere and newer, a **plain FP32 matmul** on tensor cores actually runs in **TF32**:
 
@@ -85,7 +85,7 @@ The loop:
 **Payoff:** ~**2× faster** and ~**half the memory**, negligible accuracy loss. Tensor cores are
 why it's fast — they're built for reduced-precision matmul-accumulate.
 
-## FP8 — the current frontier (Hopper / Ada)
+## FP8: the current frontier (Hopper / Ada)
 
 FP8 comes in **two flavors** because forward and backward want different things:
 - **E4M3** (4 exponent, 3 mantissa) — more precision, less range → forward pass, weights &
@@ -99,7 +99,7 @@ training and inference.
 Why it matters: FP8 **doubles tensor-core throughput vs FP16** and is the headline feature of
 Hopper (H100). Expect at least one FP8 question if the role touches LLMs.
 
-## INT8 vs FP16 — when to pick which
+## INT8 vs FP16: when to pick which
 
 - **FP16/BF16:** ~2× faster, ~half memory, **almost no accuracy risk, no calibration**. The
   safe default and often the whole answer.
@@ -110,7 +110,7 @@ Hopper (H100). Expect at least one FP8 question if the role touches LLMs.
   cost budget demands it and I can validate the accuracy hit — and I keep sensitive layers
   (first/last, softmax) in higher precision if INT8 hurts."*
 
-## 🔗 Connecting the dots — the real stack
+## 🔗 Connecting the dots: the real stack
 
 **AMP** (`torch.cuda.amp`, `torch.autocast`) for mixed precision; **Transformer Engine** for
 FP8; tensor-core formats are picked by **cuBLAS/cuDNN/TensorRT** automatically. TensorRT's

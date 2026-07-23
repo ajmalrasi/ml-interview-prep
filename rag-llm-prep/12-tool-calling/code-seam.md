@@ -1,4 +1,4 @@
-# The Code Seam — Two Precise Places DocsMind Changes
+# The Code Seam: Two Precise Places DocsMind Changes
 
 **TL;DR:** tool calling touches exactly two places: the LLM client's contract
 (`cloud_client.py` learns a `tools=` parameter and a wider return type), and a

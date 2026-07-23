@@ -14,7 +14,7 @@
 - **Single-file serpentine** (immigration, service counter): FIFO pairing, no ReID needed.
 - **Breaks on:** multi-lane / unordered crowds (join-order ≠ service-order).
 
-## 3. Little's Law (no tracking — dense crowds)
+## 3. Little's Law (no tracking: dense crowds)
 ```rawhtml
 <div class="diagram">
   <div class="formula">

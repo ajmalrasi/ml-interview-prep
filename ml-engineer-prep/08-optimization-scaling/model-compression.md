@@ -44,7 +44,7 @@ cheapest big win. Distillation when I need a fundamentally smaller model. Then c
 with something like TensorRT/ONNX Runtime for the target hardware, always re-measuring
 accuracy after."*
 
-## 🔗 Connecting the dots — the real stack
+## 🔗 Connecting the dots: the real stack
 
 Compilers/runtimes: **TensorRT** and **ONNX Runtime** (fuse ops + quantize for the target hardware), **HuggingFace Optimum** as the bridge, native **PyTorch quantization**. For LLMs specifically: **bitsandbytes** (8/4-bit), **GPTQ / AWQ**, and **llama.cpp / GGUF** for CPU/edge. Distillation uses **HuggingFace** (e.g. DistilBERT).
 

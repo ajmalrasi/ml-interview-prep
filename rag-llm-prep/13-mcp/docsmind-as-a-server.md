@@ -1,4 +1,4 @@
-# DocsMind as an MCP Server — and Why Not Yet
+# DocsMind as an MCP Server: and Why Not Yet
 
 **TL;DR:** DocsMind's `retrieve` could be exposed as an MCP server, hiding
 FAISS/BM25/RRF behind one schema. But with a single consumer, that's

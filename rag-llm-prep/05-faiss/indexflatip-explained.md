@@ -1,4 +1,4 @@
-# IndexFlatIP — Phase 1's Index
+# IndexFlatIP: Phase 1's Index
 
 **TL;DR:** `IndexFlatIP` stores all vectors in a flat array and computes the
 inner product (dot product) between the query and every stored vector. With

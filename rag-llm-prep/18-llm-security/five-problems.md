@@ -1,4 +1,4 @@
-# The Five Problems — Each Solved Differently
+# The Five Problems: Each Solved Differently
 
 **TL;DR:** PII masking, prompt injection, jailbreaks, RBAC, and content
 moderation are five distinct problems. Bundling them as "add guardrails" is

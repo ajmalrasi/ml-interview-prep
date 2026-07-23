@@ -1,4 +1,4 @@
-# Real Examples — Embeddings in Action
+# Real Examples: Embeddings in Action
 
 **TL;DR:** Concrete numbers showing what embeddings look like, and how
 similar vs dissimilar texts produce different vectors.

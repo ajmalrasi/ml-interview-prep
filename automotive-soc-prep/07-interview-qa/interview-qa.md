@@ -1,4 +1,4 @@
-# Interview Q&A — Rapid Fire
+# Interview Q&A: Rapid Fire
 
 **TL;DR:** Each answer is the 30-second spoken version. Grouped the way an interviewer
 escalates: accelerators → ONNX & quantization → models → SoC & performance → runtime &

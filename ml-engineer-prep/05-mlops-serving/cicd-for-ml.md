@@ -64,7 +64,7 @@ Teams progress from **manual** (notebook → hand-deploy), to **automated pipeli
 automated retrain, validate, and staged rollout). Knowing this ladder lets you place a
 team — and answer "how would you improve their MLOps?"
 
-## 🔗 Connecting the dots — the real stack
+## 🔗 Connecting the dots: the real stack
 
 CI is **GitHub Actions** / **GitLab CI** / **Jenkins**; ML *pipelines* (data → train → eval → register) are **Kubeflow Pipelines**, **Vertex Pipelines**, **Airflow**, or **Argo Workflows**; gradual rollout uses **Argo Rollouts** or **KServe** canary. Data/model validation gates use **Great Expectations** and a metric threshold check.
 

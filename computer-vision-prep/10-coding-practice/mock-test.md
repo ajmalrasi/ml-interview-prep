@@ -19,7 +19,7 @@ The starter notebook's setup cell generates all inputs (`label.jpg`, `clip.avi`,
 
 ---
 
-## Problem 1 — Label scanner (25 min)
+## Problem 1: Label scanner (25 min)
 
 `label.jpg` is a photo of a label/document lying at an angle on a darker
 background. Produce a clean, top-down, OCR-ready scan.
@@ -36,7 +36,7 @@ ordering.*
 
 ---
 
-## Problem 2 — Detection post-processing + zone count (25 min)
+## Problem 2: Detection post-processing + zone count (25 min)
 
 You're given a list of detections (each `(x1, y1, x2, y2, score)`) and a polygon
 **zone** (list of points). The model over-fires with overlapping boxes.
@@ -53,7 +53,7 @@ point, not the box center.*
 
 ---
 
-## Problem 3 — Video motion summary (25 min)
+## Problem 3: Video motion summary (25 min)
 
 `clip.avi` is a short video with a moving object.
 
@@ -70,7 +70,7 @@ point, not the box center.*
 
 ---
 
-## Problem 4 — Robust batch report (15 min)
+## Problem 4: Robust batch report (15 min)
 
 Folder `imgs/` holds several images — **some are corrupt**.
 

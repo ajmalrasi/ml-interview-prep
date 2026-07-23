@@ -32,7 +32,7 @@ Distinguishing these matters because the fixes differ.
 </div>
 ```
 
-### 1. Localize — which layer?
+### 1. Localize: which layer?
 
 Compare FP32 vs INT8 **per layer**, don't just look at the final metric:
 
@@ -43,7 +43,7 @@ Compare FP32 vs INT8 **per layer**, don't just look at the final metric:
   [graph surgery](../02-onnx-toolchain/onnx-graph-surgery.md)) and confirm error accumulates
   there.
 
-### 2. Explain — why is that layer bad?
+### 2. Explain: why is that layer bad?
 
 | Symptom | Likely cause |
 |---|---|
@@ -54,7 +54,7 @@ Compare FP32 vs INT8 **per layer**, don't just look at the final metric:
 | Error appears exactly at one op | Operator limitation (approximate HW implementation), not quantization |
 | Attention/LayerNorm/Softmax in BEV head | Reductions + division are precision-sensitive |
 
-### 3. Fix — the mitigation ladder (cheapest first)
+### 3. Fix: the mitigation ladder (cheapest first)
 
 1. **Better calibration** — switch min-max → entropy/percentile; use a more representative
    calibration set. Free, often enough.
@@ -69,7 +69,7 @@ Compare FP32 vs INT8 **per layer**, don't just look at the final metric:
 6. **Graph change** — if it's an *operator limitation*, rewrite the op into supported ops, or
    move it to the DSP/CPU where full precision is available (accept the boundary cost).
 
-### 4. Re-measure — both halves
+### 4. Re-measure: both halves
 
 Every fix must be re-checked on **accuracy** *and* **latency** — pushing a layer to FP16/DSP
 recovers accuracy but adds a partition boundary and DMA cost. It's a **Pareto trade**, not a

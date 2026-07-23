@@ -19,7 +19,7 @@ const SITE = [
   ]},
   { label:"1 · Embedded Accelerators", dir:"01-embedded-accelerators", items:[
     { file:"README.md", title:"Overview" },
-    { file:"npu-dsp-cnnip.md", title:"NPU, DSP & CNNIP — What They Are" },
+    { file:"npu-dsp-cnnip.md", title:"NPU, DSP & CNNIP: What They Are" },
     { file:"operator-mapping-offload.md", title:"Operator Mapping, Offload & Fallback" },
   ]},
   { label:"2 · ONNX Toolchain", dir:"02-onnx-toolchain", items:[
@@ -51,7 +51,7 @@ const SITE = [
   ]},
   { label:"7 · Interview Q&A", dir:"07-interview-qa", items:[
     { file:"README.md", title:"Overview" },
-    { file:"interview-qa.md", title:"Interview Q&A — Rapid Fire", quiz:true },
+    { file:"interview-qa.md", title:"Interview Q&A: Rapid Fire", quiz:true },
     { file:"cheat-sheet.md", title:"One-Page Cheat Sheet (Morning Of)" },
   ]},
 ];
@@ -247,7 +247,7 @@ function homeCards(){
 }
 const HOME_HERO =
   '<div class="hero"><span class="hero-badge">AI Application Engineer · Automotive SoC</span>'+
-  '<div class="hero-title">AI Models on Automotive SoCs — Interview Prep</div>'+
+  '<div class="hero-title">AI Models on Automotive SoCs: Interview Prep</div>'+
   '<p class="hero-sub">Bringing CV models (BEV, detection, segmentation) from training to optimized '+
   'inference on embedded NPU / DSP / CNNIP — quantization (PTQ/QAT/QDQ), the ONNX toolchain, '+
   'operator mapping &amp; partitioning, SoC memory / DMA / multi-core, and Linux / QNX runtime, '+
@@ -287,7 +287,7 @@ const HTML =
 '<meta charset="utf-8">\n' +
 '<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">\n' +
 '<meta name="theme-color" content="#3b82f6">\n' +
-'<title>AI Application Engineer — Automotive SoC — Interview Prep</title>\n' +
+'<title>AI Application Engineer: Automotive SoC: Interview Prep</title>\n' +
 '<style>\n' + CSS + '\n</style>\n</head>\n<body>\n' +
 '<div class="app">\n' +
 '  <aside class="sidebar" id="sidebar">\n' +

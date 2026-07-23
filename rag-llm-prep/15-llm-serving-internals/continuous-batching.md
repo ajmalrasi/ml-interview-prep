@@ -1,4 +1,4 @@
-# Continuous Batching — Don't Let One Slow Request Block the Queue
+# Continuous Batching: Don't Let One Slow Request Block the Queue
 
 **TL;DR:** naive batching waits for the whole batch to finish before starting
 the next one, so one long answer stalls everyone. Continuous batching swaps

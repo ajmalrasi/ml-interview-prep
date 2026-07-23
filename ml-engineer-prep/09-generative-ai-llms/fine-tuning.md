@@ -55,7 +55,7 @@ input→output pairs in the format/behavior you want. Data quality matters more 
 quantity — a few hundred clean, on-target examples often beat thousands of noisy ones. This
 is the real work of fine-tuning; the training itself is largely a solved recipe.
 
-## 🔗 Connecting the dots — the real stack
+## 🔗 Connecting the dots: the real stack
 
 The stack is **HuggingFace PEFT** (LoRA/QLoRA), **bitsandbytes** (4-bit for QLoRA), **TRL** (SFT/RLHF trainers), and wrappers like **Axolotl** or **Unsloth** that make it a config file. Adapters register in **MLflow / HuggingFace Hub** and serve on **vLLM** (which can hot-swap LoRA adapters).
 

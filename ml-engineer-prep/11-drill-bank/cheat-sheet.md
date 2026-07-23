@@ -71,7 +71,7 @@ of drift. "ML Engineer" = the deploy → monitor → retrain half.
 3. *"A model isn't done at deploy — I monitor for silent decay and retrain, with a quality
    gate and safe rollout."*
 
-## 🔗 Tool map — the production stack at a glance
+## 🔗 Tool map: the production stack at a glance
 - **Storage:** lake = S3/GCS + Delta/Iceberg · warehouse = Snowflake/BigQuery · lakehouse = Databricks + Unity Catalog.
 - **Pipelines:** batch = Spark/dbt + Airflow · streaming = Kafka + Flink · quality = Great Expectations.
 - **Features:** Feast (offline = Delta/BigQuery, online = Redis/DynamoDB).

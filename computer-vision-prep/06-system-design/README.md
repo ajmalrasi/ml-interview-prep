@@ -1,4 +1,4 @@
-# 06 — System Design
+# 06: System Design
 
 **TL;DR:** This is the round you said you're prepping for. Expect an open prompt
 like *"Design a system that runs object detection on 50 RTSP cameras, 24/7, on the

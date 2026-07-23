@@ -1,4 +1,4 @@
-# LangGraph — Interview Questions
+# LangGraph: Interview Questions
 
 ## Q: What is the role of LangGraph in a multi-agent system?
 

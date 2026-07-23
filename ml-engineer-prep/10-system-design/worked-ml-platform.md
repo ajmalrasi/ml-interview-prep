@@ -50,7 +50,7 @@ Flexibility vs standardization (too rigid and teams route around it; too flexibl
 chaos), build vs buy (control vs speed), and cost vs capability. A good answer explicitly
 picks a point on each and says why.
 
-## 🔗 Connecting the dots — the real stack
+## 🔗 Connecting the dots: the real stack
 
 The platform *is* a named toolchain. Open-source assembly: **Feast** (features) + **MLflow** (tracking/registry) + **Kubeflow** (pipelines) + **KServe** (serving) + **Evidently** (monitoring) + **Airflow** (orchestration) + **Terraform** (infra), on **Kubernetes**. Managed equivalent: **Databricks** or **SageMaker / Vertex** covering the same boxes end to end.
 

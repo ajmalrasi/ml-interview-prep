@@ -1,4 +1,4 @@
-# The bge-small Model — Why This One?
+# The bge-small Model: Why This One?
 
 **TL;DR:** `bge-small-en-v1.5` is a self-hosted, open-source English embedding
 model that's fast, free, private, and good enough for technical docs. The key

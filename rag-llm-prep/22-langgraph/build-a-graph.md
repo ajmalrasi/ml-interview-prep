@@ -1,4 +1,4 @@
-# Build a Graph — DocsMind's Retrieve → Generate, Runnable
+# Build a Graph: DocsMind's Retrieve → Generate, Runnable
 
 This is the whole thing in one file. It's the code to write on a whiteboard when
 someone says **"show me a LangGraph node."** Everything you saw in
@@ -68,7 +68,7 @@ the existing [`CloudLLMClient`](../../docsmind/llm/cloud_client.py). **LangGraph
 is the wiring, not the work.** The retrieval and generation you already built
 become two nodes; the graph just decides the order and, next, the branches.
 
-## invoke vs stream — know both
+## invoke vs stream: know both
 
 - `graph.invoke(state)` — run to the end, get the final state. Simplest.
 - `graph.stream(state)` — yields the state update after **each node**, so you can

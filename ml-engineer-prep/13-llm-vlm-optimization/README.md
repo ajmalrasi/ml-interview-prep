@@ -1,4 +1,4 @@
-# 13 — LLM & VLM Optimization
+# 13: LLM & VLM Optimization
 
 **TL;DR:** Your FashionMNIST project was a **CNN**. The same optimization *loop* —
 baseline → quantize → serve → compare — absolutely applies to **LLMs** and **VLMs**, but
@@ -7,7 +7,7 @@ the details flip: LLM inference is **memory-bound** not compute-bound, activatio
 INT4 dominate**), and you measure **perplexity and tokens/sec**, not top-1 accuracy. This
 section maps your CNN skills onto that world.
 
-## Does the CNN loop transfer? Yes — with three twists
+## Does the CNN loop transfer? Yes: with three twists
 
 The **method / format / engine** mental model from [§12](../12-nvidia-model-optimization/README.md)
 carries over unchanged. What changes is *which choices win*:

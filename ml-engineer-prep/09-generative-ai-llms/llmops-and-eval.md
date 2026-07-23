@@ -49,7 +49,7 @@ The honest answer to "how do you evaluate an LLM app?": *"a mix — automated ch
 LLM-as-judge for scale on every change, plus periodic human review, and for RAG I
 specifically measure groundedness and retrieval relevance, not just fluency."*
 
-## 🔗 Connecting the dots — the real stack
+## 🔗 Connecting the dots: the real stack
 
 **Serving:** **vLLM** / **TGI**. **Evaluation:** **Ragas** (RAG groundedness/retrieval), **DeepEval**, **TruLens**, **LangSmith** / **Langfuse** / **Arize Phoenix** (tracing + eval). **Guardrails:** **Guardrails AI**, **NeMo Guardrails**. **Observability:** LangSmith / Langfuse trace every prompt, token, and cost.
 

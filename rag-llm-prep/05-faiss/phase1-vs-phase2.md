@@ -1,4 +1,4 @@
-# Flat vs IVF vs HNSW vs PQ — The Full Comparison
+# Flat vs IVF vs HNSW vs PQ: The Full Comparison
 
 **TL;DR:** Four index types, four different tradeoffs between speed, memory,
 recall, and complexity. Phase 1 uses Flat. Phase 2 benchmarks the rest.

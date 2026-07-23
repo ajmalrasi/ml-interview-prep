@@ -1,4 +1,4 @@
-# Wiring It In — What Exists, the Seams, and Fire-Testing
+# Wiring It In: What Exists, the Seams, and Fire-Testing
 
 **TL;DR:** DocsMind has real-but-stranded instrumentation: a `latency_ms`
 that goes nowhere and an eval script run by hand. The seams for Phase 7 are

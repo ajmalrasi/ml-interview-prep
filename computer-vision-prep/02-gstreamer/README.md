@@ -1,4 +1,4 @@
-# 02 — GStreamer (and DeepStream)
+# 02: GStreamer (and DeepStream)
 
 **TL;DR:** GStreamer is a pipeline framework: you connect small **elements**
 (source → decode → convert → sink) into a graph, and media flows through as

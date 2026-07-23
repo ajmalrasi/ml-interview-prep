@@ -1,4 +1,4 @@
-# The Four Signals — Why Each Is a Different Axis
+# The Four Signals: Why Each Is a Different Axis
 
 **TL;DR:** cost and latency are visible in any request's logs. Quality
 needs an eval signal. Drift needs a baseline to compare against over time.

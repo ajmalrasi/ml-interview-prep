@@ -60,7 +60,7 @@ Because models can degrade in ways tests miss, **keeping the previous version pi
 ready** is essential — when a new model misbehaves in production, you flip back in
 seconds rather than scramble to retrain. Never overwrite the live model in place.
 
-## 🔗 Connecting the dots — the real stack
+## 🔗 Connecting the dots: the real stack
 
 Package with **Docker**; register in the **MLflow Model Registry**, **SageMaker / Vertex** registries, or **Unity Catalog** (models beside tables). Version data with **DVC** or a Delta snapshot, and code with git — so "which code + which data made the live model" is always answerable.
 

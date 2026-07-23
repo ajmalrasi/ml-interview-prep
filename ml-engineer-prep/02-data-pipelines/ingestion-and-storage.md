@@ -36,7 +36,7 @@ on write" — data must fit a defined structure to get in, which guarantees clea
 but rejects anything malformed at the door. This trade-off — flexibility now vs
 cleanliness now — explains most storage decisions.
 
-## 🔗 Connecting the dots — the real stack
+## 🔗 Connecting the dots: the real stack
 
 Each storage layer has a concrete implementation: a **data lake** is object storage (**S3 / GCS / ADLS**), usually with an open **table format** on top (**Delta Lake, Apache Iceberg, Hudi**); a **warehouse** is **Snowflake / BigQuery / Redshift**; a **lakehouse** is typically **Databricks** (Delta + **Unity Catalog** for governance). For ML teams the lakehouse has become the default, because it plugs straight into experiment tracking, governance, and serving — most cleanly via **MLflow** (which was created by Databricks):
 

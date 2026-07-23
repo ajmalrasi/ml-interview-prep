@@ -1,4 +1,4 @@
-# 9 — Generative AI & LLMs
+# 9: Generative AI & LLMs
 
 **TL;DR:** The JD's "staying up to date, including Generative AI." Every team asks about
 this now, even non-LLM roles. You need: how transformers/LLMs work at a high level, the

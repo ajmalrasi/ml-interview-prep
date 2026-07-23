@@ -1,4 +1,4 @@
-# Python Interview Prep — Learn It Before You Test It
+# Python Interview Prep: Learn It Before You Test It
 
 This site is a **course**, not a question dump. Each chapter teaches one mental model, walks through code, points out the common trap, and only then asks you to recall or apply it.
 

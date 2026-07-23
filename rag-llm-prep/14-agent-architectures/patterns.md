@@ -1,4 +1,4 @@
-# Patterns — Single Agent vs Multi-Agent vs Supervisor
+# Patterns: Single Agent vs Multi-Agent vs Supervisor
 
 **TL;DR:** all three live at the same place: the loop that wraps the
 pipeline. The difference is how many LLM loops exist, and who decides what

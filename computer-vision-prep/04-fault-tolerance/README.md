@@ -1,4 +1,4 @@
-# 04 — Fault Tolerance ("Crash-Proof" Systems)
+# 04: Fault Tolerance ("Crash-Proof" Systems)
 
 **TL;DR:** The JD is blunt: *"Build Crash-Proof systems. If a camera goes offline
 or a frame is dropped, the system recovers gracefully without manual

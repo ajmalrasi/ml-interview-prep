@@ -50,7 +50,7 @@ resolution mismatch in preprocessing, or quantization accuracy drop. Diagnose by
 isolating: check raw frames, check preprocessing, A/B FP16 vs INT8, error-analyze
 by camera. (Your model-eval + error-analysis background.)
 
-## "Edge vs cloud inference — defend your choice."
+## "Edge vs cloud inference: defend your choice."
 Edge: lowest latency, no video egress, privacy, survives WAN loss — but limited
 compute, harder to update, per-site hardware cost. Cloud: elastic compute, easy
 updates, central management — but latency, bandwidth/egress cost, WAN dependency.

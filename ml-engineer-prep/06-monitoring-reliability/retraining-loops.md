@@ -74,7 +74,7 @@ A recommender that only shows popular items gets clicks only on popular items, t
 shaped, and consider logging some randomized/exploration traffic to keep the feedback
 honest.
 
-## 🔗 Connecting the dots — the real stack
+## 🔗 Connecting the dots: the real stack
 
 The loop is wired with an orchestrator — **Airflow**, **Kubeflow Pipelines**, or **Vertex Pipelines** — triggered on a schedule *or* by a drift alert from **Evidently / Arize**. It pulls fresh data (feature store), retrains, gates on **MLflow**-logged metrics vs production, and canaries out via **KServe** if it wins.
 

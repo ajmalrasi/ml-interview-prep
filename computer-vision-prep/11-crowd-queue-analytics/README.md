@@ -1,4 +1,4 @@
-# 11 — Crowd & Queue Analytics
+# 11: Crowd & Queue Analytics
 
 **TL;DR:** The two numbers the client pays for: **how many people** + **how long they wait**. Detector→tracker gives boxes+IDs; you turn them into counts, dwell, flow — on the **floor plane**, not pixels.
 

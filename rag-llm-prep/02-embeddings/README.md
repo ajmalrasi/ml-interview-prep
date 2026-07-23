@@ -1,4 +1,4 @@
-# 02 — Embeddings
+# 02: Embeddings
 
 **The big idea:** A computer can't compare English sentences directly. We
 convert each chunk into a list of 384 numbers — called an *embedding* or

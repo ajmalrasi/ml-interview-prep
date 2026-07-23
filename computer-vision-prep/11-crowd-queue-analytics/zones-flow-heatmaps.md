@@ -26,7 +26,7 @@
 - Origin→destination, common routes, bottlenecks.
 - **Speed on floor (m/s)**, not pixels. Speed drop + occupancy rise = **congestion forming**.
 
-## Heatmaps — 2 kinds (don't mix)
+## Heatmaps: 2 kinds (don't mix)
 - **Occupancy/dwell heatmap** = accumulate **time-in-cell** → "where people linger."
 - **Motion heatmap** = accumulate **movement-in-cell** → "where activity is."
 - Build on the **floor**, not the image (else near-camera looks fake-hot).

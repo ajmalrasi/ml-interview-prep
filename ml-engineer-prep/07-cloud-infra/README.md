@@ -1,4 +1,4 @@
-# 7 — Cloud & Infra
+# 7: Cloud & Infra
 
 **TL;DR:** Modern ML runs on the cloud, so you should know what the big three (AWS, GCP,
 Azure) offer for ML, how **containers and Kubernetes** run your models at scale, and how

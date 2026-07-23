@@ -13,7 +13,7 @@ Given two numbers, a computer can tell you:
 Given two sentences in English, a computer can't do any of that without
 first converting them.
 
-## Keyword search — the old way
+## Keyword search: the old way
 
 The simplest approach: does the word "black hole" appear in this document?
 

@@ -41,7 +41,7 @@ run validation checks on live inputs (ranges, nulls, types, cardinality) and **a
 violations** — because a model can't tell you its input is garbage; it just returns
 garbage. Tools: Great Expectations, Evidently, or built-in cloud monitors.
 
-## 🔗 Connecting the dots — the real stack
+## 🔗 Connecting the dots: the real stack
 
 Drift/quality tools: **Evidently** (open source), **Arize**, **WhyLabs**, **Fiddler**, **NannyML**, or the built-in **SageMaker Model Monitor** / **Vertex Model Monitoring**. Raw data checks stay in **Great Expectations**. These emit metrics that feed the same Prometheus/Grafana dashboards as the service.
 

@@ -1,4 +1,4 @@
-# Reranking — the deep dive
+# Reranking: the deep dive
 
 **Where in the pipeline:** the very last step of the **Search** stage, after
 RRF fusion and right before the top chunks go to the LLM. Everything upstream

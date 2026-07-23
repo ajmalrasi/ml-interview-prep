@@ -1,4 +1,4 @@
-# 11 — HyDE: Search With a Fake Answer (concept, Phase 5)
+# 11: HyDE: Search With a Fake Answer (concept, Phase 5)
 
 **The big idea:** questions and answers are different *shapes* of text, so a
 question's vector lands in a slightly wrong neighborhood of the index. HyDE

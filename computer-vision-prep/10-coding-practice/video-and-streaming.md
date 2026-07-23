@@ -7,7 +7,7 @@ to have in muscle memory — it doubles as your fault-tolerance answer.
 
 ---
 
-## Problem 13 — Robust capture: read, sample every Nth frame, save
+## Problem 13: Robust capture: read, sample every Nth frame, save
 
 **Tests:** the capture loop, failure handling, frame sampling, releasing resources.
 
@@ -66,7 +66,7 @@ reconnect-with-backoff loop (see the fault-tolerance chapter).
 
 ---
 
-## Problem 14 — Motion detection via frame differencing, write annotated video
+## Problem 14: Motion detection via frame differencing, write annotated video
 
 **Tests:** per-frame processing, background diff, contours on a mask, `VideoWriter`.
 
@@ -134,7 +134,7 @@ empty file. Blur before diff to kill sensor noise. `fourcc` "mp4v" for `.mp4`.
 
 ---
 
-## Problem 15 — Overlay FPS / text and count frames
+## Problem 15: Overlay FPS / text and count frames
 
 **Tests:** drawing text, reading video properties, simple per-frame overlay.
 

@@ -7,7 +7,7 @@ Pure Python + NumPy — no model needed. These are classic, so know them cold.
 
 ---
 
-## Problem 8 — IoU of two boxes
+## Problem 8: IoU of two boxes
 
 **Tests:** the fundamental box metric; coordinate math; the empty-overlap edge case.
 
@@ -53,7 +53,7 @@ bogus positive area.
 
 ---
 
-## Problem 9 — Non-Maximum Suppression (from scratch)
+## Problem 9: Non-Maximum Suppression (from scratch)
 
 **Tests:** the dedup algorithm every detector needs. Sort by score, greedily keep
 the best, drop high-IoU neighbours.
@@ -124,7 +124,7 @@ Soft-NMS (decay scores instead of dropping) is the follow-up for crowded scenes.
 
 ---
 
-## Problem 10 — Count detections inside a zone (point-in-polygon)
+## Problem 10: Count detections inside a zone (point-in-polygon)
 
 **Tests:** geometry on detections; using the **bottom-center** (foot) point, not
 the box center.
@@ -171,7 +171,7 @@ geometric center — the standard gotcha for tall objects / oblique cameras.
 
 ---
 
-## Problem 11 — Line-crossing counter (direction-aware)
+## Problem 11: Line-crossing counter (direction-aware)
 
 **Tests:** tracking-style logic; cross-product sign to detect a crossing and its
 direction between consecutive frames.
@@ -224,7 +224,7 @@ not once per frame. Debounce flicker in real systems (K-of-N frames).
 
 ---
 
-## Problem 12 — Sort OCR boxes into reading order
+## Problem 12: Sort OCR boxes into reading order
 
 **Tests:** turning detections into text order — group into rows, then left-to-right.
 

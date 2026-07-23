@@ -4,7 +4,7 @@
 Estimate → Architect → Bottleneck → Failure**. It works for any "design a video
 pipeline" prompt and shows the senior-engineer method the JD wants.
 
-## Step 1 — Clarify (never skip)
+## Step 1: Clarify (never skip)
 
 Ask before you design. Good questions for any CV pipeline:
 - **Scale:** how many cameras? resolution? framerate? Edge, cloud, or both?
@@ -17,7 +17,7 @@ Ask before you design. Good questions for any CV pipeline:
 
 *Stating these assumptions out loud is half the score.*
 
-## Step 2 — Estimate (back-of-envelope)
+## Step 2: Estimate (back-of-envelope)
 
 Show you can size it:
 - 50 cams × 1080p × 30fps. Can one Jetson/GPU decode + infer that? NVDEC decode
@@ -26,7 +26,7 @@ Show you can size it:
 - Conclusion drives architecture: one box won't do 50 → distribute (e.g., edge
   boxes of 8–16 cams each, or a GPU cluster).
 
-## Step 3 — Architect (the diagram)
+## Step 3: Architect (the diagram)
 
 A defensible default:
 ```rawhtml
@@ -46,13 +46,13 @@ A defensible default:
 Key decisions to justify: edge vs cloud inference, per-camera isolation, batching
 at the mux, bounded buffers, hardware decode.
 
-## Step 4 — Bottleneck (prove you measure)
+## Step 4: Bottleneck (prove you measure)
 
 Walk the latency budget (section 03): decode, copy, inference, post, network. Name
 the likely fattest slice and how you'd *measure* then fix it. Mention p99, GPU
 utilization as the diagnostic. This is your "evidence-driven engineering" signature.
 
-## Step 5 — Failure (crash-proof, section 04)
+## Step 5: Failure (crash-proof, section 04)
 
 Close every design by addressing: camera drop (reconnect+backoff), silent freeze
 (watchdog), overload (drop frames / degrade), process crash (supervised restart),

@@ -1,4 +1,4 @@
-# The Guardrail — INSUFFICIENT_CONTEXT
+# The Guardrail: INSUFFICIENT_CONTEXT
 
 **TL;DR:** When the retrieved chunks don't contain enough to answer the
 question, Claude should reply with the exact string `INSUFFICIENT_CONTEXT`.

@@ -1,4 +1,4 @@
-# 16 — Python Concurrency: Sync, Async, Threads, Processes (real code)
+# 16: Python Concurrency: Sync, Async, Threads, Processes (real code)
 
 **The big idea:** sync, async, multithreading, and multiprocessing sound like
 synonyms. They aren't — and treating them as synonyms is the interview trap.

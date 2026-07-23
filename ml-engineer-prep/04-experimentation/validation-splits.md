@@ -55,7 +55,7 @@ problem has a time dimension, say this unprompted — it's a common gotcha.
 When one class is rare, use **stratified** splitting so each split keeps the same class
 ratio — otherwise a fold might contain almost no positives and give meaningless scores.
 
-## 🔗 Connecting the dots — the real stack
+## 🔗 Connecting the dots: the real stack
 
 In practice this is **scikit-learn** `model_selection`: `KFold`, `StratifiedKFold` for imbalance, `TimeSeriesSplit` for time-ordered data, and `cross_val_score` / `cross_validate` to run it. Pair it with **DVC** or a Delta snapshot so the *exact* split and data version are reproducible.
 

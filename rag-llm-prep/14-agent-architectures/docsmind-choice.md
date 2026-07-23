@@ -1,4 +1,4 @@
-# DocsMind's Choice — One LangGraph Loop, and What Would Change That
+# DocsMind's Choice: One LangGraph Loop, and What Would Change That
 
 **TL;DR:** `docsmind/agent/` is planned as a single-agent LangGraph loop
 with explicit tools. For "answer questions from one corpus, with citations,"

@@ -63,7 +63,7 @@ lifecycle *is* your answer skeleton: frame → data → features → train → e
 deploy → monitor → retrain. Hang specifics off each stage and you've structured a
 strong 10-minute answer without rambling.
 
-## 🔗 Connecting the dots — the real stack
+## 🔗 Connecting the dots: the real stack
 
 Naming a tool for each stage is what turns "I know the lifecycle" into "I've run one." A common cloud stack:
 

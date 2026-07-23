@@ -22,7 +22,7 @@ served separately by `ml-prep.service` :9002 — don't touch it here).
 | `koi-prep` | static website, port **9000** (no build needed to serve) |
 | `koi-jupyter` | JupyterLab, port **8888**, fixed token **`koireader`** (needs a Python venv) |
 
-## Gotchas (learned the hard way — read before you start)
+## Gotchas (learned the hard way: read before you start)
 
 - **Pi pulls over HTTPS, not SSH.** The Pi has no GitHub key. If `origin` is
   `git@github.com:...` you'll get `Host key verification failed`. Fix once:

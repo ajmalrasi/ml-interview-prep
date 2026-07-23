@@ -1,4 +1,4 @@
-# Agent Architectures — Interview Questions
+# Agent Architectures: Interview Questions
 
 ## Q: How does Agentic AI differ from a traditional workflow?
 
@@ -19,7 +19,7 @@ an agent.
 
 ---
 
-## Q: Single agent vs multi-agent vs supervisor — what's the difference and when do you use each?
+## Q: Single agent vs multi-agent vs supervisor: what's the difference and when do you use each?
 
 All three live at the same place: the loop wrapping the pipeline. The
 difference is how many LLM loops exist and who decides what runs next.
@@ -39,7 +39,7 @@ distinct specialties with different tools, prompts, or context windows.
 
 ---
 
-## Q: Multi-agent sounds more powerful — why not always use it?
+## Q: Multi-agent sounds more powerful: why not always use it?
 
 Because multi-agent's real cost is **coordination, not compute**. Every hop
 between agents is a full LLM call reinterpreting another LLM's natural-language
@@ -55,7 +55,7 @@ That's when you promote it to a real supervisor.
 
 ---
 
-## Q: LlamaIndex vs LangChain vs LangGraph vs CrewAI — compare them.
+## Q: LlamaIndex vs LangChain vs LangGraph vs CrewAI: compare them.
 
 It's a trick prompt: they solve **different layers**, so a head-to-head is a
 category error, and interviewers use it to check whether you know the stack or

@@ -1,4 +1,4 @@
-# 01 — Chunks & Overlap
+# 01: Chunks & Overlap
 
 **The big idea:** Documents are too long and too broad to search as a whole.
 We split them into small focused pieces called *chunks*. We overlap neighboring

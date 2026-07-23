@@ -43,7 +43,7 @@ them, runs them in order, retries failures, and alerts you. A pipeline without
 orchestration is a pile of scripts someone runs by hand — fine for a demo, not for
 production.
 
-## 🔗 Connecting the dots — the real stack
+## 🔗 Connecting the dots: the real stack
 
 **Batch** is usually **Spark** or **dbt** transforms orchestrated by **Airflow** (or Dagster / Prefect). **Streaming** is **Kafka** as the event backbone with **Flink** or **Spark Structured Streaming** doing the processing, often writing fresh values into a feature store's online store.
 

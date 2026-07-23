@@ -1,4 +1,4 @@
-# 06 — Generation
+# 06: Generation
 
 **The big idea:** After FAISS returns the top-k chunks, the pipeline turns
 them into a grounded answer. It formats the chunks as numbered passages, sends

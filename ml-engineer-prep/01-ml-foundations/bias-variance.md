@@ -65,7 +65,7 @@ augmentation, monitoring for drift — all of it is really about making a model
 generalize to data it hasn't seen. If you understand bias–variance, most modeling
 decisions become obvious.
 
-## 🔗 Connecting the dots — the real stack
+## 🔗 Connecting the dots: the real stack
 
 The anti-overfitting knobs live inside the libraries: L1/L2 and `max_depth` / `min_child_weight` in **XGBoost**, `dropout` and `weight_decay` in **PyTorch**, early-stopping callbacks in **XGBoost** and **Keras**, and cross-validation in **scikit-learn**. You *detect* the gap with an experiment tracker (**MLflow / W&B**) plotting train vs validation curves.
 

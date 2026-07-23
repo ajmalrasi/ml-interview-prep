@@ -1,4 +1,4 @@
-# Interview Q&A — LLM & VLM Rapid Fire
+# Interview Q&A: LLM & VLM Rapid Fire
 
 **TL;DR:** Last-mile drill for applying the optimization loop to LLMs and VLMs. Cover the
 answer, say the 30-second version out loud, then check. Grouped: bridge → LLM quant → serving →

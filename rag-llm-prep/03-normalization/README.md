@@ -1,4 +1,4 @@
-# 03 — Normalization
+# 03: Normalization
 
 **The big idea:** Before storing or comparing vectors, we scale each one so
 its length is exactly 1.0. This is called *L2 normalization*. It makes cosine

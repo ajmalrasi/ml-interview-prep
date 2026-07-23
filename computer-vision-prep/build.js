@@ -85,7 +85,7 @@ const SITE = [
     { file:"python-and-numpy.md", title:"Python & NumPy" },
     { file:"opencv-cheat-sheet.md", title:"OpenCV Cheat Sheet" },
     { file:"mock-test.md", title:"⏱ 90-min Mock Test" },
-    { file:"mock-solutions.md", title:"Mock — Solutions" },
+    { file:"mock-solutions.md", title:"Mock: Solutions" },
   ]},
   { label:"11 · Crowd & Queue Analytics", dir:"11-crowd-queue-analytics", items:[
     { file:"README.md", title:"Overview" },
@@ -345,7 +345,7 @@ const HTML =
 '<meta charset="utf-8">\n' +
 '<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">\n' +
 '<meta name="theme-color" content="#d97757">\n' +
-'<title>AI Data Scientist — Video Intelligence Prep</title>\n' +
+'<title>AI Data Scientist: Video Intelligence Prep</title>\n' +
 '<style>\n' + CSS + '\n</style>\n</head>\n<body>\n' +
 '<div class="app">\n' +
 '  <aside class="sidebar" id="sidebar">\n' +

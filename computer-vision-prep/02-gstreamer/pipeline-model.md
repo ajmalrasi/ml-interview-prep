@@ -57,7 +57,7 @@ stopped) → PLAYING (clock running, data flows). Live sources can't fully prero
 which is why live pipelines behave slightly differently and why you handle
 `async-done`/`no-preroll`.
 
-## Caps negotiation — how two pads actually agree
+## Caps negotiation: how two pads actually agree
 
 Linking isn't "plug A into B." When you set the pipeline to PLAYING, pads
 **negotiate caps**: the downstream pad advertises what it can accept, the upstream
@@ -111,7 +111,7 @@ common bug; you wait for the bus to confirm before assuming the camera is up.
   dropping late frames, slow down"). You usually don't handle these directly but
   knowing they exist explains how backpressure/QoS propagates.
 
-## Pad probes — inspect or modify the stream in flight
+## Pad probes: inspect or modify the stream in flight
 
 A **pad probe** is a callback you attach to a pad to watch buffers/events passing
 through — without adding an element. This is exactly how you read DeepStream

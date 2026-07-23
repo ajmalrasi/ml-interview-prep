@@ -245,19 +245,19 @@ D.multimodal = (()=>{
   return {h:226, body:b};
 })();
 
-// Production seismic RAG: offline indexing and online answering stay separate.
+// Target production adaptation: offline indexing and online answering stay separate.
 D.seismicRag = (()=>{
   let b='';
   const w=112,h=48,step=138,x0=16;
-  const offline=[["S3 / GCS","versioned SEG-Y"],["Airflow","discover + retry"],["Workers","range-read headers"],["Normalize","schema + QC"],["OpenSearch","embed + index"]];
-  const online=[["User","question + identity"],["FastAPI","route + authorize"],["Hybrid","BM25 + vector"],["Rerank","dedupe + budget"],["LLM","cite or abstain"]];
-  b+='<text class="dg-accent-tx" x="16" y="24">OFFLINE — INDEXING</text>';
+  const offline=[["S3","source change"],["SQS + DLQ","durable event"],["MWAA","orchestrate"],["EKS workers","extract + embed"],["Search index","validate + promote"]];
+  const online=[["User","question + identity"],["API Gateway","Okta / JWT"],["RAG API","authorize + route"],["Hybrid","BM25 + vector"],["LLM","cite or abstain"]];
+  b+='<text class="dg-accent-tx" x="16" y="24">TARGET OFFLINE ADAPTATION — INDEXING</text>';
   offline.forEach((l,i)=>{const x=x0+i*step;b+=box(x,36,w,h,l[0],l[1],i===4?'dg-box dg-hot':'dg-box');if(i<offline.length-1)b+=arrow(x+w,60,x+step);});
-  b+='<text class="dg-accent-tx" x="16" y="128">ONLINE — QUERY</text>';
+  b+='<text class="dg-accent-tx" x="16" y="128">TARGET ONLINE ADAPTATION — QUERY</text>';
   online.forEach((l,i)=>{const x=x0+i*step;b+=box(x,140,w,h,l[0],l[1],i===1||i===4?'dg-box dg-hot':'dg-box');if(i<online.length-1)b+=arrow(x+w,164,x+step);});
   b+='<rect class="dg-soft" x="16" y="220" width="664" height="48" rx="12"/>'+
      '<text class="dg-label" x="348" y="241" text-anchor="middle">Shared production foundation</text>'+
-     '<text class="dg-sub" x="348" y="258" text-anchor="middle">IAM · encryption · audit · OpenTelemetry/OTLP · Grafana · CI/CD · Terraform</text>';
+     '<text class="dg-sub" x="348" y="258" text-anchor="middle">IAM · project filters · OpenTelemetry · Loki · Mimir · Grafana · CI/CD · rollback</text>';
   return {h:286,body:b};
 })();
 
@@ -278,7 +278,7 @@ const DIAGRAMS = {
   "19-fine-tuning/README.md": ["finetune","RAG changes what the model sees; fine-tuning changes what it is"],
   "20-production-monitoring/README.md": ["monitoring","One event stream, four different signals"],
   "21-multimodal-document-rag/README.md": ["multimodal","Four extraction paths converge — the pipeline never knows the difference"],
-  "23-seismic-rag-project/README.md": ["seismicRag","Production seismic RAG — offline knowledge indexing and online answering are separate systems"],
+  "23-seismic-rag-project/README.md": ["seismicRag","Target production RAG adaptation — one product with separate offline and online workloads"],
 };
 
 /* section metadata: icon (emoji), accent, tagline.
@@ -307,7 +307,7 @@ const SECTIONS = {
   "20 · Production Monitoring": { icon:"📈", accent:"#3f8fbf", tag:"Cost, latency, quality, drift" },
   "21 · Multimodal Document RAG": { icon:"📄", accent:"#b58a2a", tag:"PDFs, tables, scans, charts — an ingest problem" },
   "22 · LangGraph":        { icon:"🕸️", accent:"#5a7fd6", tag:"State, nodes, edges — build the agent graph" },
-  "23 · Seismic RAG Project": { icon:"🌊", accent:"#168f86", tag:"40 PB, multi-TB SEG-Y, hybrid retrieval — your production story" },
+  "23 · Seismic RAG Project": { icon:"🌊", accent:"#168f86", tag:"Turn a working RAG prototype into an honest AWS production design" },
 };
 
 module.exports = { D, DIAGRAMS, SECTIONS, fig };

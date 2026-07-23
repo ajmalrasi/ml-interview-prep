@@ -9,7 +9,7 @@ serverless GPU** — by one question: *can the request wait through a cold start
 zero; if no, keep one warm replica. This page is the deployment counterpart to
 [The Loop in Practice](llm-opt-in-practice.md).
 
-## The layering — the engine is not your application
+## The layering: the engine is not your application
 
 TensorRT-LLM (or Triton / vLLM) **only performs inference**. It knows nothing about SEG-Y,
 EBCDIC, auth, business rules, logging, validation, or database writes. Those live in the app
@@ -34,7 +34,7 @@ layer. Keep them separate so each side scales, secures, and evolves independentl
 (Service A/B/C all POST to it). TensorRT-LLM handles batching, scheduling, KV cache, and GPU
 utilization — your app never manages any of that.
 
-## Keep it internal — no public endpoint
+## Keep it internal: no public endpoint
 
 Since usage is internal-only, nothing is exposed to the internet. In Kubernetes the parser
 simply calls a **ClusterIP** service, e.g. `http://trtllm-service:8000/v1/chat/completions`.
@@ -132,7 +132,7 @@ a permanently running REST server.
 </div>
 ```
 
-## Cold start — what you actually pay for
+## Cold start: what you actually pay for
 
 When scaling from zero, the first request eats: GPU **node provisioning** → container **image
 pull** → **TensorRT engine** download → **CUDA init** → engine **deserialization** → **KV-cache**

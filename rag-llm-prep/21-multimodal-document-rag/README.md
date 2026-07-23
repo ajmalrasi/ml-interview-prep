@@ -1,4 +1,4 @@
-# 21 — Multimodal Document RAG: PDFs, Tables, Scans, Charts (system design, roadmap)
+# 21: Multimodal Document RAG: PDFs, Tables, Scans, Charts (system design, roadmap)
 
 **The big idea:** the interviewer's question *sounds* like it wants a
 totally different architecture. It doesn't. Everything downstream of

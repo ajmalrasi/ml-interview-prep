@@ -1,4 +1,4 @@
-# 1 — ML Foundations
+# 1: ML Foundations
 
 **TL;DR:** Before the cloud and the MLOps, you need the core ideas an interviewer
 assumes you already have: how an ML project actually flows, the main *kinds* of

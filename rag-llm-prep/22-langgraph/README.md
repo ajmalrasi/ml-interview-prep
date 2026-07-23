@@ -1,4 +1,4 @@
-# 22 — LangGraph Hands-On: State, Nodes, Edges (concept, Phase 5)
+# 22: LangGraph Hands-On: State, Nodes, Edges (concept, Phase 5)
 
 **The big idea:** LangGraph is a way to write your agent as a **graph of small
 functions** instead of one long function. Each function is a **node**. A shared

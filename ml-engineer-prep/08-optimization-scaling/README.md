@@ -1,4 +1,4 @@
-# 8 — Optimization & Scaling
+# 8: Optimization & Scaling
 
 **TL;DR:** The JD's "optimize models for speed, efficiency, and scale." Two directions:
 make the **model** smaller/faster (quantization, pruning, distillation), and make the

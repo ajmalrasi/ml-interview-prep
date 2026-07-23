@@ -1,4 +1,4 @@
-# Cheat Sheet — One Page, Every Key Answer
+# Cheat Sheet: One Page, Every Key Answer
 
 Read this the morning of an interview. For depth, go to the topic files.
 
@@ -76,7 +76,7 @@ trade ~1–5% recall for huge speed gains. Usually acceptable for RAG.
 
 ---
 
-## Index Types (Phase 2 — real benchmark numbers)
+## Index Types (Phase 2: real benchmark numbers)
 
 **Flat vs IVF vs HNSW vs IVFPQ?**
 At 50k vectors: flat 0.78ms/100% recall; IVF 0.10ms/90%; HNSW 0.40ms/86%
@@ -114,7 +114,7 @@ setting. Pipeline never knows which is underneath.
 
 ---
 
-## Hybrid & Reranking (Phase 3 — real eval numbers)
+## Hybrid & Reranking (Phase 3: real eval numbers)
 
 **Why hybrid?**
 Dense and BM25 fail differently: dense blurs rare exact terms, BM25 misses

@@ -1,4 +1,4 @@
-# 14 — Agent Architectures: One Loop vs Many (concept, Phase 5)
+# 14: Agent Architectures: One Loop vs Many (concept, Phase 5)
 
 **The big idea:** two separate questions hide inside "agent architecture":
 which **framework** builds the loop, and whether the loop is **one agent or

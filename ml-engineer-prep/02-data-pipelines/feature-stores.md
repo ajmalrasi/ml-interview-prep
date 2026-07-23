@@ -56,7 +56,7 @@ they were at that moment* — not today's values. Using a feature computed after
 event leaks the future and inflates offline metrics. Feature stores handle these
 point-in-time joins for you, which is a big reason they exist.
 
-## 🔗 Connecting the dots — the real stack
+## 🔗 Connecting the dots: the real stack
 
 The open-source standard is **Feast**; managed options are **Tecton** and the **Databricks / SageMaker / Vertex** feature stores. Under the hood the **offline store** is Delta / BigQuery / Parquet (for training) and the **online store** is a low-latency key-value store like **Redis** or **DynamoDB** (for serving).
 

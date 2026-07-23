@@ -29,7 +29,7 @@ Key plugins:
   structured metadata you read in a `pad probe` (Python via pyds) to push results
   to a DB/analytics — no full-frame copy needed.
 
-## nvstreammux — the knobs that actually matter
+## nvstreammux: the knobs that actually matter
 
 `nvstreammux` is the heart of multi-stream, and its config is a frequent
 follow-up question:
@@ -53,7 +53,7 @@ follow-up question:
 > reconnected independently."* This ties multi-stream batching to
 > [fault tolerance](../04-fault-tolerance/README.md).
 
-## nvinfer config — what's in that text file
+## nvinfer config: what's in that text file
 
 `nvinfer` is configured by a `config_infer.txt` of key groups, not code. The ones
 to be able to name:
@@ -107,7 +107,7 @@ analytics service — same decoupled pattern as my data-platform work."*
   sub-500ms browser path from [section 01](../01-video-streaming/protocols-rtsp-webrtc.md).
   This closes the **RTSP in → infer → WebRTC out** loop.
 
-## Jetson vs dGPU (you've shipped Jetson — own the nuance)
+## Jetson vs dGPU (you've shipped Jetson: own the nuance)
 
 On **Jetson** (Nano/Orin) CPU and GPU share physical memory, so NVMM transfers are
 near-free, but you're compute/power constrained — INT8 + frame `interval` skipping

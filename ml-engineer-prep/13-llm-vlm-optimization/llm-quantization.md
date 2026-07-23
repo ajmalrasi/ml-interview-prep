@@ -69,7 +69,7 @@ higher-precision). Always worth mentioning as a lever your CNN never had.
   the tasks you care about.
 - **Watch long-context and reasoning** — these degrade first under aggressive quantization.
 
-## 🔗 Connecting the dots — the real stack
+## 🔗 Connecting the dots: the real stack
 
 **AutoGPTQ**, **AutoAWQ**, **llama.cpp/GGUF** (k-quants, CPU/edge), **bitsandbytes** (NF4/8-bit,
 QLoRA) for weight-only; **NVIDIA TensorRT-Model-Optimizer** and **TensorRT-LLM** for

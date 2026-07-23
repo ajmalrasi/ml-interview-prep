@@ -1,4 +1,4 @@
-# Experiment Walkthrough — Your FashionMNIST Quantization Project
+# Experiment Walkthrough: Your FashionMNIST Quantization Project
 
 **TL;DR:** You built the full optimization loop end-to-end: train an FP32 CNN → PTQ and QAT
 (fbgemm, CPU) → TensorRT INT8 (PTQ + QAT-fed) and FP16 (GPU) → compare six variants in
@@ -44,7 +44,7 @@ INT8 actually runs."*
 Your notes are strong on the conceptual story. These are the follow-ups they don't yet answer
 — close them:
 
-### 1. The ~0.83 INT8 cliff — have a root cause, not just "small model"
+### 1. The ~0.83 INT8 cliff: have a root cause, not just "small model"
 Don't leave it at "small models are sensitive." The concrete cause is almost certainly
 **per-tensor weight quantization** on a net with few, uneven channels, plus too little
 calibration data. Say: *"I'd switch to **per-channel** weight scales and more calibration

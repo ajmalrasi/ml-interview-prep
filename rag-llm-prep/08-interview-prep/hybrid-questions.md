@@ -1,4 +1,4 @@
-# Hybrid Retrieval & Reranking — Interview Questions
+# Hybrid Retrieval & Reranking: Interview Questions
 
 Phase 3 depth questions. The theme: every answer should end in a number you
 measured, because "how did you know it worked?" is always the follow-up.
@@ -32,7 +32,7 @@ Code: [`fusion.py`](../../docsmind/retrieval/fusion.py) — it's ~20 lines.
 
 ---
 
-## Q: Bi-encoder vs cross-encoder — and why do you need both?
+## Q: Bi-encoder vs cross-encoder: and why do you need both?
 
 - **Bi-encoder** (bge-small): encodes question and chunk *separately*, compares
   vectors. Fast, because chunk vectors are precomputed once at ingest.

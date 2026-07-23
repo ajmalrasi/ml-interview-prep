@@ -1,4 +1,4 @@
-# 2 — Data Pipelines
+# 2: Data Pipelines
 
 **TL;DR:** Models are only as good as the data feeding them, so a huge part of ML
 Engineering is building reliable pipelines that ingest, clean, and shape data — in

@@ -1,4 +1,4 @@
-# CV Fundamentals — Quick Refresh
+# CV Fundamentals: Quick Refresh
 
 One page for the classical-CV questions. Depth in the section files.
 
@@ -52,7 +52,7 @@ One page for the classical-CV questions. Depth in the section files.
 - **SORT** = Kalman+IoU (fast, ID switches); **DeepSORT** adds appearance re-ID
   (survives occlusion); **ByteTrack** uses low-conf boxes too.
 
-## Logic on detections (the JD's standout — be ready to whiteboard)
+## Logic on detections (the JD's standout: be ready to whiteboard)
 - Model gives boxes; **you** add geometry+stats: zones, counting, dwell, line-cross.
 - **Point-in-polygon** with the box's **bottom-center** (where it meets the floor).
 - **Line-crossing** via sign flip of cross product between frames → direction.

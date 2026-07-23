@@ -1,4 +1,4 @@
-# Four Ideas, One Job — Handling More Than One Thing at Once
+# Four Ideas, One Job: Handling More Than One Thing at Once
 
 **TL;DR:** sync does one thing at a time. Async interleaves I/O waits on one
 thread. Threads interleave too (the GIL forbids true parallel bytecode).

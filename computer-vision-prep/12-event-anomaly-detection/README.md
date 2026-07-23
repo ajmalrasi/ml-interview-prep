@@ -1,4 +1,4 @@
-# 12 — Event & Anomaly Detection
+# 12: Event & Anomaly Detection
 
 **TL;DR:** Two different problems. **Event** = you can name it (loitering, intrusion, abandoned bag) → write a **rule**. **Anomaly** = can't list it → **learn "normal", flag deviation**. Most briefs = 80% events + 20% anomaly.
 

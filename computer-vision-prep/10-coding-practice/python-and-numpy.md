@@ -7,7 +7,7 @@ long-running processes" — show that.
 
 ---
 
-## Problem 16 — Vectorize it (no pixel loops)
+## Problem 16: Vectorize it (no pixel loops)
 
 **Tests:** that you reach for NumPy, not `for y: for x:`. Example: threshold +
 tint without loops.
@@ -54,7 +54,7 @@ answer — say "vectorize with NumPy."
 
 ---
 
-## Problem 17 — Fault-tolerant batch image processor
+## Problem 17: Fault-tolerant batch image processor
 
 **Tests:** the "manage a long-running job, don't crash on one bad input" skill.
 Process a folder, skip and log corrupt files, keep going.
@@ -114,7 +114,7 @@ tolerance.
 
 ---
 
-## Problem 18 — Count connected components (blobs)
+## Problem 18: Count connected components (blobs)
 
 **Tests:** a small algorithm framed in CV terms; thresholding + labeling.
 

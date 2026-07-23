@@ -1,4 +1,4 @@
-# 18 — LLM Security: PII, Injection, Jailbreaks, RBAC, Moderation (concept, roadmap)
+# 18: LLM Security: PII, Injection, Jailbreaks, RBAC, Moderation (concept, roadmap)
 
 **The big idea:** "add security" is not a single stage — say that out loud
 first in an interview. Five distinct problems live at different pipeline

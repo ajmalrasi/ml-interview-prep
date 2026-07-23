@@ -1,4 +1,4 @@
-# The Request/Response Contract — Type Hints That Enforce Themselves
+# The Request/Response Contract: Type Hints That Enforce Themselves
 
 **TL;DR:** FastAPI reads the pydantic type annotations and does three jobs
 from them: parse, validate (bad requests get a 422 before your code runs),

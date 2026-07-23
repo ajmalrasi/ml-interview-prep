@@ -96,7 +96,7 @@ parallel pass, accepting the longest correct prefix. Since decode is memory-boun
 K tokens costs about the same as generating one — so you get **multiple tokens per big-model
 pass** with identical output distribution. Good "how else would you speed up decode" answer.
 
-## 🔗 Connecting the dots — the real stack
+## 🔗 Connecting the dots: the real stack
 
 **TensorRT-LLM** (NVIDIA — in-flight batching, fused kernels, FP8, TP/PP) served via
 **Triton**; **vLLM** (PagedAttention, continuous batching); **TGI**; **FlashAttention** /

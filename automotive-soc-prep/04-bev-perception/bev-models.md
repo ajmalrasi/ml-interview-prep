@@ -31,7 +31,7 @@ dominant automotive perception paradigm.
 
 ## The three approaches
 
-### LSS — Lift, Splat, Shoot (depth-based, "forward" projection)
+### LSS: Lift, Splat, Shoot (depth-based, "forward" projection)
 
 - **Lift:** for each pixel, predict a **depth distribution**, creating a frustum of 3D points
   with feature weights.
@@ -42,7 +42,7 @@ dominant automotive perception paradigm.
   the depth-weighted splat are the NPU-unfriendly parts; the depth net and BEV head are
   conv-friendly. Lineage: BEVDet, BEVDepth.
 
-### BEVFormer — query-based (transformer, "backward" projection)
+### BEVFormer: query-based (transformer, "backward" projection)
 
 - Start with a fixed grid of **BEV queries** (one per BEV cell).
 - **Spatial cross-attention:** each query attends to the image features at the pixels it
@@ -53,7 +53,7 @@ dominant automotive perception paradigm.
   LayerNorm. These are the classic NPU fallbacks: dynamic-ish sampling, reductions,
   precision-sensitive norms. This is where your partitioning and mixed-precision work lands.
 
-### BEVFusion — multi-modal (camera + lidar in shared BEV)
+### BEVFusion: multi-modal (camera + lidar in shared BEV)
 
 - Encode **camera** into BEV (LSS-style) **and** **lidar** into BEV (voxelization +
   sparse/3D conv), then **fuse in the BEV space** before the head.

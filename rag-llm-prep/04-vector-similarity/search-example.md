@@ -1,4 +1,4 @@
-# Search Example — Question to Top-k
+# Search Example: Question to Top-k
 
 **TL;DR:** A full walkthrough of one query through the retrieval layer —
 from raw question text to ranked chunks with scores.

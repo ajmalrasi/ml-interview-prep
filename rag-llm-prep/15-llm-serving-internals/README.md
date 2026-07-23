@@ -1,4 +1,4 @@
-# 15 — LLM Serving Internals: Beginner Path
+# 15: LLM Serving Internals: Beginner Path
 
 **The big idea:** an LLM generates autoregressively — token N+1 depends on
 tokens 1..N, so a 500-token answer is 500 sequential forward passes. No
@@ -88,7 +88,10 @@ sits behind it at serving time.
 | 3 | [Continuous batching](continuous-batching.md) | How can many unequal-length requests share one GPU efficiently? |
 | 4 | [Speculative decoding](speculative-decoding.md) | How can one target-model pass safely commit several tokens? |
 | 5 | [Latency benchmarking](latency-benchmarking.md) | Which stopwatch proves each optimization helped? |
-| 6 | [vLLM in production](vllm-production.md) | Where does the engine sit in a real service? |
+| 6 | [Benchmark harness and CI gates](benchmark-harness-regression-gates.md) | How does a benchmark become reliable release infrastructure? |
+| 7 | [Engine and hardware qualification](engine-hardware-qualification.md) | How do vLLM, SGLang, TensorRT-LLM, NVIDIA, and AMD compare fairly? |
+| 8 | [Capacity, COGS and statistics](capacity-cogs-statistics.md) | How does a saturation curve become a fleet and cost decision? |
+| 9 | [vLLM in production](vllm-production.md) | Where does the engine sit in a real service? |
 | Drill | [Interview questions](interview-questions.md) | Can I explain mechanism, trade-off, and measurement clearly? |
 
 ## Why each mechanism exists

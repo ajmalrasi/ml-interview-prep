@@ -1,4 +1,4 @@
-# 10 — ML System Design
+# 10: ML System Design
 
 **TL;DR:** The open-ended interview round: *"design an ML system for X"* (recommendations,
 fraud, search, a feed). It's not about one model — it's about the whole pipeline: framing

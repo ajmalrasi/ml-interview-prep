@@ -1,4 +1,4 @@
-# 09 — Computer Vision Fundamentals (Refresher)
+# 09: Computer Vision Fundamentals (Refresher)
 
 **TL;DR:** The systems sections (01–08) are the *job*. This section is the
 *foundation* the JD assumes you already have: *"extensive experience with OpenCV

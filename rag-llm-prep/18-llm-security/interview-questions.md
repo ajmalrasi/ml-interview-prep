@@ -1,4 +1,4 @@
-# LLM Security — Interview Questions
+# LLM Security: Interview Questions
 
 ## Q: How would you secure an enterprise GenAI application?
 

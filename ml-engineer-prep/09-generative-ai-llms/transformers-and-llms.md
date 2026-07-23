@@ -48,7 +48,7 @@ without training a new model each time — via prompting or light fine-tuning. T
 generality is why they're "foundation" models and why the practical skill is *adapting*
 them (next pages), not training them from scratch (almost no one does that).
 
-## 🔗 Connecting the dots — the real stack
+## 🔗 Connecting the dots: the real stack
 
 You either call a **hosted API** (**OpenAI**, **Anthropic**, **Cohere**) or run an **open model** (**Llama**, **Mistral**, **Qwen**) via **HuggingFace Transformers**; tokenization is **tiktoken** or HF tokenizers. Self-hosting for throughput uses **vLLM** or **TGI** (see §8).
 

@@ -56,7 +56,7 @@ The whole point is judgment: batch (cheap, stale) vs online (fresh, costly); a b
 (accurate, slow, expensive) vs a smaller one; more features (better, more pipeline risk).
 Naming the trade-off and *making a choice with a reason* is what they're scoring.
 
-## 🔗 Connecting the dots — the real stack
+## 🔗 Connecting the dots: the real stack
 
 Each layer of your answer maps to named tools, and dropping them in shows you've built, not just diagrammed: features → **Feast**; training → **PyTorch / XGBoost** on **SageMaker/Vertex/Databricks**; tracking → **MLflow**; candidate retrieval → a **vector DB / ANN** (FAISS, ScaNN); serving → **Triton / KServe**; monitoring → **Evidently + Prometheus/Grafana**; A/B → **Statsig**.
 

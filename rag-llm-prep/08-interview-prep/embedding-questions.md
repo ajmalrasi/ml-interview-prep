@@ -1,4 +1,4 @@
-# Embeddings — Interview Questions
+# Embeddings: Interview Questions
 
 ## Q: Why self-hosted bge-small over OpenAI embeddings?
 
@@ -22,7 +22,7 @@ ingest and query is non-negotiable.
 
 ---
 
-## Q: Dense embeddings vs BM25 — which is better?
+## Q: Dense embeddings vs BM25: which is better?
 
 Neither alone. Dense captures semantic meaning ("car" ≈ "automobile") but
 misses exact tokens, IDs, rare terms. BM25 nails exact matches but is blind

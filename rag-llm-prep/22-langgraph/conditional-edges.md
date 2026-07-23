@@ -1,4 +1,4 @@
-# Conditional Edges — Why It's a Graph, Not a Sequence
+# Conditional Edges: Why It's a Graph, Not a Sequence
 
 This is the page that turns "our graph is still sequential" from an apology into
 a *design choice you're about to upgrade.* A conditional edge is the one feature
@@ -57,7 +57,7 @@ sequential?" — **because turning a sequence into a decision is one
 `add_conditional_edges` call, and the decision is now a thing you can see, test,
 and trace**, not logic hidden inside a function.
 
-## The loop — an agent, in graph form
+## The loop: an agent, in graph form
 
 The same conditional-edge tool makes a loop. Point an edge *back* to an earlier
 node, and gate it with a router. This is the tool-calling loop from

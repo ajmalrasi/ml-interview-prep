@@ -18,7 +18,7 @@ foot_world = cv2.perspectiveTransform(foot_image, H)
 - Enables de-dup of overlapping counts + cross-camera track handoff (§14 ReID).
 - No shared plane → two cameras double-count one crowd.
 
-## Validation (don't skip — you WILL be asked)
+## Validation (don't skip: you WILL be asked)
 | Metric | Measures |
 |---|---|
 | Count **MAE/MAPE** | ±N people vs manual count |
