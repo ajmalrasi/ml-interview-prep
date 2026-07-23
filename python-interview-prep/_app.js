@@ -36,12 +36,14 @@ function normalizeState(s){
   s.done = s.done && typeof s.done === "object" ? s.done : {};
   s.cards = s.cards && typeof s.cards === "object" ? s.cards : {};
   s.pins = s.pins && typeof s.pins === "object" ? s.pins : {};
+  s.analytics = s.analytics && typeof s.analytics === "object" ? s.analytics : {};
   s.last = typeof s.last === "string" ? s.last : null;
   return s;
 }
 STATE = normalizeState(STATE);
 function hasStudyState(){
-  return Object.keys(STATE.done).length || Object.keys(STATE.cards).length || Object.keys(STATE.pins).length;
+  return Object.keys(STATE.done).length || Object.keys(STATE.cards).length ||
+    Object.keys(STATE.pins).length || Object.keys(STATE.analytics).length;
 }
 function mergeLegacyLocal(remote, local){
   let changed=false;
@@ -52,7 +54,124 @@ function mergeLegacyLocal(remote, local){
       if(!(key in remote[field]) && !(key in tombstones)){ remote[field][key]=local[field][key]; changed=true; }
     });
   });
+  Object.keys(local.analytics||{}).forEach(key=>{
+    if(!(key in remote.analytics)){ remote.analytics[key]=local.analytics[key]; changed=true; }
+  });
   return changed;
+}
+
+/* ------------------------- per-page study analytics ------------------------ */
+let trackedPagePath=null;
+let trackedPageStartedAt=null;
+let analyticsSaveTimer=null;
+let analyticsPaintTimer=null;
+function analyticsEntry(path){
+  let a=STATE.analytics[path];
+  if(!a || typeof a!=="object") a=STATE.analytics[path]={};
+  a.seconds=Math.max(0, Number(a.seconds)||0);
+  a.visits=Math.max(0, Math.floor(Number(a.visits)||0));
+  a.lastVisited=Math.max(0, Number(a.lastVisited)||0);
+  return a;
+}
+function pageSeconds(path){
+  const a=analyticsEntry(path);
+  let seconds=a.seconds;
+  if(path===trackedPagePath && trackedPageStartedAt!==null && document.visibilityState==="visible"){
+    seconds+=Math.max(0,Date.now()-trackedPageStartedAt)/1000;
+  }
+  return seconds;
+}
+function fmtMinutes(seconds){
+  const mins=Math.max(0,seconds)/60;
+  return (mins<10?mins.toFixed(1):Math.round(mins))+" min";
+}
+function persistPageAnalytics(path, beacon){
+  if(!path) return;
+  const change={op:"set",field:"analytics",key:path,value:analyticsEntry(path)};
+  saveStore(STATE);
+  if(!remoteReady || location.protocol==="file:" || (!serverHasState && !hasStudyState())) return;
+  if(beacon && navigator.sendBeacon){
+    try{
+      navigator.sendBeacon("/api/progress",new Blob([JSON.stringify(change)],{type:"application/json"}));
+      return;
+    }catch(_){}
+  }
+  persist(change);
+}
+function flushTrackedPage(saveRemote){
+  if(!trackedPagePath || trackedPageStartedAt===null) return;
+  const now=Date.now();
+  analyticsEntry(trackedPagePath).seconds+=Math.max(0,now-trackedPageStartedAt)/1000;
+  trackedPageStartedAt=now;
+  if(saveRemote) persistPageAnalytics(trackedPagePath,false); else saveStore(STATE);
+}
+function beginTrackedPage(){
+  if(!trackedPagePath || trackedPageStartedAt!==null || document.visibilityState!=="visible") return;
+  const a=analyticsEntry(trackedPagePath);
+  a.visits++;
+  a.lastVisited=Date.now();
+  trackedPageStartedAt=Date.now();
+  persistPageAnalytics(trackedPagePath,false);
+}
+function switchTrackedPage(path){
+  if(path===trackedPagePath && trackedPageStartedAt!==null) return;
+  flushTrackedPage(true);
+  trackedPageStartedAt=null;
+  trackedPagePath=path;
+  beginTrackedPage();
+}
+function analyticsStatus(path){
+  if(path==="README.md") return "Overview";
+  if(isDone(path)) return "Completed";
+  return analyticsEntry(path).visits?"In progress":"Not started";
+}
+function escAnalytics(s){
+  return String(s).replace(/[&<>"']/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[c]));
+}
+function renderAnalyticsPanel(path){
+  const old=document.getElementById("analyticsPanel"); if(old) old.remove();
+  if(path!=="README.md") return;
+  const content=document.getElementById("content"); if(!content) return;
+  const pages=progressPages();
+  const done=pages.filter(p=>isDone(p.path)).length;
+  const panel=document.createElement("section");
+  panel.id="analyticsPanel"; panel.className="analytics-panel";
+  panel.innerHTML='<div class="analytics-overview-head"><div><span class="analytics-kicker">Study analytics</span>'+
+    '<h2>Time on every page</h2><p>Counts only while this site is visible. Time and completion sync across devices.</p></div>'+
+    '<div class="analytics-total"><strong id="analyticsTotalTime">0.0 min</strong><span>'+done+" / "+pages.length+' completed</span></div></div>'+
+    '<div class="analytics-page-list">'+PAGES.map(p=>{
+      const a=analyticsEntry(p.path), status=analyticsStatus(p.path);
+      return '<a class="analytics-row" href="#'+encodeURI(p.path)+'"><span class="analytics-row-main"><strong>'+
+        escAnalytics(p.title)+'</strong><small>'+a.visits+(a.visits===1?" visit":" visits")+'</small></span>'+
+        '<span class="analytics-minutes" data-page-minutes="'+escAnalytics(p.path)+'">'+fmtMinutes(pageSeconds(p.path))+'</span>'+
+        '<span class="analytics-state state-'+status.toLowerCase().replace(" ","-")+'">'+status+'</span></a>';
+    }).join("")+'</div>';
+  const first=content.firstElementChild;
+  if(first) first.insertAdjacentElement("afterend",panel); else content.appendChild(panel);
+  updateAnalyticsUI();
+}
+function updateAnalyticsUI(){
+  document.querySelectorAll("[data-page-minutes]").forEach(el=>{
+    el.textContent=fmtMinutes(pageSeconds(el.dataset.pageMinutes));
+  });
+  const current=document.getElementById("pageTimeValue");
+  if(current && currentPath) current.textContent=fmtMinutes(pageSeconds(currentPath));
+  const total=document.getElementById("analyticsTotalTime");
+  if(total) total.textContent=fmtMinutes(PAGES.reduce((sum,p)=>sum+pageSeconds(p.path),0));
+}
+function initPageAnalytics(){
+  document.addEventListener("visibilitychange",()=>{
+    if(document.visibilityState==="hidden"){
+      flushTrackedPage(true); trackedPageStartedAt=null;
+    }else{ beginTrackedPage(); updateAnalyticsUI(); }
+  });
+  window.addEventListener("pagehide",()=>{
+    flushTrackedPage(false);
+    trackedPageStartedAt=null;
+    persistPageAnalytics(trackedPagePath,true);
+  });
+  analyticsSaveTimer=setInterval(()=>flushTrackedPage(true),15000);
+  analyticsPaintTimer=setInterval(updateAnalyticsUI,1000);
 }
 function persist(change){
   saveStore(STATE);
@@ -190,6 +309,7 @@ function loadPage(path){
   const pg=byPath[path];
   const content=document.getElementById("content");
   if(!pg){ content.innerHTML='<div class="loading">Page not found: '+path+'</div>'; document.getElementById("pagetools").innerHTML=""; document.getElementById("pager").innerHTML=""; return; }
+  switchTrackedPage(path);
   currentPath=path;
   setActive(path);
   // tint the page to its section accent (soft tint is translucent → theme-proof)
@@ -197,6 +317,7 @@ function loadPage(path){
   if(pg.accent){ root.setProperty("--sec-accent", pg.accent); root.setProperty("--sec-accent-soft", hexToRgba(pg.accent, 0.16)); }
   else { root.removeProperty("--sec-accent"); root.removeProperty("--sec-accent-soft"); }
   content.innerHTML=pg.html;
+  renderAnalyticsPanel(path);
   renderPageTools(pg);
   if(pg.quiz) initFlashcards(pg);
   renderPager(path);
@@ -777,7 +898,9 @@ function renderPageStatus(path){
   const pinned=!!STATE.pins[path];
   const strip=document.createElement("div");
   strip.className="page-status";
-  strip.innerHTML='<button class="complete-btn'+(done?" is-done":"")+'" id="completeBtn">'+
+  strip.innerHTML='<div class="page-time-summary"><span>Time on this page</span><strong id="pageTimeValue">'+
+    fmtMinutes(pageSeconds(path))+'</strong></div>'+
+    '<button class="complete-btn'+(done?" is-done":"")+'" id="completeBtn">'+
     (done?"✓ Completed — click to unmark":"Mark this page complete")+'</button>'+
     '<button class="pin-btn'+(pinned?" is-pinned":"")+'" id="pinBtn" aria-pressed="'+pinned+'">'+
     (pinned?"★ Pinned":"☆ Pin page")+'</button>';
@@ -975,6 +1098,7 @@ function renderResume(){
 /* ----------------------------------- init ---------------------------------- */
 buildNav();
 initTimer();
+initPageAnalytics();
 refreshProgressUI();
 renderResume();
 window.addEventListener("hashchange", onHash);

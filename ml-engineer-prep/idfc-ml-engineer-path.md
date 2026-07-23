@@ -4,6 +4,10 @@
 data systems, and production MLOps. The fastest preparation strategy is breadth first, then
 one end-to-end system-design story that connects the layers.
 
+> **After the interview:** use the
+> **[IDFC AI Engineer interview debrief](idfc-interview-debrief.md)** to review the exact
+> questions, corrected answers, decision signals, and targeted recovery plan.
+
 ## How to use this path
 
 - Spend more time explaining trade-offs aloud than rereading definitions.

@@ -9,6 +9,10 @@ Preparing for the IDFC ML Engineer role in two days? Start with the focused
 **[IDFC ML Engineer path](idfc-ml-engineer-path.md)**. It reuses the relevant pages
 from this ML track and the RAG/LLM track without copying their content.
 
+Already completed the IDFC FIRST Bank AI Engineer interview? Read the detailed
+**[interview debrief](idfc-interview-debrief.md)** for the evidence-based scorecard,
+corrected model answers, interviewer signals, and seven-day recovery plan.
+
 ## What this role actually is
 
 An ML Engineer sits between a data scientist and a backend engineer. You're expected

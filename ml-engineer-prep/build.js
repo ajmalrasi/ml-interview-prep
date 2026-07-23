@@ -17,6 +17,7 @@ const SITE = [
   { label:"Start here", items:[
     { dir:"", file:"README.md", title:"Overview & How to Use" },
     { dir:"", file:"idfc-ml-engineer-path.md", title:"IDFC ML Engineer: 2-Day Path" },
+    { dir:"", file:"idfc-interview-debrief.md", title:"IDFC AI Engineer: Interview Debrief", quiz:true },
   ]},
   { label:"1 · ML Foundations", dir:"01-ml-foundations", items:[
     { file:"README.md", title:"Overview" },

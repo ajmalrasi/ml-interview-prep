@@ -70,13 +70,13 @@ class Handler(http.server.SimpleHTTPRequestHandler):
     def _validate_state(state):
         if not isinstance(state, dict):
             raise ValueError("State must be an object")
-        for key in ("done", "cards", "pins"):
+        for key in ("done", "cards", "pins", "analytics"):
             if key in state and not isinstance(state[key], dict):
                 raise ValueError(key + " must be an object")
         if "_deleted" in state and not isinstance(state["_deleted"], dict):
             raise ValueError("_deleted must be an object")
         for key, value in state.get("_deleted", {}).items():
-            if key not in ("done", "cards", "pins") or not isinstance(value, dict):
+            if key not in ("done", "cards", "pins", "analytics") or not isinstance(value, dict):
                 raise ValueError("Invalid deletion history")
         if state.get("last") is not None and not isinstance(state.get("last"), str):
             raise ValueError("last must be a string or null")
@@ -101,6 +101,7 @@ class Handler(http.server.SimpleHTTPRequestHandler):
         state.setdefault("done", {})
         state.setdefault("cards", {})
         state.setdefault("pins", {})
+        state.setdefault("analytics", {})
         deleted = state.setdefault("_deleted", {})
         field = payload.get("field")
         value = payload.get("value")
@@ -108,7 +109,7 @@ class Handler(http.server.SimpleHTTPRequestHandler):
             if not isinstance(value, str):
                 raise ValueError("last must be a string")
             state["last"] = value
-        elif field in ("done", "cards", "pins"):
+        elif field in ("done", "cards", "pins", "analytics"):
             key = payload.get("key")
             if not isinstance(key, str) or not key or len(key) > 1000:
                 raise ValueError("Invalid state key")
