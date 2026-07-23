@@ -3,8 +3,8 @@
 Everything you need to understand DocsMind, in the order it was taught.
 Read **top to bottom the first time**. Come back to any file as a reference
 anytime. Topics 1–8 cover Phase 1 (the core pipeline); 9–10 cover Phases
-2–3 (better retrieval); 11–21 map the concepts the next phases and the
-target role need.
+2–3 (better retrieval); 11–22 map advanced concepts; and 23 applies them to
+your production seismic system-design story.
 
 Preparing for the IDFC LLM Inference & AI Infrastructure role in two days? Use the
 focused **[IDFC AI Infrastructure path](idfc-ai-infra-path.md)**. It links only the
@@ -69,10 +69,11 @@ reusable serving, GPU, distributed-systems, and production lessons that match th
 | 20 📈 | [20-production-monitoring/](20-production-monitoring/) | Cost, latency, quality, drift — four signals, not one dashboard |
 | 21 📄 | [21-multimodal-document-rag/](21-multimodal-document-rag/) | PDFs, tables, scans, charts — why it's an ingest problem |
 | 22 🕸️ | [22-langgraph/](22-langgraph/) | State, nodes, edges — build the agent graph, and "show me a node" |
+| 23 🌊 | [23-seismic-rag-project/](23-seismic-rag-project/) | Your 40 PB seismic RAG architecture, production deep-dives, and interview answer |
 
 ## How to use this
 
-- **First time:** follow the numbers, 1 → 22. The pipeline (1–7) is the
+- **First time:** follow the numbers, 1 → 23. The pipeline (1–7) is the
   skeleton everything else hangs on.
 - **Stuck on a concept:** each folder has a `README.md` overview that links
   to every file inside.

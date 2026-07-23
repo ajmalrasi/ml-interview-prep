@@ -164,6 +164,18 @@ const SITE = [
     { file:"conditional-edges.md", title:"Conditional Edges — Branch & Loop" },
     { file:"interview-questions.md", title:"Interview Questions" },
   ]},
+  { label:"23 · Seismic RAG Project", dir:"23-seismic-rag-project", items:[
+    { file:"README.md", title:"Overview & Architecture" },
+    { file:"01-problem-and-requirements.md", title:"Problem, Scale & Requirements" },
+    { file:"02-offline-ingestion.md", title:"Offline Ingestion & Reliability" },
+    { file:"03-data-embeddings-indexing.md", title:"Data, Embeddings & OpenSearch" },
+    { file:"04-online-retrieval-generation.md", title:"Online Retrieval & Generation" },
+    { file:"05-evaluation-experiments.md", title:"Evaluation & Experiments" },
+    { file:"06-production-operations.md", title:"Deployment, Observability & Security" },
+    { file:"07-tradeoffs-capacity.md", title:"Trade-offs, Capacity & Cost" },
+    { file:"08-interview-answer.md", title:"2-Minute & 10-Minute Answers" },
+    { file:"09-interview-questions.md", title:"Principal-Level Interview Drills", quiz:true },
+  ]},
 ];
 
 /* ----------------------------- markdown parser ----------------------------- */
