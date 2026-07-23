@@ -1,0 +1,14 @@
+[Unit]
+Description=Jumio face recognition and biometrics interview preparation website
+After=network.target
+
+[Service]
+Type=simple
+User=ajmalrasi
+WorkingDirectory=/home/ajmalrasi/ml-interview-prep/jumio-biometrics-prep
+ExecStart=/usr/bin/python3 /home/ajmalrasi/ml-interview-prep/prep_server.py 9005
+Restart=always
+RestartSec=2
+
+[Install]
+WantedBy=multi-user.target

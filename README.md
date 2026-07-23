@@ -1,6 +1,6 @@
 # Interview Prep
 
-Four self-contained interview-prep tracks. Each is a static site — edit the
+Six self-contained interview-prep tracks. Each is a static site — edit the
 `.md` files, run `node build.js`, and open the generated `index.html`.
 
 ## Tracks
@@ -25,6 +25,16 @@ Four self-contained interview-prep tracks. Each is a static site — edit the
   (PTQ/QAT, accuracy mitigation), detection/segmentation/BEV models, SoC
   architecture (memory/DMA/IPMMU, multi-core scheduling), and Linux/QNX runtime,
   SIL/HIL validation, ISO 26262 functional safety.
+
+- **[jumio-biometrics-prep/](jumio-biometrics-prep/)** — Staff / Senior ML
+  Engineer for face recognition and biometrics. Face capture quality, embeddings
+  and angular-margin losses, verification/identification metrics, fairness,
+  liveness/PAD and deepfake defense, balanced/synthetic data, AWS production
+  architecture, TensorRT/ONNX, ANN search, privacy and staff-level system design.
+
+- **[python-interview-prep/](python-interview-prep/)** — Python fundamentals,
+  object model, iterators, concurrency, production patterns, coding drills and
+  mock-interview practice.
 
 ## Build a track
 
