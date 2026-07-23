@@ -28,8 +28,10 @@ provides `/api/progress`.
 
 ## Commit and push
 
-When the user asks to commit/push, use plain Git. Do not require `gh` unless the
-user explicitly requests a pull request.
+Every completed website change must be committed and pushed to GitHub. A Pi
+deployment is not complete while its code is uncommitted, Pi-only, or absent
+from GitHub. Use plain Git; do not require `gh` unless the user explicitly
+requests a pull request.
 
 ```bash
 git add -A
@@ -38,7 +40,9 @@ git push github-ssh main
 ```
 
 The expected target is normally direct `main`. Verify the working tree and
-remote SHA afterward.
+remote SHA afterward. If an emergency change is made directly on the Pi, copy
+it back into this repository immediately, validate it, commit and push it, then
+synchronize the Pi to that exact commit.
 
 ## Safe Pi synchronization
 
@@ -50,7 +54,8 @@ The Pi checkout may contain uncommitted deployed work.
 4. Do not resurrect files superseded by newer committed content.
 5. Rebuild all affected `index.html` files on the Mac.
 6. Deploy the exact built artifacts and restart only affected services.
-7. Finish with clean Mac and Pi checkouts at the same GitHub SHA.
+7. Finish with clean Mac and Pi checkouts at the same GitHub SHA. Always push
+   the deployment's changes to GitHub; do not leave deployed-only changes.
 
 Never use `git reset --hard` or overwrite a dirty Pi checkout without first
 preserving and reviewing its unique changes.
