@@ -41,15 +41,50 @@ and occasional duplicate retrieval results.
 
 ---
 
-## Q: Fixed-size vs sentence-aware vs semantic chunking?
+## Q: What are the main chunking strategies, and when would you use each?
 
-- **Fixed-size:** fastest, cuts mid-sentence.
-- **Sentence-aware (Phase 1):** respects sentence boundaries, good default.
-- **Semantic:** splits where topic changes, best quality, slower.
-- **Structural:** splits on headers/code blocks — excellent for markdown docs.
+| Strategy | Use it when | Main trade-off |
+|---|---|---|
+| **Fixed-size** | You need a cheap, deterministic baseline or uniformly formatted text | Fast, but cuts across sentences, sections, and tables |
+| **Recursive** | General text has paragraphs and sentences | Strong default: tries large natural separators, then falls back to smaller ones |
+| **Sliding window** | Important facts frequently cross boundaries in transcripts, logs, or dense prose | Better boundary recall, but more vectors, cost, and duplicate hits |
+| **Semantic** | Long unstructured prose changes topic without reliable headings | Meaning-aware boundaries, but slower and sensitive to similarity thresholds |
+| **Structure-based** | Headings, sections, lists, records, or table rows are trustworthy | Coherent and citation-friendly, but parser quality matters |
+| **Parent-child** | Small chunks retrieve precisely but the answer needs the containing section | Preserves context, but adds storage, relationships, and more prompt tokens |
 
-You'd mention semantic or structural chunking as "the next improvement"
-if retrieval quality matters.
+For production text, start with **structure-based chunking plus recursive splitting
+for oversized sections**. Keep fixed-size as the baseline. Add small measured
+overlap, parent expansion, or semantic boundaries only for failure cases shown
+by the eval set.
+
+---
+
+## Q: What is recursive chunking, exactly?
+
+It applies an ordered list of separators. Try document sections first, then
+paragraphs, sentences, words, and finally tokens until every chunk is under the
+limit. That makes it almost as operationally simple as fixed-size splitting
+while preserving much more natural context.
+
+It is not automatically semantic: a paragraph can still contain two topics.
+Its strength is a predictable, inexpensive baseline that respects available
+text structure.
+
+---
+
+## Q: Sliding window vs parent-child chunking?
+
+Both fix context lost at boundaries, but in different ways:
+
+- **Sliding window** duplicates neighboring text inside every overlapping chunk.
+  It is simple and works well when boundaries are unreliable.
+- **Parent-child** searches small child chunks, then returns a bounded parent
+  section around the hit. It avoids duplicating every window and is better when
+  the document hierarchy is trustworthy.
+
+Choose by measurement. Sliding windows increase index size and duplicate
+retrieval; parent-child retrieval adds ID relationships and can increase
+generation tokens.
 
 ---
 
@@ -59,3 +94,9 @@ Run an eval set: a set of (question, expected source doc) pairs. Measure
 recall@k — what fraction of questions retrieved the expected chunk in top-k.
 If recall is low, the chunk boundaries may be wrong. You don't guess; you
 measure.
+
+Also measure context precision, answer faithfulness, latency, vector count,
+and generation-token cost. Small chunks can improve retrieval precision while
+starving the answer of context; large chunks can retrieve weakly and waste the
+prompt budget. The right size is the smallest self-contained unit that can
+answer the typical question, not a universal token number.

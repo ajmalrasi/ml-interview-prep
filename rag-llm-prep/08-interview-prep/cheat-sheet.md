@@ -23,6 +23,13 @@ Prevents ideas at chunk boundaries from being split. A sentence at the end of
 chunk N appears again at the start of chunk N+1, so it's always fully inside
 at least one chunk. Costs ~12% duplication.
 
+**Which chunking strategy?**
+Fixed-size = cheap baseline. Recursive = strong general-text default.
+Structure-based = best when headings, sections, records, or table rows are
+reliable. Sliding window = boundary recall at the cost of duplication.
+Semantic = unstructured topic shifts at extra compute/tuning cost.
+Parent-child = retrieve small, return the bounded containing section.
+
 ---
 
 ## Embeddings
@@ -43,6 +50,18 @@ Hybrid + reranking (Phase 3) beats either.
 Bi-encoder = fast, scalable, precomputable (used for retrieval).
 Cross-encoder = accurate but must run per query-doc pair (used as reranker).
 
+**Production embedding strategy?**
+Parse and normalize → serialize table rows with title, headers, values, and
+units → structure/recursive chunk → attach stable source metadata → encode with
+the model's correct query/passage mode → batch and validate → version model,
+dimension, preprocessing, metric, and chunker. Use metadata filters for exact
+constraints; do not stuff every field into the embedded text.
+
+**How do you choose the model?**
+Domain golden-set Recall@K/MRR/NDCG first, then input length, technical or
+multilingual quality, dimension/memory, latency, throughput, privacy, and cost.
+Choose the smallest model that meets the measured target.
+
 ---
 
 ## Normalization
@@ -59,6 +78,12 @@ affected by magnitude. For text retrieval, cosine is always the right choice.
 ---
 
 ## FAISS & Retrieval
+
+**Retrieval methods?**
+BM25 = exact terms. Dense = paraphrases. Hybrid = both, fused. Parent-child =
+small match plus larger section. Multi-query = several controlled query
+rewrites for recall. Contextual compression = remove irrelevant text after
+retrieval. Start simple and add stages only for measured failures.
 
 **FAISS vs Pinecone?**
 FAISS = in-process library, free, no data egress, no filtering. Pinecone =

@@ -1,5 +1,61 @@
 # Retrieval — Interview Questions
 
+## Q: What retrieval methods should a RAG engineer know, and when should each be used?
+
+| Method | Best use | Main trade-off |
+|---|---|---|
+| **BM25** | Exact IDs, codes, names, rare terms, and technical vocabulary | Misses paraphrases with little word overlap |
+| **Dense retrieval** | Conceptual similarity, paraphrases, and inconsistent wording | Can blur exact tokens; model and ANN quality matter |
+| **Hybrid search** | Queries mix exact technical terms with natural language | More infrastructure, latency, and fusion tuning |
+| **Parent-child retrieval** | A precise small-chunk hit needs its larger section for context | Extra indexing relationships and prompt tokens |
+| **Multi-query retrieval** | Vague or abbreviated questions have several valid phrasings | More retrieval calls, latency, deduplication, and query-drift risk |
+| **Contextual compression** | Retrieved documents are relevant but contain much irrelevant text | Extra reranking/extraction cost and risk of deleting needed context |
+
+The production answer is not "turn everything on." Start with authorized
+metadata filters plus the simplest retriever that meets the golden-set target.
+For a technical enterprise corpus, that is often BM25 + dense retrieval fused
+with RRF. Add parent expansion, multi-query, or compression only for a measured
+failure cohort.
+
+---
+
+## Q: What is parent-child retrieval?
+
+Index small **child chunks** because they match precise questions well. When a
+child wins retrieval, return its bounded **parent section** for generation so
+the model also sees definitions, warnings, and surrounding steps.
+
+Use it for long manuals, policies, or reports with reliable hierarchy. Store
+stable parent/child IDs, deduplicate parents when several children match, and
+cap parent size so context expansion does not consume the whole prompt.
+
+---
+
+## Q: What is multi-query retrieval?
+
+Generate several controlled reformulations of the user's question, retrieve
+for each, then fuse and deduplicate the results. It improves recall for vague
+language, acronyms, and domain synonyms.
+
+The cost is multiple retrieval calls and possible **query drift**—a rewrite may
+change the user's intent. Preserve the original query, limit the number of
+variants, apply the same authorization filters to every variant, and keep the
+feature only if recall gains justify p95 latency and cost.
+
+---
+
+## Q: What is contextual compression?
+
+Retrieve candidates first, then use a reranker or extractor to keep only the
+sentences or passages relevant to the query before generation. This reduces
+noise and token cost and can improve faithfulness on long documents.
+
+Compression is not free: it adds latency and may remove a qualifier needed for
+the answer. Preserve source offsets, evaluate extraction recall, and bypass it
+for already-short evidence or exact lookups.
+
+---
+
 ## Q: FAISS vs Pinecone / Weaviate / Qdrant?
 
 | | FAISS | Pinecone | Qdrant |
