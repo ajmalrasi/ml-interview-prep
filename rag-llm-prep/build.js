@@ -183,6 +183,14 @@ const SITE = [
     { file:"10-ten-minute-walkthrough.md", title:"The Ten-Minute Walkthrough" },
     { file:"11-interview-questions.md", title:"Senior Interview Drills", quiz:true },
   ]},
+  { label:"24 · Advanced Production RAG", dir:"24-advanced-production-rag", items:[
+    { file:"README.md", title:"Overview — The Remaining Iceberg" },
+    { file:"multi-hop-retrieval.md", title:"Multi-Hop Retrieval" },
+    { file:"retrieval-caching.md", title:"Retrieval Caching" },
+    { file:"feedback-learning-loops.md", title:"Feedback & Learning Loops" },
+    { file:"responsible-rag-bias.md", title:"Responsible RAG & Bias" },
+    { file:"interview-questions.md", title:"Interview Questions", quiz:true },
+  ]},
 ];
 
 /* ----------------------------- markdown parser ----------------------------- */

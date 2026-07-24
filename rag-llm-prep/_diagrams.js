@@ -308,6 +308,7 @@ const SECTIONS = {
   "21 · Multimodal Document RAG": { icon:"📄", accent:"#b58a2a", tag:"PDFs, tables, scans, charts — an ingest problem" },
   "22 · LangGraph":        { icon:"🕸️", accent:"#5a7fd6", tag:"State, nodes, edges — build the agent graph" },
   "23 · Seismic RAG Project": { icon:"🌊", accent:"#168f86", tag:"Turn a working RAG prototype into an honest AWS production design" },
+  "24 · Advanced Production RAG": { icon:"🧭", accent:"#7a5fd0", tag:"Multi-hop, safe caching, feedback loops, responsible RAG" },
 };
 
 module.exports = { D, DIAGRAMS, SECTIONS, fig };

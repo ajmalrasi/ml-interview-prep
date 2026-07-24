@@ -3,8 +3,9 @@
 Everything you need to understand DocsMind, in the order it was taught.
 Read **top to bottom the first time**. Come back to any file as a reference
 anytime. Topics 1–8 cover Phase 1 (the core pipeline); 9–10 cover Phases
-2–3 (better retrieval); 11–22 map advanced concepts; and 23 applies them to
-your production seismic system-design story.
+2–3 (better retrieval); 11–22 map advanced concepts; 23 applies them to
+your production seismic system-design story; and 24 fills the remaining
+production iceberg: multi-hop, caching, feedback loops, and responsible RAG.
 
 Preparing for the DigitalOcean Senior Engineer: LLM Benchmarking & Performance role? Use
 the focused **[DigitalOcean two-day path](digitalocean-llm-benchmarking-path.md)**. It adds
@@ -74,10 +75,11 @@ For the IDFC LLM Inference & AI Infrastructure role, use the focused
 | 21 📄 | [21-multimodal-document-rag/](21-multimodal-document-rag/) | PDFs, tables, scans, charts — why it's an ingest problem |
 | 22 🕸️ | [22-langgraph/](22-langgraph/) | State, nodes, edges — build the agent graph, and "show me a node" |
 | 23 🌊 | [23-seismic-rag-project/](23-seismic-rag-project/) | Turn the seismic RAG prototype into an honest, production-ready AWS interview story |
+| 24 🧭 | [24-advanced-production-rag/](24-advanced-production-rag/) | Multi-hop retrieval, safe caching, feedback loops, and responsible RAG/bias checks |
 
 ## How to use this
 
-- **First time:** follow the numbers, 1 → 23. The pipeline (1–7) is the
+- **First time:** follow the numbers, 1 → 24. The pipeline (1–7) is the
   skeleton everything else hangs on.
 - **Stuck on a concept:** each folder has a `README.md` overview that links
   to every file inside.
