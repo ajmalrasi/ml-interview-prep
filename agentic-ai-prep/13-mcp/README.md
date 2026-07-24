@@ -1,4 +1,4 @@
-# 13: MCP: A USB Port for Tools (concept, Phase 5)
+# 2: MCP: A USB Port for Tools
 
 **The big idea:** MCP doesn't give models a new capability — tool calling
 already lets them request functions. MCP standardizes the *packaging*: a
@@ -49,7 +49,7 @@ Don't add a protocol layer you don't need yet.
 It's code you didn't write, executing with whatever permissions your client
 grants it. You're trusting the server's implementation, not just the model's
 request — the tool-argument caution from
-[18-llm-security](../18-llm-security/README.md) applies doubly.
+The LLM security guidance in the separate RAG/LLM Prep site applies doubly.
 
 ## Code
 

@@ -1,4 +1,4 @@
-# Four Ideas, One Job: Handling More Than One Thing at Once
+# RAG Serving Concurrency: Handling More Than One Request
 
 **TL;DR:** sync does one thing at a time. Async interleaves I/O waits on one
 thread. Threads interleave too (the GIL forbids true parallel bytecode).
@@ -73,4 +73,4 @@ are the right lever. Serving `/query` is I/O-bound (waiting on the LLM API)
 → async or thread-pool concurrency is the right lever. Grab the wrong lever
 — say, threads to speed up embedding — and the GIL blocks you anyway.
 
-→ Next: **[docsmind-server.md](docsmind-server.md)**
+→ Next: **[DocsMind's FastAPI server](docsmind-fastapi-server.md)**

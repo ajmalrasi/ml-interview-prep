@@ -10,7 +10,7 @@ brand names.
 | Framework | What it actually is | Where DocsMind uses it |
 |---|---|---|
 | **LlamaIndex** | Ingestion/indexing toolkit — loaders, chunkers, index abstractions | `docsmind/ingestion/` (`SimpleDirectoryReader`, `SentenceSplitter`) |
-| **LangChain** | General-purpose LLM app toolkit — prompt templates, chains, many integrations | Not used; DocsMind calls the Anthropic SDK directly (see [pipeline-questions.md](../08-interview-prep/pipeline-questions.md) for why) |
+| **LangChain** | General-purpose LLM app toolkit — prompt templates, chains, many integrations | Not used; DocsMind calls the Anthropic SDK directly; the RAG/LLM Prep site explains why |
 | **LangGraph** | A *graph* execution engine for stateful, cyclic control flow — the loop itself | `docsmind/agent/` — this is the loop-builder for Phase 5 |
 | **CrewAI** | A multi-agent framework — pre-built "roles," a "crew" of agents delegating tasks | Not used; relevant only if the multi-agent pattern is chosen |
 

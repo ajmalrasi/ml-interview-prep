@@ -66,4 +66,4 @@ extra complexity isn't earning its cost. In an interview, having *run* that
 comparison — even on a toy task set — beats any amount of architecture
 vocabulary.
 
-→ Next: **[15-llm-serving-internals/README.md](../15-llm-serving-internals/README.md)**
+→ Next: **[LangGraph Hands-On](../22-langgraph/README.md)**

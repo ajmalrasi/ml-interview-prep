@@ -53,7 +53,7 @@ schema otherwise be duplicated? One consumer: marginal. Three: MCP wins.
 An MCP server run by someone else is code you didn't write, executing with
 whatever permissions your client grants it.
 
-The caution in [18-llm-security](../18-llm-security/README.md) about not
+The caution in the RAG/LLM Prep security module about not
 trusting tool arguments applies doubly here. With a hand-written tool, you
 trust the model's *request* but you wrote the *implementation*. With a
 third-party MCP server, you're trusting both — the request *and* an

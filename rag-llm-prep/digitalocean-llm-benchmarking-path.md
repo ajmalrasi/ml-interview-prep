@@ -129,7 +129,7 @@ Before coding, state:
 - deterministic tests for boundaries, empty input, malformed rows, and exact threshold ties;
 - how the production version would avoid loading a multi-GB result file into memory.
 
-Then use [Python Concurrency](16-python-concurrency/README.md) to explain how you would run
+Then use the concurrency chapter in the separate Python Interview Prep site to explain how you would run
 many remote benchmark jobs without turning CPU-bound analysis into an async bottleneck.
 
 ### Block 8: Technical deep dive and final mock: 2 hours

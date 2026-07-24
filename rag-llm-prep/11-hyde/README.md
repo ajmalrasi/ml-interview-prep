@@ -52,4 +52,4 @@ labeled queries, compare Hit@1/MRR against dense and hybrid.
 [docsmind/retrieval/retriever.py](../../docsmind/retrieval/retriever.py) —
 `HybridRetriever.retrieve()`, the seam where the question is embedded today.
 
-→ Next: **[12-tool-calling/README.md](../12-tool-calling/README.md)**
+→ Continue with the remaining RAG production topics from the main learning path.

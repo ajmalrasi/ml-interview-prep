@@ -7,8 +7,8 @@ is itself the interview signal.
 
 ## The concrete scenario
 
-Swap DocsMind's agentic tool calling (see
-[12-tool-calling](../12-tool-calling/reliability-and-security.md)) from a
+Swap DocsMind's agentic tool calling, covered in the separate Agentic AI Prep
+site, from a
 closed model to an open one on the beast GPU. Watch tool-call reliability
 regress — schema drift, malformed arguments. Then fix it in a specific
 **cost order**:

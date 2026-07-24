@@ -27,7 +27,7 @@ inference/serving role. The fix path, in cost order:
    JSON matching the schema, *structurally*, at the token level. The model
    literally cannot emit an invalid character. No retraining.
 3. **Fine-tuning** on tool-call examples — last resort
-   (see [19-fine-tuning](../19-fine-tuning/README.md)).
+   (fine-tuning is covered in the separate RAG/LLM Prep site).
 
 This exact regression — swap closed model for open model, watch tool calls
 break, fix it, write up before/after success rate — is the roadmap's planned
@@ -59,6 +59,6 @@ schema** — a schema checks shape, not intent:
 And the arguments themselves can be attacker-influenced: a prompt-injected
 chunk can steer the model into calling a tool with hostile arguments. The
 full treatment of that attack surface is in
-[18-llm-security](../18-llm-security/README.md).
+the LLM security module in the separate RAG/LLM Prep site.
 
 → Next: **[13-mcp/README.md](../13-mcp/README.md)**

@@ -105,7 +105,7 @@ The important parts are not the framework names. They are the guards:
 - abstention when the chain is incomplete
 - citations that identify which hop supplied each claim
 
-[LangGraph conditional edges](../22-langgraph/conditional-edges.md) are one way
+LangGraph conditional edges, covered in the separate Agentic AI Prep site, are one way
 to express this loop visibly.
 
 ## Security applies at every hop

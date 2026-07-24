@@ -92,7 +92,7 @@ anyway — worse than no speculation at all.
 | Creative, high-entropy text | low | can be net negative |
 
 This has a neat tie-in to DocsMind's roadmap: tool-call JSON (see
-[12-tool-calling](../12-tool-calling/reliability-and-security.md)) is
+agent tool calling (covered in the separate Agentic AI Prep site) is
 exactly the predictable, structured output where speculation shines —
 serving and reliability concerns end up pointing at the same workload.
 
@@ -103,4 +103,4 @@ model, per workload type, on the actual card. Report the acceptance rate
 alongside the speedup — a high speedup with a high acceptance rate is a
 result; a speedup claim without the acceptance rate is a vendor slide.
 
-→ Next: **[16-python-concurrency/README.md](../16-python-concurrency/README.md)**
+→ Next: **[FastAPI & HTTP Semantics](../17-fastapi-http-semantics/README.md)**

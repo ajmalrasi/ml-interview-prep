@@ -16,149 +16,30 @@ const { D, DIAGRAMS, SECTIONS, fig } = require("./_diagrams.js");
 const SITE = [
   { label:"Start here", items:[
     { dir:"", file:"README.md", title:"Overview & Learning Path" },
-    { dir:"", file:"digitalocean-llm-benchmarking-path.md", title:"DigitalOcean LLM Benchmarking: 2-Day Path" },
-    { dir:"", file:"idfc-ai-infra-path.md", title:"IDFC AI Infrastructure: 2-Day Path" },
-    { dir:"", file:"RUN-ON-PI.md", title:"Run on a Raspberry Pi" },
   ]},
-  { label:"1 · Chunks & Overlap", dir:"01-chunks-and-overlap", items:[
+  { label:"1 · Tool Calling", dir:"12-tool-calling", items:[
     { file:"README.md", title:"Overview" },
-    { file:"what-is-a-chunk.md", title:"What Is a Chunk?" },
-    { file:"why-overlap.md", title:"Why Overlap?" },
-    { file:"real-examples.md", title:"Real Examples" },
+    { file:"the-loop.md", title:"The Agent Loop" },
+    { file:"code-seam.md", title:"Implementing Tool Calls" },
+    { file:"reliability-and-security.md", title:"Reliability & Security" },
   ]},
-  { label:"2 · Embeddings", dir:"02-embeddings", items:[
+  { label:"2 · MCP", dir:"13-mcp", items:[
     { file:"README.md", title:"Overview" },
-    { file:"problem-text-is-not-numbers.md", title:"The Problem: Text Is Not Numbers" },
-    { file:"what-is-an-embedding.md", title:"What Is an Embedding?" },
-    { file:"similar-text-similar-vectors.md", title:"Similar Text → Similar Vectors" },
-    { file:"bge-small-model.md", title:"The bge-small Model" },
-    { file:"real-examples.md", title:"Real Examples" },
+    { file:"why-a-protocol.md", title:"Why a Tool Protocol?" },
+    { file:"docsmind-as-a-server.md", title:"Build an MCP Server" },
   ]},
-  { label:"3 · Normalization", dir:"03-normalization", items:[
+  { label:"3 · Agent Architectures", dir:"14-agent-architectures", items:[
     { file:"README.md", title:"Overview" },
-    { file:"why-length-1.md", title:"Why Length 1.0 Is Fair" },
-    { file:"l2-normalization-math.md", title:"L2 Normalization: The Math" },
-    { file:"code-example.md", title:"Normalization in Code" },
+    { file:"framework-comparison.md", title:"Framework Comparison" },
+    { file:"patterns.md", title:"Single, Multi-Agent & Supervisor" },
+    { file:"docsmind-choice.md", title:"Choosing an Architecture" },
+    { file:"interview-questions.md", title:"Interview Questions", quiz:true },
   ]},
-  { label:"4 · Vector Similarity", dir:"04-vector-similarity", items:[
+  { label:"4 · LangGraph", dir:"22-langgraph", items:[
     { file:"README.md", title:"Overview" },
-    { file:"cosine-similarity.md", title:"Cosine Similarity" },
-    { file:"similarity-scores.md", title:"Reading Similarity Scores" },
-    { file:"search-example.md", title:"Search Example: Question to Top-k" },
-  ]},
-  { label:"5 · FAISS", dir:"05-faiss", items:[
-    { file:"README.md", title:"Overview" },
-    { file:"problem-slow-search.md", title:"The Problem: Brute-Force Doesn't Scale" },
-    { file:"indexflatip-explained.md", title:"IndexFlatIP: Phase 1's Index" },
-    { file:"how-search-works.md", title:"How FAISS Search Works" },
-    { file:"code-walkthrough.md", title:"Code Walkthrough" },
-    { file:"benchmark-results.md", title:"Benchmark Results" },
-    { file:"phase1-vs-phase2.md", title:"Flat vs IVF vs HNSW vs PQ" },
-  ]},
-  { label:"6 · Generation", dir:"06-generation", items:[
-    { file:"README.md", title:"Overview" },
-    { file:"system-prompt.md", title:"The System Prompt" },
-    { file:"building-context.md", title:"Building the Context" },
-    { file:"claude-generates.md", title:"The LLM Generates the Answer" },
-    { file:"citation-extraction.md", title:"Citation Extraction" },
-    { file:"guardrail.md", title:"The Guardrail: INSUFFICIENT_CONTEXT" },
-  ]},
-  { label:"7 · Full Pipeline", dir:"07-full-pipeline", items:[
-    { file:"README.md", title:"Overview" },
-    { file:"4-step-flow.md", title:"The 4-Step Flow" },
-    { file:"phase1-end-to-end.md", title:"How the Code Wires Together" },
-    { file:"real-query-example.md", title:"Real Query Example: End to End" },
-  ]},
-  { label:"8 · Interview Prep", dir:"08-interview-prep", items:[
-    { file:"README.md", title:"Overview" },
-    { file:"chunking-questions.md", title:"Chunking Questions", quiz:true },
-    { file:"embedding-questions.md", title:"Embedding Questions", quiz:true },
-    { file:"retrieval-questions.md", title:"Retrieval Questions", quiz:true },
-    { file:"index-questions.md", title:"Index & Vector DB Questions", quiz:true },
-    { file:"hybrid-questions.md", title:"Hybrid & Reranking Questions", quiz:true },
-    { file:"generation-questions.md", title:"Generation Questions", quiz:true },
-    { file:"pipeline-questions.md", title:"Pipeline Questions", quiz:true },
-    { file:"cheat-sheet.md", title:"Cheat Sheet: One Page" },
-  ]},
-  { label:"9 · Hybrid Retrieval", dir:"09-hybrid-retrieval", items:[
-    { file:"README.md", title:"Overview" },
-    { file:"reranking-deep-dive.md", title:"Reranking: The Deep Dive" },
-    { file:"search-evaluation.md", title:"Search Evaluation" },
-    { file:"eval-results.md", title:"Eval Results: Does Hybrid Win?" },
-  ]},
-  { label:"10 · Qdrant", dir:"10-qdrant", items:[
-    { file:"README.md", title:"Overview" },
-  ]},
-  { label:"11 · HyDE", dir:"11-hyde", items:[
-    { file:"README.md", title:"Overview" },
-    { file:"problem-and-fix.md", title:"The Problem and the Fix" },
-    { file:"code-seam-and-tradeoffs.md", title:"The Code Seam and the Cost" },
-    { file:"query-transformations.md", title:"Query Transformations: The Family" },
-  ]},
-  { label:"15 · LLM Serving Internals", dir:"15-llm-serving-internals", items:[
-    { file:"README.md", title:"Overview" },
-    { file:"prefill-decode-scheduling.md", title:"Prefill, Decode & Chunked Scheduling" },
-    { file:"kv-cache.md", title:"KV Cache: Memory for Compute" },
-    { file:"continuous-batching.md", title:"Continuous Batching: No Idle GPU" },
-    { file:"speculative-decoding.md", title:"Speculative Decoding: Guess & Verify" },
-    { file:"latency-benchmarking.md", title:"TTFT, ITL & Reproducible Benchmarks" },
-    { file:"benchmark-harness-regression-gates.md", title:"Benchmark Harness & CI Regression Gates" },
-    { file:"engine-hardware-qualification.md", title:"Engine & Hardware Qualification" },
-    { file:"capacity-cogs-statistics.md", title:"Capacity, COGS & Statistical Decisions" },
-    { file:"vllm-production.md", title:"vLLM in Production" },
-    { file:"interview-questions.md", title:"Interview Questions" },
-  ]},
-  { label:"17 · FastAPI & HTTP Semantics", dir:"17-fastapi-http-semantics", items:[
-    { file:"README.md", title:"Overview" },
-    { file:"get-vs-post.md", title:"GET vs POST: Semantics, Not Convention" },
-    { file:"request-contract.md", title:"The Request/Response Contract" },
-    { file:"async-endpoint.md", title:"Building a Genuinely Async Endpoint" },
-  ]},
-  { label:"18 · LLM Security", dir:"18-llm-security", items:[
-    { file:"README.md", title:"Overview" },
-    { file:"five-problems.md", title:"The Five Problems" },
-    { file:"code-seams.md", title:"The Code Seams: Where Defenses Slot In" },
-    { file:"red-team-validation.md", title:"Costs, Severity & Red-Team Validation" },
-    { file:"interview-questions.md", title:"Interview Questions" },
-  ]},
-  { label:"19 · Fine-Tuning", dir:"19-fine-tuning", items:[
-    { file:"README.md", title:"Overview" },
-    { file:"rag-vs-fine-tuning.md", title:"RAG vs Fine-Tuning: Knowledge vs Behavior" },
-    { file:"lora-qlora-peft-rlhf.md", title:"LoRA, QLoRA, PEFT, RLHF: Untangled" },
-    { file:"tool-call-fix-path.md", title:"The Tool-Call Fix Path, in Cost Order" },
-  ]},
-  { label:"20 · Production Monitoring", dir:"20-production-monitoring", items:[
-    { file:"README.md", title:"Overview" },
-    { file:"four-signals.md", title:"The Four Signals: Cost, Latency, Quality, Drift" },
-    { file:"inference-observability.md", title:"Inference Observability: Prometheus & Grafana" },
-    { file:"wiring-it-in.md", title:"Wiring It In: Seams & Fire-Testing" },
-    { file:"interview-questions.md", title:"Interview Questions" },
-  ]},
-  { label:"21 · Multimodal Document RAG", dir:"21-multimodal-document-rag", items:[
-    { file:"README.md", title:"Overview" },
-    { file:"four-content-types.md", title:"Four Content Types, Four Extraction Problems" },
-    { file:"classify-route-normalize.md", title:"The Design: Classify, Route, Normalize" },
-  ]},
-  { label:"23 · Seismic RAG Project", dir:"23-seismic-rag-project", items:[
-    { file:"README.md", title:"From Prototype to Production" },
-    { file:"01-system-story.md", title:"System Overview & Interview Story" },
-    { file:"02-prototype-to-production.md", title:"Prototype to Production Architecture" },
-    { file:"03-offline-ingestion-indexing.md", title:"Offline Ingestion & Indexing" },
-    { file:"04-online-rag.md", title:"Online Retrieval & Generation" },
-    { file:"05-evaluation-ml-lifecycle.md", title:"Evaluation & ML Lifecycle" },
-    { file:"06-reliability-security-observability.md", title:"Reliability, Security & Observability" },
-    { file:"07-scaling-performance-cost.md", title:"Scaling, Performance & Cost" },
-    { file:"08-failure-debugging.md", title:"Failure Scenarios & Debugging" },
-    { file:"09-two-minute-answer.md", title:"The Two-Minute Answer" },
-    { file:"10-ten-minute-walkthrough.md", title:"The Ten-Minute Walkthrough" },
-    { file:"11-interview-questions.md", title:"Senior Interview Drills", quiz:true },
-  ]},
-  { label:"24 · Advanced Production RAG", dir:"24-advanced-production-rag", items:[
-    { file:"README.md", title:"Overview — The Remaining Iceberg" },
-    { file:"multi-hop-retrieval.md", title:"Multi-Hop Retrieval" },
-    { file:"retrieval-caching.md", title:"Retrieval Caching" },
-    { file:"feedback-learning-loops.md", title:"Feedback & Learning Loops" },
-    { file:"responsible-rag-bias.md", title:"Responsible RAG & Bias" },
+    { file:"state-nodes-edges.md", title:"State, Nodes & Edges" },
+    { file:"build-a-graph.md", title:"Build a Graph" },
+    { file:"conditional-edges.md", title:"Branches & Loops" },
     { file:"interview-questions.md", title:"Interview Questions", quiz:true },
   ]},
 ];
@@ -380,10 +261,10 @@ function homeCards(){
   return '<h2 id="jump-in">Jump in</h2><div class="section-cards">'+cards+'</div>';
 }
 const HOME_HERO =
-  '<div class="hero"><span class="hero-badge">DocsMind · RAG from Scratch</span>'+
-  '<div class="hero-title">Retrieval-Augmented Generation, Explained</div>'+
-  '<p class="hero-sub">How a question finds the right passages and turns them into a cited answer — '+
-  'chunking, embeddings, normalization, similarity, FAISS, and generation, one chapter at a time.</p></div>';
+  '<div class="hero"><span class="hero-badge">Agentic AI · From First Principles</span>'+
+  '<div class="hero-title">Build Agents You Can Explain and Control</div>'+
+  '<p class="hero-sub">Tool calling, MCP, architecture choices and LangGraph — '+
+  'from one safe tool call to observable, bounded agent workflows.</p></div>';
 
 const PAGES = [];
 SITE.forEach(sec => sec.items.forEach(it => {
@@ -424,13 +305,13 @@ const HTML =
 '<meta charset="utf-8">\n' +
 '<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">\n' +
 '<meta name="theme-color" content="#d97757">\n' +
-'<title>DocsMind: RAG from Scratch</title>\n' +
+'<title>Agentic AI Interview Prep</title>\n' +
 '<style>\n' + CSS + '\n</style>\n</head>\n<body>\n' +
 '<div class="app">\n' +
 '  <aside class="sidebar" id="sidebar">\n' +
 '    <div class="brand">\n' +
-'      <h1>DocsMind</h1>\n' +
-'      <div class="sub">RAG from Scratch — a learning path</div>\n' +
+'      <h1>Agentic AI</h1>\n' +
+'      <div class="sub">Tools, protocols and agent workflows</div>\n' +
 '      <button class="nav-hide" id="navHide" type="button" aria-label="Collapse navigation" aria-controls="sidebar" aria-expanded="true">← Hide navigation</button>\n' +
 '      <div class="tools">\n' +
 '        <input id="search" type="search" placeholder="Search all pages…" autocomplete="off" autocapitalize="off" spellcheck="false">\n' +
@@ -449,7 +330,7 @@ const HTML =
 '    <div class="nav-collapsed-bar"><button class="iconbtn nav-show" id="navShow" type="button" aria-label="Show navigation" aria-controls="sidebar" aria-expanded="false">☰ <span>Show navigation</span></button></div>\n' +
 '    <div class="topbar">\n' +
 '      <button class="iconbtn" id="menu" aria-label="Open menu">☰</button>\n' +
-'      <span class="tb-title" id="tbTitle">DocsMind</span>\n' +
+'      <span class="tb-title" id="tbTitle">Agentic AI</span>\n' +
 '      <button class="iconbtn" id="searchBtn" aria-label="Search">🔍</button>\n' +
 '      <button class="iconbtn theme-toggle" aria-label="Toggle theme">◐</button>\n' +
 '    </div>\n' +

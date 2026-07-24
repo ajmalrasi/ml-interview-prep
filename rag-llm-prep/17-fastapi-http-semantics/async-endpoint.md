@@ -7,7 +7,7 @@ not a no-op — it's a regression.
 ## What the migration actually looks like
 
 Today's `def query(...)` runs in FastAPI's thread pool — see
-[16-python-concurrency/docsmind-server.md](../16-python-concurrency/docsmind-server.md)
+the DocsMind FastAPI lesson in the separate Python Interview Prep website
 for why that's correct as-is.
 
 To make it a *true* `async def`, every I/O call inside it must be
@@ -38,7 +38,7 @@ async def query()                       serving/app.py
 
 One blocking link anywhere in that chain and the event loop stalls — the
 footgun in detail:
-[16-python-concurrency/docsmind-server.md](../16-python-concurrency/docsmind-server.md).
+the DocsMind FastAPI lesson in the separate Python Interview Prep website.
 
 What about retrieval? FAISS search and BM25 scoring are CPU work, not I/O —
 there's nothing to await. They're fast enough (sub-millisecond at this

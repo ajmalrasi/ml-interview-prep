@@ -10,7 +10,7 @@ the contract, enforced at the framework boundary.
 wrapping the pipeline, in
 [`serving/app.py`](../../docsmind/serving/app.py). This section covers the
 HTTP-and-FastAPI layer; the sync/async execution model *underneath* it is
-[16-python-concurrency](../16-python-concurrency/README.md).
+the concurrency chapter in the separate Python Interview Prep website.
 
 ```rawhtml
 <div class="diagram"><div class="vflow" style="align-items:stretch;gap:12px">

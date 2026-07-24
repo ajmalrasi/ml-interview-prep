@@ -60,4 +60,5 @@ When Phase 5 lands, each of these gets the full treatment: insertion point,
 eval numbers, and the honest "did it beat hybrid?" verdict — same discipline
 as [09-hybrid-retrieval/eval-results.md](../09-hybrid-retrieval/eval-results.md).
 
-→ Next: **[12-tool-calling/README.md](../12-tool-calling/README.md)**
+Tool selection and agent control loops continue in the separate Agentic AI
+Prep website.

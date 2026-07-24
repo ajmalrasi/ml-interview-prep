@@ -55,6 +55,8 @@ const SITE = [
     { file:"gil-threads-processes.md", title:"GIL, Threads and Processes" },
     { file:"asyncio-explained.md", title:"asyncio Explained" },
     { file:"queues-backpressure.md", title:"Queues, Races and Backpressure" },
+    { file:"rag-serving-concurrency.md", title:"RAG Serving: Sync, Async, Threads & Processes" },
+    { file:"docsmind-fastapi-server.md", title:"FastAPI and the Async Footgun" },
   ]},
   { label:"7 · Production Python", dir:"07-production-python", items:[
     { file:"README.md", title:"Overview" },

@@ -1,0 +1,14 @@
+[Unit]
+Description=Agentic AI interview preparation website
+After=network.target
+
+[Service]
+Type=simple
+User=ajmalrasi
+WorkingDirectory=/home/ajmalrasi/ml-interview-prep/agentic-ai-prep
+ExecStart=/usr/bin/python3 /home/ajmalrasi/ml-interview-prep/prep_server.py 9006
+Restart=always
+RestartSec=2
+
+[Install]
+WantedBy=multi-user.target

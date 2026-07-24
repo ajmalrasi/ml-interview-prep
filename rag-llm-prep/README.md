@@ -1,11 +1,9 @@
 # DocsMind: Learning Path
 
-Everything you need to understand DocsMind, in the order it was taught.
-Read **top to bottom the first time**. Come back to any file as a reference
-anytime. Topics 1–8 cover Phase 1 (the core pipeline); 9–10 cover Phases
-2–3 (better retrieval); 11–22 map advanced concepts; 23 applies them to
-your production seismic system-design story; and 24 fills the remaining
-production iceberg: multi-hop, caching, feedback loops, and responsible RAG.
+Everything you need to understand the DocsMind RAG system. This site now stays
+focused on retrieval-augmented generation. Python concurrency lives in the
+Python Interview Prep site, while tool calling, MCP, agent architectures and
+LangGraph live in the Agentic AI Prep site.
 
 Preparing for the DigitalOcean Senior Engineer: LLM Benchmarking & Performance role? Use
 the focused **[DigitalOcean two-day path](digitalocean-llm-benchmarking-path.md)**. It adds
@@ -63,17 +61,12 @@ For the IDFC LLM Inference & AI Infrastructure role, use the focused
 | # | Folder | What you learn |
 |---|--------|----------------|
 | 11 🔮 | [11-hyde/](11-hyde/) | Search with a fake answer — query transformations |
-| 12 🛠️ | [12-tool-calling/](12-tool-calling/) | The LLM asks, your code answers — the agent's core mechanic |
-| 13 🔌 | [13-mcp/](13-mcp/) | A USB port for tools — standardize the plug, not the electricity |
-| 14 🕸️ | [14-agent-architectures/](14-agent-architectures/) | One loop vs many, and who's in charge |
 | 15 ⚙️ | [15-llm-serving-internals/](15-llm-serving-internals/) | Prefill/decode, KV cache, batching, benchmark CI, engine/hardware qualification, capacity/COGS, vLLM |
-| 16 🧵 | [16-python-concurrency/](16-python-concurrency/) | Sync, async, threads, processes — and why `/query` is a plain `def` |
 | 17 🌐 | [17-fastapi-http-semantics/](17-fastapi-http-semantics/) | GET vs POST, and contracts that enforce themselves |
 | 18 🛡️ | [18-llm-security/](18-llm-security/) | PII, injection, jailbreaks, RBAC, moderation — five problems, five fixes |
 | 19 🎛️ | [19-fine-tuning/](19-fine-tuning/) | When RAG isn't the right tool — LoRA/QLoRA/PEFT/RLHF untangled |
 | 20 📈 | [20-production-monitoring/](20-production-monitoring/) | Cost, latency, quality, drift — four signals, not one dashboard |
 | 21 📄 | [21-multimodal-document-rag/](21-multimodal-document-rag/) | PDFs, tables, scans, charts — why it's an ingest problem |
-| 22 🕸️ | [22-langgraph/](22-langgraph/) | State, nodes, edges — build the agent graph, and "show me a node" |
 | 23 🌊 | [23-seismic-rag-project/](23-seismic-rag-project/) | Turn the seismic RAG prototype into an honest, production-ready AWS interview story |
 | 24 🧭 | [24-advanced-production-rag/](24-advanced-production-rag/) | Multi-hop retrieval, safe caching, feedback loops, and responsible RAG/bias checks |
 

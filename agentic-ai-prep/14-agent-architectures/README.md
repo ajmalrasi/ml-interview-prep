@@ -1,4 +1,4 @@
-# 14: Agent Architectures: One Loop vs Many (concept, Phase 5)
+# 3: Agent Architectures: One Loop vs Many
 
 **The big idea:** two separate questions hide inside "agent architecture":
 which **framework** builds the loop, and whether the loop is **one agent or
@@ -52,4 +52,4 @@ complexity isn't earning its cost.
 [docsmind/agent/\_\_init\_\_.py](../../docsmind/agent/__init__.py) — the
 placeholder docstring describing the planned single-agent LangGraph loop.
 
-→ Next: **[15-llm-serving-internals/README.md](../15-llm-serving-internals/README.md)**
+→ Next: **[LangGraph Hands-On](../22-langgraph/README.md)**

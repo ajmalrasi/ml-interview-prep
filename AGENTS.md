@@ -20,6 +20,7 @@ Raspberry Pi.
 | `automotive-soc-prep` | 9003 |
 | `python-interview-prep` | 9004 |
 | `jumio-biometrics-prep` | 9005 |
+| `agentic-ai-prep` | 9006 |
 
 Each track contains Markdown source, `build.js`, `_app.js`, `_site.css`,
 `_diagrams.js`, and generated `index.html`. Build on the Mac with

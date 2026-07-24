@@ -14,6 +14,9 @@ This site is a **course**, not a question dump. Each chapter teaches one mental 
 | Application | 8 | You solve coding problems with readable, testable Python |
 | Interview rehearsal | 9 | You answer out loud, handle follow-ups, and run a timed mock |
 
+Chapter 6 includes an applied RAG-serving case study showing how these Python
+concurrency choices affect a FastAPI application with blocking model calls.
+
 ## The rule for every lesson
 
 1. Read the mental model.

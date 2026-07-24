@@ -21,4 +21,14 @@ Every concurrency design also needs:
 - backpressure when consumers fall behind;
 - measurement under realistic load.
 
+## Applied case study: serving a RAG API
+
+After the Python fundamentals, apply them to a real FastAPI service:
+
+- [RAG serving concurrency](rag-serving-concurrency.md) compares sync, async,
+  threads and processes around blocking model calls.
+- [DocsMind's FastAPI server](docsmind-fastapi-server.md) explains why a plain
+  `def` handler can be safer than an `async def` handler that calls blocking
+  code.
+
 → Continue with **[GIL, Threads and Processes](gil-threads-processes.md)**.

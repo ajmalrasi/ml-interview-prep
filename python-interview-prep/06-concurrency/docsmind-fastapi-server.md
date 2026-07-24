@@ -68,7 +68,7 @@ async event loop can juggle thousands of waiting requests far more cheaply.
 | Failure mode | pool exhaustion → queuing (graceful) | one blocking call → whole loop stalls (silent, severe) |
 
 The migration itself — `aquery()`, `AsyncAnthropic` — is sketched in
-[17-fastapi-http-semantics/async-endpoint.md](../17-fastapi-http-semantics/async-endpoint.md).
+the FastAPI endpoint lesson in the separate RAG Interview Prep website.
 
 ## How you'd validate a concurrency choice
 
@@ -77,4 +77,4 @@ latency and error rate. Same measure-don't-assume discipline as every other
 choice in this repo: "async is faster" is only true under concurrent
 I/O-bound load, and only if you proved it on your own endpoint.
 
-→ Next: **[17-fastapi-http-semantics/README.md](../17-fastapi-http-semantics/README.md)**
+→ Return to the **[Concurrency overview](README.md)**.

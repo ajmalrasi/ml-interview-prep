@@ -61,4 +61,4 @@ with the same Hit@1/MRR discipline as the retrieval eval.
 `load_documents()`, whose single-path `SimpleDirectoryReader` +
 `SUPPORTED_EXTS` assumption is exactly what this design replaces.
 
-→ Next: **[22-langgraph/README.md](../22-langgraph/README.md)**
+→ Next: **[Seismic RAG Project](../23-seismic-rag-project/README.md)**

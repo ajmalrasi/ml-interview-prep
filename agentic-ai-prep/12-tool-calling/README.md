@@ -1,4 +1,4 @@
-# 12: Tool Calling: The LLM Asks, Your Code Answers (concept, Phase 5)
+# 1: Tool Calling: The LLM Asks, Your Code Answers
 
 **The big idea:** today, Generate is one LLM call — `RAGPipeline.query()`
 retrieves once, generates once, done. Tool calling turns that one call into a

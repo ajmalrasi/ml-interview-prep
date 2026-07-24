@@ -1,6 +1,6 @@
 # Interview Prep
 
-Six self-contained interview-prep tracks. Each is a static site — edit the
+Seven self-contained interview-prep tracks. Each is a static site — edit the
 `.md` files, run `node build.js`, and open the generated `index.html`.
 
 ## Tracks
@@ -16,8 +16,11 @@ Six self-contained interview-prep tracks. Each is a static site — edit the
 
 - **[rag-llm-prep/](rag-llm-prep/)** — RAG & LLM systems. The retrieval pipeline
   (chunking, embeddings, FAISS/Qdrant, hybrid retrieval, reranking) plus LLM
-  serving internals, tool calling, MCP, agent architectures, fine-tuning,
-  security, and production monitoring.
+  serving internals, fine-tuning, security, evaluation and production monitoring.
+
+- **[agentic-ai-prep/](agentic-ai-prep/)** — Agentic AI from first principles:
+  tool calling, MCP, single- and multi-agent architectures, supervisor patterns,
+  LangGraph state, nodes, edges, branches and bounded control loops.
 
 - **[automotive-soc-prep/](automotive-soc-prep/)** — AI Application Engineer
   (Automotive SoC). Deploying CV/BEV models on embedded NPU/DSP/CNNIP: the ONNX
