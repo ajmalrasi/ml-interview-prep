@@ -291,6 +291,7 @@ const HTML =
 '<style>\n' + CSS + '\n</style>\n</head>\n<body>\n' +
 '<div class="app">\n' +
 '  <aside class="sidebar" id="sidebar">\n' +
+'    <div class="site-switcher"><label for="siteSwitcher">Switch website</label><select id="siteSwitcher" aria-label="Switch interview preparation website" onchange="if(this.value){const h=location.protocol===&quot;file:&quot;?&quot;http://192.168.3.20&quot;:location.protocol+&quot;//&quot;+location.hostname;location.href=h+&quot;:&quot;+this.value+&quot;/&quot;}"><option value="9000">Computer Vision</option><option value="9001">RAG &amp; LLM</option><option value="9002">ML Engineer</option><option value="9003" selected>Automotive SoC</option><option value="9004">Python</option><option value="9005">Biometrics</option><option value="9006">Agentic AI</option></select></div>\n' +
 '    <div class="brand">\n' +
 '      <h1>Automotive SoC AI Prep</h1>\n' +
 '      <div class="sub">NPU · DSP · ONNX · Quantization · BEV · QNX</div>\n' +

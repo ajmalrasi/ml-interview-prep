@@ -46,6 +46,10 @@
   /* sidebar */
   .sidebar{background:var(--bg-side); border-right:1px solid var(--border);
     position:sticky; top:0; height:100vh; height:100dvh; overflow-y:auto; padding-bottom:env(safe-area-inset-bottom)}
+  .site-switcher{padding:14px 20px 0;font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,Helvetica,Arial,sans-serif}
+  .site-switcher label{display:block;margin:0 0 5px;color:var(--muted);font-size:10px;font-weight:700;letter-spacing:.7px;text-transform:uppercase}
+  .site-switcher select{width:100%;background:var(--bg);border:1px solid var(--border);color:var(--text);border-radius:9px;padding:8px 30px 8px 10px;font-family:inherit;font-size:12.5px;font-weight:600;line-height:1.3;cursor:pointer;outline:none}
+  .site-switcher select:focus{border-color:var(--accent);box-shadow:0 0 0 3px var(--accent-soft)}
   .brand{padding:20px 20px 14px; border-bottom:1px solid var(--border);
     position:sticky; top:0; background:var(--bg-side); z-index:2}
   .nav-hide{position:static;display:inline-flex;align-items:center;gap:6px;margin-top:10px;border:0;background:transparent;color:var(--muted);
@@ -624,6 +628,7 @@ details.qa.missed .cg-missed{background:#e0663f; color:#fff; border-color:#e0663
 <body>
 <div class="app">
   <aside class="sidebar" id="sidebar">
+    <div class="site-switcher"><label for="siteSwitcher">Switch website</label><select id="siteSwitcher" aria-label="Switch interview preparation website" onchange="if(this.value){const h=location.protocol===&quot;file:&quot;?&quot;http://192.168.3.20&quot;:location.protocol+&quot;//&quot;+location.hostname;location.href=h+&quot;:&quot;+this.value+&quot;/&quot;}"><option value="9000">Computer Vision</option><option value="9001">RAG &amp; LLM</option><option value="9002">ML Engineer</option><option value="9003">Automotive SoC</option><option value="9004" selected>Python</option><option value="9005">Biometrics</option><option value="9006">Agentic AI</option></select></div>
     <div class="brand">
       <h1>Python Interview Prep</h1>
       <div class="sub">Learn · Examples · Practice · Hard Q&amp;A</div>
